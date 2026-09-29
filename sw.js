@@ -1,5 +1,5 @@
 // Οκτώηχος: λειτουργία χωρίς διαδίκτυο
-const CACHE = "oktoichos-v13";
+const CACHE = "oktoichos-v14";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png"];
 
 self.addEventListener("install", e => {

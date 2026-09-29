@@ -748,7 +748,7 @@ function playSeq(events,onEnd,owner,token,ui){
         const pf=freq(prevM);
         setF(v,pf,t); setF(v,f,t,0.05);
         const same=ev.m===prevM&&ev.vowel===prevV;
-        const dip = same ? 0.12 : (ev.newSyl ? 0.45 : 0.7);
+        const dip = same ? 0.7 : (ev.newSyl ? 0.45 : 0.7);   // στο ίσον: μόνο ένα απαλό «άγγιγμα» για τη νέα συλλαβή
         v.g.gain.setValueAtTime(L,t); v.g.gain.linearRampToValueAtTime(L*dip,t+0.035); v.g.gain.linearRampToValueAtTime(L,t+0.1);
       }
       sounding=true; prevM=ev.m; prevV=ev.vowel;
@@ -1607,7 +1607,11 @@ function deleteHymn(hy){
   if(hy.img){ idb.del(hy.img); }
   lib.hymns=lib.hymns.filter(x=>x.id!==hy.id); scheduleSave(800);
 }
-function withVowels(notes){ let last="a"; return notes.map(n=>{ const has=n.s&&n.s.trim(); if(has) last=vowelOf(n.s); return {...n,vowel:last}; }); }
+// Φωνήεντα των συλλαβών. Στο ίσον (ίδιος φθόγγος με τον προηγούμενο) κρατάμε ΑΚΡΙΒΩΣ τον ίδιο ήχο:
+// ίδιο ύψος και ίδια χροιά, αλλιώς η αλλαγή φωνήεντος στο ηχείο του κινητού ακούγεται σαν άλλη νότα.
+function withVowels(notes){ let last="a", prev=null; return notes.map(n=>{ const has=n.s&&n.s.trim();
+  if(has&&!(prev&&prev.m===n.m)) last=vowelOf(n.s);
+  const o={...n,vowel:last,same:!!(prev&&prev.m===n.m)}; prev=n; return o; }); }
 function renderLib(){
   const v=$("viewLib"); document.body.classList.remove("editing");
   if(libView==="hymn"&&findHymn(openId)) return renderHymn();
