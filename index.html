@@ -216,6 +216,94 @@
   .homebtn .ar{font-size:34px;line-height:.9;font-weight:800}
   .homebtn .tx{font-size:13px;font-weight:800;letter-spacing:.04em}
   @media (prefers-reduced-motion:reduce){ .key{transition:none} }
+
+  /* Πάνω γραμμή: Πληροφορίες + Επαναφορά */
+  .toprow{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
+  .resetbtn{border-color:#9fd3a8;color:#bff0c6}
+  #resetMsg{text-align:center;color:#bff0c6;font-size:17px;font-weight:600;margin-top:-8px}
+  #scaleSec{display:flex;flex-direction:column;gap:12px}
+  .scalebar{display:flex;flex-direction:column;gap:12px}
+  .acchint{margin:8px 0 0;font-size:16px;font-weight:600;color:#ffd98a;text-align:center}
+  .acchint.pulse{animation:pulse .5s ease 2}
+  @keyframes pulse{50%{transform:scale(1.06);color:#fff}}
+  .key.acc.nosize{opacity:.55}
+  /* ΣΤΟΠ που γίνεται ΣΥΝΕΧΕΙΑ */
+  .stopall.resume{background:#2f8f4e;border-color:#2f8f4e}
+
+  /* Βιβλιοθήκη: κουμπί διαγραφής δίπλα σε κάθε βιβλίο/ψαλμό */
+  .itemrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
+  .delbtn{appearance:none;cursor:pointer;min-width:88px;border:2px solid #ff8a70;background:transparent;color:#ffb4a2;border-radius:14px;
+    font:600 26px "Noto Sans",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:4px 8px}
+  .delbtn small{font-size:13px;font-weight:600}
+  .delbtn.armed{background:var(--cinnabar);border-color:var(--cinnabar);color:#fff;font-size:17px}
+  .keycard input{width:100%;box-sizing:border-box;font:400 18px "Noto Sans",sans-serif;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:#0b1430;color:var(--parch)}
+  .keycard ol{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:6px;font-size:17px}
+  .ok{color:#9fe0aa;font-weight:700}
+
+  /* Γραφή ψαλμού: τα σημάδια δίπλα στην παρτιτούρα */
+  .desk{display:flex;flex-direction:column;gap:12px}
+  .tools{display:flex;flex-direction:column;gap:14px;border:2px solid var(--gold);border-radius:14px;padding:12px;background:rgba(23,42,94,.85)}
+  .tools input[type=text]{width:100%;box-sizing:border-box;font:400 22px "GFS Didot",Georgia,serif;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:#0b1430;color:var(--parch)}
+  .tools .pbtn{min-height:84px}
+  .tools .chip{min-height:46px;padding:4px 10px;font-size:15px}
+  .tools .label{margin-bottom:6px}
+  .wherehint{margin:0;font-size:17px;color:var(--parch);background:rgba(208,73,47,.18);border:1px solid var(--cinnabar);border-radius:10px;padding:8px 10px}
+  body.editing .desk .score{position:sticky;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:3;max-height:36vh;overflow-y:auto;box-shadow:0 8px 18px rgba(0,0,0,.55);align-content:flex-start}
+  body.editing .dock .sl{display:none}
+  @media (min-width:700px){
+    .desk{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+    body.editing .desk .score{max-height:calc(100vh - var(--dock-real,100px) - 24px)}
+    body.editing .wrap{max-width:1180px}
+  }
+
+  /* ΟΡΙΖΟΝΤΙΑ (landscape): όλη η κλίμακα χωράει στην οθόνη, χωρίς σκρολ */
+  @media (orientation:landscape) and (max-height:600px){
+    .wrap{max-width:1100px}
+    .dock{padding:6px 16px calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+    .dock .in{max-width:1100px;flex-direction:row;align-items:center;gap:16px}
+    .dockrow{flex:none;margin:0;grid-template-columns:auto auto auto}
+    .dockrow .chip,.stopall{min-height:46px;padding:4px 14px}
+    .dock .sl{flex:1;min-width:0}
+    .dock .ticks{display:none}
+    .dock input[type=range]{height:34px}
+    #scaleSec{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+    #scaleSec > .label{display:none}
+    .scalebar{grid-column:1;flex-direction:row;align-items:center;gap:8px;min-width:0}
+    .scalebar > *{min-width:0}
+    .scalebar .stepper{flex:0 0 210px;grid-template-columns:48px minmax(0,1fr) 48px}
+    .scalebar .stepper output{flex-direction:column;line-height:1.15;overflow:hidden}
+    .scalebar .ow{display:none}
+    .scalebar .stepper .btn{font-size:20px}
+    .key.acc .sym{height:30px}
+    .scalebar .btn{min-height:44px;font-size:15px;padding:4px 6px}
+    .scalebar .stepper output{font-size:14px}
+    #btnAcc{flex:0 0 112px}
+    #accBox{flex:1 1 auto}
+    .accsize{gap:6px}
+    .accsize button{font-size:14px}
+    #btnScale{padding:4px 10px;max-width:170px}
+    .homebtn{display:none!important}
+    #accBox .label{display:none}
+    .accsize button{min-height:44px}
+    .acchint{margin:4px 0 0;font-size:14px}
+    #btnScale{grid-column:2;grid-row:1;min-height:44px;font-size:16px}
+    #scale,#steps,#btnTune,#tuneBox{grid-column:1 / -1}
+    .scale{flex-direction:row-reverse;gap:6px}
+    .scale .row{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+    .scale .row .key.acc:first-child{order:3}
+    .scale .row .key.main{order:2}
+    .scale .row .key.acc:last-child{order:1}
+    .scale .key{min-height:48px;padding:3px}
+    .scale .key.main{min-height:100px;justify-content:flex-end;padding-bottom:6px}
+    .scale .key .nm{font-size:30px}
+    .scale .key .hz{font-size:11px}
+    .scale .key.main .mart{left:50%;top:6px;margin:0;font-size:26px;transform:translateX(-50%)}
+    .key.acc .sym{font-size:40px;height:24px}
+    .key.acc .t{font-size:13px;line-height:1.1;text-align:center;white-space:nowrap}
+    .key.acc .an{display:none}
+    .scale .key.main{min-height:92px}
+    .mtable table{min-width:0}
+  }
 </style>
 
 <div class="wrap">
@@ -229,7 +317,11 @@
     <button class="tab" id="tabChroai" role="tab" type="button" aria-selected="false">Χρόες</button>
     <button class="tab" id="tabLib" role="tab" type="button" aria-selected="false">Βιβλιοθήκη</button>
   </div>
-  <button class="btn infobtn" id="btnInfo" type="button">ⓘ Πληροφορίες για τους ήχους</button>
+  <div class="toprow">
+    <button class="btn infobtn" id="btnInfo" type="button">ⓘ Πληροφορίες για τους ήχους</button>
+    <button class="btn resetbtn" id="btnReset" type="button">↺ Επαναφορά</button>
+  </div>
+  <p class="hint" id="resetMsg" hidden></p>
 
   <!-- ΚΛΙΜΑΚΕΣ -->
   <div id="viewScales" style="display:flex;flex-direction:column;gap:20px">
@@ -244,24 +336,27 @@
       <p class="label desp-label">Δεσπόζοντες φθόγγοι</p>
       <div class="isons" id="desp"></div>
     </section>
-    <section style="display:flex;flex-direction:column;gap:12px">
+    <section id="scaleSec">
       <p class="label" style="margin:0">Κλίμακα με τις μαρτυρίες της</p>
-      <div class="stepper" role="group" aria-label="Οκτάβα">
-        <button type="button" class="btn small" id="octDn">▼ Οκτάβα κάτω</button>
-        <output id="octOut" aria-live="polite"></output>
-        <button type="button" class="btn small" id="octUp">Οκτάβα πάνω ▲</button>
-      </div>
-      <button class="btn small" id="btnAcc" type="button" aria-pressed="false">± Δείξε διέσεις και υφέσεις</button>
-      <div id="accBox" hidden>
-        <p class="label">Μέγεθος δίεσης και ύφεσης · ύφεση αριστερά, δίεση δεξιά</p>
-        <div class="accsize" id="accsize"></div>
+      <div class="scalebar">
+        <div class="stepper" role="group" aria-label="Οκτάβα">
+          <button type="button" class="btn small" id="octDn" aria-label="Οκτάβα κάτω">▼<span class="ow"> Οκτάβα κάτω</span></button>
+          <output id="octOut" aria-live="polite"></output>
+          <button type="button" class="btn small" id="octUp" aria-label="Οκτάβα πάνω"><span class="ow">Οκτάβα πάνω </span>▲</button>
+        </div>
+        <button class="btn small" id="btnAcc" type="button" aria-pressed="false">± Δείξε διέσεις και υφέσεις</button>
+        <div id="accBox" hidden>
+          <p class="label">Μέγεθος δίεσης και ύφεσης · ύφεση αριστερά, δίεση δεξιά</p>
+          <div class="accsize" id="accsize"></div>
+          <p class="acchint" id="accHint" hidden>👆 Διάλεξε πόσα μόρια, για να ακούγονται οι διέσεις και οι υφέσεις.</p>
+        </div>
       </div>
       <div class="scale" id="scale"></div>
       <p class="steps" id="steps"></p>
       <button class="btn small" id="btnTune" type="button">✎ Άλλαξε τα διαστήματα</button>
       <div class="card tune" id="tuneBox" hidden></div>
+      <button class="btn" id="btnScale" type="button">▶ Παίξε την κλίμακα</button>
     </section>
-    <button class="btn" id="btnScale" type="button">▶ Παίξε την κλίμακα</button>
     <p class="hint">Διαστήματα κατά την Πατριαρχική Μουσική Επιτροπή του 1881 (72 μόρια στην οκτάβα). Ο χρυσός κύκλος δείχνει τη βάση του ήχου. Σε iPhone, αν δεν ακούγεται τίποτα, βγάλε το κινητό από τη σίγαση (το διακοπτάκι στο πλάι).</p>
   </div>
 
@@ -283,12 +378,16 @@
       <button type="button" class="chip" id="tmOrgan" aria-pressed="false">Όργανο</button>
       <button type="button" class="btn red stopall" id="btnStopAll">■ ΣΤΟΠ</button>
     </div>
-    <label class="slab" for="pitch"><span>Τόνος φωνής</span><b id="pitchVal"></b></label>
-    <input type="range" id="pitch" min="-10" max="10" step="0.5" value="0">
-    <div class="ticks" aria-hidden="true" id="pitchTicks"></div>
-    <label class="slab" for="vol"><span>Ένταση</span><b id="volVal"></b></label>
-    <input type="range" id="vol" min="-10" max="10" step="1" value="0">
-    <div class="ticks" aria-hidden="true" id="volTicks"></div>
+    <div class="sl">
+      <label class="slab" for="pitch"><span>Τόνος φωνής</span><b id="pitchVal"></b></label>
+      <input type="range" id="pitch" min="-10" max="10" step="0.5" value="0">
+      <div class="ticks" aria-hidden="true" id="pitchTicks"></div>
+    </div>
+    <div class="sl">
+      <label class="slab" for="vol"><span>Ένταση</span><b id="volVal"></b></label>
+      <input type="range" id="vol" min="-10" max="10" step="1" value="0">
+      <div class="ticks" aria-hidden="true" id="volTicks"></div>
+    </div>
   </div>
 </div>
 
@@ -464,15 +563,45 @@ function buildCtx(){
   noiseBuf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
   const nd=noiseBuf.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
   const b=ctx.createBuffer(1,1,22050), sb=ctx.createBufferSource(); sb.buffer=b; sb.connect(ctx.destination); sb.start(0);
-  ctx.onstatechange=()=>{ if(ctx&&ctx.state!=="running"){ voice=null; } };
+  const me=ctx;
+  ctx.onstatechange=()=>{ if(ctx!==me) return; if(ctx.state!=="running"){ voice=null; if(ctx.state==="interrupted") needRebuild=true; } };
+  clockMark={ct:ctx.currentTime,pt:performance.now(),ran:false};
 }
+/* ---- Φύλακας του ήχου ----
+   Στο iPhone, μετά από κλήση, ειδοποίηση, σβήσιμο οθόνης, ακουστικά ή άλλη εφαρμογή με ήχο,
+   το «ηχητικό κύκλωμα» μπορεί να μείνει ζωντανό στα χαρτιά αλλά βουβό. Τότε το ξαναφτιάχνουμε μόνοι μας. */
+let needRebuild=false, lastUse=0, clockMark=null;
+function rebuildAudio(){
+  const old=ctx;
+  try{ if(seq&&!seq.pending){ seq.timers.forEach(clearTimeout); seq=null; } }catch(e){}
+  voice=null; drone=null;
+  try{ if(old&&old.state!=="closed") old.close(); }catch(e){}
+  ctx=null; needRebuild=false;
+  document.querySelectorAll(".ison.on").forEach(el=>el.classList.remove("on"));
+  buildCtx();
+  try{ ctx.resume(); }catch(e){}
+}
+// Ελέγχει ότι το «ρολόι» του ήχου προχωρά. Αν έχει σταματήσει ενώ λέει ότι παίζει, είναι κολλημένο.
+function clockStuck(){
+  if(!ctx||!clockMark) return false;
+  const prev=clockMark, pt=performance.now(), ct=ctx.currentTime, run=ctx.state==="running";
+  clockMark={ct,pt,ran:run};
+  const dt=(pt-prev.pt)/1000;
+  return prev.ran&&run&&dt>0.4&&(ct-prev.ct)<dt*0.4;
+}
+const soundBusy=()=>!!(voice||drone||(seq&&!seq.pending));
 function impulse(sec,decay){
   const len=Math.floor(ctx.sampleRate*sec), buf=ctx.createBuffer(2,len,ctx.sampleRate);
   for(let c=0;c<2;c++){ const d=buf.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); }
   return buf;
 }
 function ensureAudio(){
-  if(!ctx||ctx.state==="closed"){ buildCtx(); }
+  const now=performance.now();
+  const idle=lastUse&&now-lastUse>40000&&!soundBusy();   // πάνω από 40″ ησυχία: καινούργιο, «φρέσκο» κύκλωμα
+  lastUse=now;
+  if(!ctx||ctx.state==="closed"||(needRebuild&&!soundBusy())||idle){ rebuildAudio(); return; }
+  if(ctx.state==="interrupted"){ rebuildAudio(); return; }
+  if(clockStuck()){ rebuildAudio(); return; }
   if(ctx.state!=="running"){ try{ ctx.resume(); }catch(e){} }
 }
 // Περιμένει να «ξυπνήσει» ο ήχος· αν δεν ξυπνήσει, φτιάχνει καινούργιο κύκλωμα (χωρίς να χρειάζεται επανεκκίνηση)
@@ -481,13 +610,16 @@ async function audioReady(){
   if(ctx.state==="running") return true;
   try{ await Promise.race([ctx.resume(),new Promise(r=>setTimeout(r,350))]); }catch(e){}
   if(ctx.state==="running") return true;
-  try{ const old=ctx; seq=null; voice=null; drone=null; old.close&&old.close(); }catch(e){}
-  buildCtx();
+  rebuildAudio();
   try{ await Promise.race([ctx.resume(),new Promise(r=>setTimeout(r,350))]); }catch(e){}
   return ctx.state==="running";
 }
-["pointerdown","touchend","click","keydown"].forEach(t=>document.addEventListener(t,ensureAudio,{capture:true,passive:true}));
-document.addEventListener("visibilitychange",()=>{ if(document.hidden&&ctx) stopAll(); });
+["pointerdown","touchend","click","keydown"].forEach(t=>document.addEventListener(t,()=>{ if(t==="pointerdown"||t==="keydown"||!ctx||ctx.state!=="running") ensureAudio(); },{capture:true,passive:true}));
+// Όταν φεύγεις από την εφαρμογή: σταματά ο ήχος (και θυμάται τι έπαιζε, για το «ΣΥΝΕΧΕΙΑ»).
+// Όταν γυρνάς: την επόμενη φορά που θα πατήσεις κάτι, φτιάχνεται καινούργιο ηχητικό κύκλωμα.
+document.addEventListener("visibilitychange",()=>{ if(document.hidden){ if(ctx) stopAll(true); } else needRebuild=true; });
+window.addEventListener("pageshow",()=>{ needRebuild=true; });
+try{ if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener("devicechange",()=>{ needRebuild=true; }); }catch(e){}
 
 // Χροιά: "voice" = ψαλτική φωνή με φωνήεντα, "organ" = όργανο
 let timbre=(()=>{ try{ return JSON.parse(localStorage.getItem("okt-timbre"))||"voice"; }catch(e){ return "voice"; } })();
@@ -512,7 +644,7 @@ function makeVoice(f,vowel){
   const o=ctx.createOscillator(), g=ctx.createGain(), lfo=ctx.createOscillator(), lg=ctx.createGain();
   o.frequency.value=f;
   g.gain.value=0; g.connect(master);
-  const extra=[]; let formants=null; const fps=[{p:o.frequency,r:1}];
+  const extra=[]; let formants=null; const fps=[{p:o.frequency,r:1}]; const nodes=[g,lg];
   if(timbre==="voice"){
     // ΦΩΝΗ: τρεις ελαφρά «ξεκούρδιστες» φωνές (σαν μικρός χορός) μέσα από τα φωνήεντα, με βιμπράτο και ανάσα
     o.type="sawtooth";
@@ -522,25 +654,27 @@ function makeVoice(f,vowel){
     const drift=ctx.createOscillator(), dg=ctx.createGain(); drift.frequency.value=0.27; dg.gain.value=f*0.002; drift.connect(dg); dg.connect(o.frequency); drift.start(t); extra.push(drift);
     const sum=ctx.createGain(); sum.gain.value=2.4; sum.connect(g);
     const tilt=ctx.createBiquadFilter(); tilt.type="lowpass"; tilt.frequency.value=3500;
+    nodes.push(o2,o3,drift,dg,sum,tilt);
     [o,o2,o3].forEach(x=>x.connect(tilt));
     const F=FORM[vowel]||FORM.a;
     formants=F.map(([fr,db,bw])=>{ const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=fr; bp.Q.value=fr/(bw*0.75);
-      const gg=ctx.createGain(); gg.gain.value=dB(db); tilt.connect(bp); bp.connect(gg); gg.connect(sum); return {bp,gg}; });
+      const gg=ctx.createGain(); gg.gain.value=dB(db); tilt.connect(bp); bp.connect(gg); gg.connect(sum); nodes.push(bp,gg); return {bp,gg}; });
     const ns=ctx.createBufferSource(); ns.buffer=noiseBuf; ns.loop=true;
     const nf=ctx.createBiquadFilter(); nf.type="bandpass"; nf.frequency.value=1800; nf.Q.value=0.8;
-    const ng=ctx.createGain(); ng.gain.value=0.05; ns.connect(nf); nf.connect(ng); ng.connect(g); ns.start(t); extra.push(ns);
+    const ng=ctx.createGain(); ng.gain.value=0.05; ns.connect(nf); nf.connect(ng); ng.connect(g); ns.start(t); extra.push(ns); nodes.push(ns,nf,ng);
     [o2,o3].forEach(x=>{ lg.connect(x.frequency); x.start(t); });
   }else{
     // ΟΡΓΑΝΟ: σταθερός ήχος αυλών εκκλησιαστικού οργάνου, χωρίς βιμπράτο, με βαθύ «16 πόδια» από κάτω
     const real=new Float32Array([0,1,.75,.3,.55,.08,.22,.04,.28]);
     o.setPeriodicWave(ctx.createPeriodicWave(real,new Float32Array(real.length))); o.connect(g);
     const sub=ctx.createOscillator(), sg=ctx.createGain(); sub.type="sine"; sub.frequency.value=f/2; sg.gain.value=0.45; sub.connect(sg); sg.connect(g); sub.start(t);
-    fps.push({p:sub.frequency,r:0.5}); extra.push(sub);
+    fps.push({p:sub.frequency,r:0.5}); extra.push(sub); nodes.push(sub,sg);
     lfo.frequency.value=0.1; lg.gain.value=0;
   }
   lfo.connect(lg); lg.connect(o.frequency);
   o.start(t); lfo.start(t);
-  return {o,g,lfo,formants,extra,fps};
+  nodes.push(o,lfo);
+  return {o,g,lfo,formants,extra,fps,nodes};
 }
 // Αλλαγή ύψους σε όλους τους ταλαντωτές της φωνής
 function setF(v,f,t,glide){ (v.fps||[{p:v.o.frequency,r:1}]).forEach(({p,r})=>{ if(glide){ p.exponentialRampToValueAtTime(f*r,t+glide); } else p.setValueAtTime(f*r,t); }); }
@@ -548,7 +682,9 @@ function setVowel(v,vowel,t){
   if(!v.formants) return; const F=FORM[vowel]||FORM.a;
   v.formants.forEach(({bp,gg},i)=>{ bp.frequency.setTargetAtTime(F[i][0],t,0.03); bp.Q.setTargetAtTime(F[i][0]/F[i][2],t,0.03); gg.gain.setTargetAtTime(dB(F[i][1]),t,0.03); });
 }
-function stopNodes(v,at){ try{ v.o.stop(at); v.lfo.stop(at); (v.extra||[]).forEach(n=>n.stop(at)); }catch(e){} }
+function stopNodes(v,at){
+  try{ v.o.onended=()=>{ (v.nodes||[]).forEach(n=>{ try{ n.disconnect(); }catch(e){} }); }; }catch(e){}   // καθάρισμα, να μη «γεμίζει» το κύκλωμα
+  try{ v.o.stop(at); v.lfo.stop(at); (v.extra||[]).forEach(n=>n.stop(at)); }catch(e){} }
 function killVoice(v,fade){
   if(!v||!ctx) return; const t=ctx.currentTime;
   try{ v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value,t); v.g.gain.linearRampToValueAtTime(0,t+fade); }catch(e){}
@@ -556,7 +692,7 @@ function killVoice(v,fade){
 }
 // Μονοφωνικό πάτημα: νέο κουμπί σβήνει αμέσως το προηγούμενο
 function noteOn(f,owner,vowel){
-  ensureAudio(); stopSeq();
+  ensureAudio(); stopSeq(); clearResume();
   if(voice) killVoice(voice,0.015);
   const v=makeVoice(f,vowel), t=ctx.currentTime;
   v.g.gain.setValueAtTime(0,t); v.g.gain.linearRampToValueAtTime(0.5,t+0.015);
@@ -570,7 +706,7 @@ function noteOff(owner){
 }
 // Ίσον (συνεχές), στη φωνή πάνω στο «νε»
 function droneOn(m,key){
-  ensureAudio(); droneOff();
+  ensureAudio(); droneOff(); clearResume();
   const v=makeVoice(freq(m),"e"); const t=ctx.currentTime;
   v.g.gain.linearRampToValueAtTime(0.2,t+0.35);
   drone={...v,m,key};
@@ -583,19 +719,20 @@ function retuneDrone(){ if(drone&&ctx){ const f=freq(drone.m); (drone.fps||[{p:d
 // Πάτημα στο ίδιο κουμπί = σταμάτημα. Πάτημα σε άλλο κουμπί = σταματά την παλιά και παίζει τη νέα.
 function toggleSeq(owner,makeEvents,onStart,onEnd){
   if(seq&&seq.owner===owner){ stopSeq(); return; }
-  stopSeq();
+  stopSeq(); clearResume();
   onStart&&onStart();
-  const token={owner}; seq={owner,timers:[],v:null,onEnd,token,pending:true};
+  const token={owner}; seq={owner,timers:[],v:null,onEnd,token,pending:true,ui:{onStart,onEnd}};
   audioReady().then(()=>{
     if(!seq||seq.token!==token) return;   // σταμάτησε στο μεταξύ
-    playSeq(makeEvents(),onEnd,owner,token);
+    playSeq(makeEvents(),onEnd,owner,token,{onStart,onEnd});
   });
 }
-function playSeq(events,onEnd,owner,token){
+function playSeq(events,onEnd,owner,token,ui){
   ensureAudio(); if(voice){killVoice(voice,0.015);voice=null;}
-  const L=0.45; let first=events.find(e=>!e.rest);
+  const L=0.45; let first=events.find(e=>!e.rest); let idxAt=0;
+  const me={v:null,timers:[],onEnd,owner,token,events,idx:0,ui};
   if(!first){ seq=null; onEnd&&onEnd(); return; }
-  const v=makeVoice(freq(first.m),first.vowel); const timers=[];
+  const v=makeVoice(freq(first.m),first.vowel); const timers=me.timers; me.v=v;
   let t=ctx.currentTime+0.08, prevM=null, prevV=null, sounding=false;
   events.forEach(ev=>{
     if(ev.rest){
@@ -617,22 +754,43 @@ function playSeq(events,onEnd,owner,token){
       sounding=true; prevM=ev.m; prevV=ev.vowel;
     }
     if(ev.onStart){ const at=t; timers.push(setTimeout(ev.onStart,Math.max(0,(at-ctx.currentTime)*1000))); }
+    { const at=t, i=idxAt++; timers.push(setTimeout(()=>{ if(seq===me) me.idx=i; },Math.max(0,(at-ctx.currentTime)*1000))); }
     t+=ev.dur;
   });
   v.g.gain.setValueAtTime(L,t-0.12); v.g.gain.linearRampToValueAtTime(0,t+0.15);
   stopNodes(v,t+0.25);
-  const me={v,timers,onEnd,owner,token};
   timers.push(setTimeout(()=>{ if(seq===me){ seq=null; onEnd&&onEnd(); } },(t-ctx.currentTime)*1000+300));
   seq=me;
 }
-// Σιγή όλων: σταματά αμέσως κάθε ήχο
-function stopAll(){
+// Σιγή όλων: σταματά αμέσως κάθε ήχο.
+// remember=true: θυμάται τι έπαιζε, ώστε το ίδιο κουμπί (ΣΥΝΕΧΕΙΑ) να το ξαναβάλει από εκεί που σταμάτησε.
+let resumeInfo=null;
+function stopAll(remember){
+  let info=null;
+  if(remember){
+    if(seq&&seq.events){ const rest=seq.events.slice(Math.max(0,seq.idx||0)); if(rest.some(e=>!e.rest)) info={seq:{owner:seq.owner,events:rest,ui:seq.ui||{}}}; }
+    if(drone){ info=info||{}; info.drone={m:drone.m,key:drone.key}; }
+  }
   stopSeq();
   if(voice&&ctx){ killVoice(voice,0.03); voice=null; }
   if(drone&&ctx){ killVoice(drone,0.05); drone=null; }
   document.querySelectorAll(".playing").forEach(el=>el.classList.remove("playing"));
   document.querySelectorAll(".ison.on").forEach(el=>el.classList.remove("on"));
   const hi=document.getElementById("btnHIson"); if(hi) hi.classList.remove("red");
+  resumeInfo=info; renderStopBtn();
+}
+function clearResume(){ if(resumeInfo){ resumeInfo=null; renderStopBtn(); } }
+function resumeAll(){
+  const r=resumeInfo; resumeInfo=null; if(!r){ renderStopBtn(); return; }
+  if(r.drone){ droneOn(r.drone.m,r.drone.key); try{ renderIsons(); }catch(e){} const hi=document.getElementById("btnHIson"); if(hi) hi.classList.toggle("red",r.drone.key==="hymn"); }
+  if(r.seq){ const d=drone; toggleSeq(r.seq.owner,()=>r.seq.events,r.seq.ui.onStart,r.seq.ui.onEnd); drone=d; }
+  renderStopBtn();
+}
+function renderStopBtn(){
+  const b=document.getElementById("btnStopAll"); if(!b) return;
+  b.classList.toggle("resume",!!resumeInfo);
+  b.textContent=resumeInfo?"▶ ΣΥΝΕΧΕΙΑ":"■ ΣΤΟΠ";
+  b.setAttribute("aria-label",resumeInfo?"Συνέχεια από εκεί που σταμάτησε":"Σταμάτα κάθε ήχο");
 }
 function stopSeq(){
   if(!seq) return; const s=seq; seq=null;
@@ -645,8 +803,8 @@ const store={
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 };
 let current=MODES[0];          // ξεκινά πάντα από τον Α΄ ήχο
-let showAcc=false;             // ξεκινά χωρίς διέσεις/υφέσεις· τις ανοίγεις με το κουμπί
-let accSize=store.get("okt-acc",4);
+let showAcc=true;              // ξεκινά με τις διέσεις/υφέσεις να φαίνονται
+let accSize=null;              // κανένα μέγεθος επιλεγμένο στην αρχή· το διαλέγεις εσύ
 // Ρυθμιστικά από −10 έως +10, με το 0 στη μέση
 let pitchPos=store.get("okt-pitch2",0);   // ημιτόνια από τον Νη = 220 Hz
 let volPos=store.get("okt-vol2",0);       // 0 = κανονική ένταση, −10 = σιωπή, +10 = δυνατά
@@ -681,8 +839,9 @@ function applyVol(){
 function renderTimbre(){ $("tmVoice").setAttribute("aria-pressed",timbre==="voice"); $("tmOrgan").setAttribute("aria-pressed",timbre==="organ"); }
 $("tmVoice").onclick=()=>{ timbre="voice"; store.set("okt-timbre",timbre); renderTimbre(); };
 $("tmOrgan").onclick=()=>{ timbre="organ"; store.set("okt-timbre",timbre); renderTimbre(); };
-$("btnStopAll").addEventListener("pointerdown",e=>{ e.preventDefault(); stopAll(); });
-$("btnStopAll").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); stopAll(); } });
+const stopPress=()=>{ const playing=!!(seq||drone||voice); if(!playing&&resumeInfo) resumeAll(); else stopAll(true); };
+$("btnStopAll").addEventListener("pointerdown",e=>{ e.preventDefault(); stopPress(); });
+$("btnStopAll").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); stopPress(); } });
 renderTimbre();
 $("pitch").value=pitchPos; $("vol").value=volPos; applyPitch(); applyVol();
 $("pitch").addEventListener("input",e=>{ pitchPos=+e.target.value; applyPitch(); if(tab==="scales") renderScale(); });
@@ -697,7 +856,7 @@ function showTab(t){
   tab=t;
   $("tabScales").setAttribute("aria-selected",t==="scales"); $("tabChroai").setAttribute("aria-selected",t==="chroai"); $("tabLib").setAttribute("aria-selected",t==="lib");
   $("viewScales").hidden=t!=="scales"; $("viewChroai").hidden=t!=="chroai"; $("viewLib").hidden=t!=="lib";
-  stopSeq();
+  stopSeq(); document.body.classList.remove("editing");
   if(t==="lib") renderLib(); else if(t==="chroai") renderChroai(); else renderScales();
   if(typeof updateHome==="function") updateHome();
 }
@@ -714,7 +873,7 @@ MODES.forEach(md=>{
 });
 [2,4,6,8].forEach(n=>{
   const b=document.createElement("button"); b.type="button"; b.id="acc-"+n; b.textContent=n+" μόρια";
-  b.onclick=()=>{ accSize=n; store.set("okt-acc",n); renderScales(); };
+  b.onclick=()=>{ accSize=(accSize===n?null:n); renderScales(); };
   $("accsize").appendChild(b);
 });
 
@@ -765,8 +924,10 @@ function holdable(el,getF,owner,vowel){
 function renderScale(){
   const sc=$("scale"); sc.innerHTML="";
   $("accBox").hidden=!showAcc;
+  $("accHint").hidden=!(showAcc&&!accSize);
   $("btnAcc").setAttribute("aria-pressed",showAcc);
-  $("btnAcc").textContent=showAcc?"Κρύψε τις διέσεις και υφέσεις":"± Δείξε διέσεις και υφέσεις";
+  const landNow=window.matchMedia&&window.matchMedia("(orientation:landscape) and (max-height:600px)").matches;
+  $("btnAcc").textContent=landNow?(showAcc?"Κρύψε ±":"± Διέσεις"):(showAcc?"Κρύψε τις διέσεις και υφέσεις":"± Δείξε διέσεις και υφέσεις");
   const rows=[...current.notes].map((nt,i)=>({nt,i})).reverse(); // ψηλά πάνω, χαμηλά κάτω
   rows.forEach(({nt,i})=>{
     const row=document.createElement("div"); row.className="row"+(showAcc?"":" solo");
@@ -776,10 +937,15 @@ function renderScale(){
     const main=mk("main"+((i===0||i===7)?" base":""),`${martyriaHTML(stepOf(nt),current.gen)}<span class="nm">${nm}</span><span class="hz">${freq(nt.m).toFixed(1)} Hz</span>`,nt.m,"n"+i);
     main.style.background=`linear-gradient(160deg,${shade(current.color,k+.12)},${shade(current.color,k-.12)})`;
     main.dataset.idx=i;
-    if(showAcc){
-      const yf=mk("acc",`<span class="sym">${YFESIS[accSize]}</span><span class="t">${nm} ύφεση −${accSize}</span>`,nt.m-accSize,"y"+i);
-      const di=mk("acc",`<span class="sym">${DIESIS[accSize]}</span><span class="t">${nm} δίεση +${accSize}</span>`,nt.m+accSize,"d"+i);
+    if(showAcc&&accSize){
+      const yf=mk("acc",`<span class="sym">${YFESIS[accSize]}</span><span class="t"><span class="an">${nm} </span>ύφεση −${accSize}</span>`,nt.m-accSize,"y"+i);
+      const di=mk("acc",`<span class="sym">${DIESIS[accSize]}</span><span class="t"><span class="an">${nm} </span>δίεση +${accSize}</span>`,nt.m+accSize,"d"+i);
       row.append(yf,main,di);
+    } else if(showAcc){
+      // δεν έχει διαλεχτεί μέγεθος: τα κουμπιά φαίνονται, και αν τα πατήσεις σου δείχνουν να διαλέξεις μόρια
+      const ask=(txt)=>{ const b=document.createElement("button"); b.type="button"; b.className="key acc nosize"; b.innerHTML=`<span class="t" style="font-size:15px">${txt}</span><span class="t">${nm}</span>`;
+        b.onclick=()=>{ const h=$("accHint"); h.hidden=false; h.classList.remove("pulse"); void h.offsetWidth; h.classList.add("pulse"); $("accBox").scrollIntoView({block:"nearest",behavior:"smooth"}); }; return b; };
+      row.append(ask("ύφεση"),main,ask("δίεση"));
     } else row.append(main);
     sc.appendChild(row);
   });
@@ -978,7 +1144,8 @@ $("btnInfo").onclick=()=>{ renderInfo(); $("sheet").hidden=false; $("sheet").scr
 
 /* ============ ΒΕΛΑΚΙ ΑΡΧΗΣ & ΠΛΟΗΓΗΣΗ ΠΙΣΩ ============ */
 function updateHome(){
-  const atHome=tab==="scales"&&$("sheet").hidden&&(window.scrollY||0)<250;
+  const land=window.matchMedia&&window.matchMedia("(orientation:landscape) and (max-height:600px)").matches;
+  const atHome=tab==="scales"&&$("sheet").hidden&&((window.scrollY||0)<250||land);
   $("btnHome").hidden=atHome;
 }
 function goHome(){
@@ -1101,6 +1268,7 @@ function openPdf(path){
 }
 // Από πού έρχεται η σελίδα ενός ψαλμού: δικό του PDF ή σελίδα βιβλίου
 function hymnSource(hy){
+  if(hy.img) return {img:hy.img,page:null};
   if(hy.pdf) return {path:hy.pdf,page:null};
   if(hy.book){ const bk=findBook(hy.book.id); if(bk) return {path:bk.pdf,page:hy.book.page,book:bk}; }
   return null;
@@ -1122,6 +1290,12 @@ async function renderPdfPages(hy){
   box.innerHTML=`<p class="hint">Φόρτωση του PDF…</p>`;
   const src=hymnSource(hy); if(!src) return;
   try{
+    if(src.img){
+      const b=await idb.get(src.img); if(!$("pdfPages")) return;
+      if(!b){ box.innerHTML=`<p class="hint">Η φωτογραφία υπάρχει μόνο στη συσκευή όπου τη βγάλατε.</p>`; return; }
+      box.innerHTML=""; const im=document.createElement("img"); im.src=URL.createObjectURL(b); im.alt="Η φωτογραφία της σελίδας";
+      im.style.cssText=`width:${100*pdfZoom}%;max-width:${pdfZoom>1?"none":"100%"};background:#fff;border-radius:8px`; box.appendChild(im); return;
+    }
     if(src.page){ box.innerHTML=""; await renderPageInto(box,src.path,src.page,pdfZoom); return; }
     const pdf=await openPdf(src.path); if(!$("pdfPages")) return;
     box.innerHTML="";
@@ -1146,6 +1320,7 @@ function wirePdf(hy){
   if(readCtl){ $("btnRead").textContent="■ Σταμάτα την ανάγνωση"; }
   $("btnRead").onclick=()=>{
     if(readCtl){ readCtl.abort(); return; }
+    if(!canRead()){ showNeedKey($("readConfirm")); return; }
     showReadConfirm(hy);
   };
 }
@@ -1154,8 +1329,17 @@ async function showReadConfirm(hy){
   const box=$("readConfirm"); if(!box) return;
   box.hidden=false; box.innerHTML=`<p class="hint">Μετράω τις σελίδες…</p>`;
   const src=hymnSource(hy); if(!src) return;
+  const costTxt=inClaude()?"Η ανάγνωση χρησιμοποιεί λίγη από τη συνδρομή σου στο Claude.":"Η ανάγνωση κοστίζει λίγα λεπτά από την πίστωση του κλειδιού σου Claude.";
+  if(src.img){
+    box.innerHTML=`<p style="margin:0;font-size:18px"><b>Θα διαβαστεί η φωτογραφία.</b> ${costTxt}${hy.cells.length?" Τα σημάδια που υπάρχουν ήδη θα αντικατασταθούν.":""}</p>
+      <button type="button" class="btn red" id="rcOne" style="width:100%;margin-top:10px">Ναι, διάβασέ τη και κάν' τη ήχο</button>
+      <button type="button" class="btn small" id="rcCancel" style="width:100%;margin-top:10px">Άκυρο, να μη διαβαστεί</button>`;
+    $("rcOne").onclick=()=>{ box.hidden=true; transcribe(hy,1); };
+    $("rcCancel").onclick=()=>{ box.hidden=true; box.innerHTML=""; };
+    return;
+  }
   if(src.page){
-    box.innerHTML=`<p style="margin:0;font-size:18px"><b>Θα διαβαστεί μόνο η σελίδα ${src.page}.</b> Η ανάγνωση χρησιμοποιεί λίγη από τη συνδρομή σου στο Claude.${hy.cells.length?" Τα σημάδια που υπάρχουν ήδη θα αντικατασταθούν.":""}</p>
+    box.innerHTML=`<p style="margin:0;font-size:18px"><b>Θα διαβαστεί μόνο η σελίδα ${src.page}.</b> ${costTxt}${hy.cells.length?" Τα σημάδια που υπάρχουν ήδη θα αντικατασταθούν.":""}</p>
       <button type="button" class="btn red" id="rcOne" style="width:100%;margin-top:10px">Ναι, διάβασε τη σελίδα ${src.page}</button>
       <button type="button" class="btn small" id="rcCancel" style="width:100%;margin-top:10px">Άκυρο, να μη διαβαστεί</button>`;
     $("rcOne").onclick=()=>{ box.hidden=true; transcribe(hy,1); };
@@ -1164,7 +1348,7 @@ async function showReadConfirm(hy){
   }
   let n=0; try{ n=(await openPdf(src.path)).numPages; }catch(e){ box.innerHTML=`<p class="hint">Δεν μπόρεσα να ανοίξω το PDF.</p>`; return; }
   const max=Math.min(n,12);
-  box.innerHTML=`<p style="margin:0;font-size:18px"><b>Το PDF έχει ${n} ${n===1?"σελίδα":"σελίδες"}.</b> Κάθε σελίδα που διαβάζει το Claude χρησιμοποιεί λίγη από τη συνδρομή σου.${n>12?" Το πολύ 12 σελίδες τη φορά.":""}${hy.cells.length?" Τα σημάδια που υπάρχουν ήδη θα αντικατασταθούν.":""}</p>
+  box.innerHTML=`<p style="margin:0;font-size:18px"><b>Το PDF έχει ${n} ${n===1?"σελίδα":"σελίδες"}.</b> ${costTxt}${n>12?" Το πολύ 12 σελίδες τη φορά.":""}${hy.cells.length?" Τα σημάδια που υπάρχουν ήδη θα αντικατασταθούν.":""}</p>
     <div class="btnrow" style="margin-top:10px">
       <button type="button" class="btn red" id="rcOne">Μόνο την 1η σελίδα</button>
       ${max>1?`<button type="button" class="btn" id="rcAll">Όλες (${max} σελίδες)</button>`:""}
@@ -1180,6 +1364,24 @@ async function stripBlobs(page){
   const c=document.createElement("canvas"); c.width=vp.width; c.height=vp.height;
   const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height);
   await page.render({canvasContext:g,viewport:vp}).promise;
+  return canvasStrips(c);
+}
+function blobImage(blob){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(blob), im=new Image(); im.onload=()=>{ URL.revokeObjectURL(u); res(im); }; im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error("image")); }; im.src=u; }); }
+async function imgStrips(blob){
+  if(!blob) throw new Error("missing");
+  const im=await blobImage(blob); const W=1500, H=Math.round(im.naturalHeight*W/im.naturalWidth);
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,W,H); g.drawImage(im,0,0,W,H);
+  return canvasStrips(c);
+}
+// Μικραίνει μια φωτογραφία του κινητού ώστε να χωράει άνετα στη συσκευή
+async function shrinkImage(file,maxSide){
+  const im=await blobImage(file); const k=Math.min(1,maxSide/Math.max(im.naturalWidth,im.naturalHeight));
+  const c=document.createElement("canvas"); c.width=Math.round(im.naturalWidth*k); c.height=Math.round(im.naturalHeight*k);
+  const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height);
+  return await new Promise(r=>c.toBlob(r,"image/jpeg",0.9));
+}
+async function canvasStrips(c){
   const H=760, OV=60, out=[];
   for(let y=0;y<c.height;y+=H-OV){
     const h=Math.min(H,c.height-y); if(h<80&&out.length) break;
@@ -1192,8 +1394,8 @@ async function stripBlobs(page){
 }
 const READ_RULES=`You are reading one page of Byzantine chant written in Chrysanthine (neo-Byzantine, parasemantic) notation. The images are consecutive horizontal strips of that ONE page, top to bottom; neighbouring strips overlap slightly, so never transcribe the same neume twice.
 Transcribe the melody in reading order (left to right, line by line) as a list of quantity neumes, each with the lyric syllable written under it.
-Neume codes you may use (steps are scale degrees from the previous note):
-ison (0), oligon (+1), petasti (+1), kentimata (+1), olk2 (oligon with kentima below or after it, +2), olk3 (oligon with kentima above it, +3), olyps (oligon or petasti with ypsili, +4), apo (apostrofos, -1), yporroi (-1 then -1), elafron (-2), elafapo (elafron with apostrofos, -3), chamili (-4).
+Neume codes you may use (steps are scale degrees counted from the PREVIOUS note, never from the start):
+ison (0 = exactly the same pitch as the previous note; it is NOT a return to the starting note or to the base of the mode; do not confuse the ison, a short flat stroke, with the oligon, a longer stroke that rises), oligon (+1), petasti (+1), kentimata (+1), olk2 (oligon with kentima below or after it, +2), olk3 (oligon with kentima above it, +3), olyps (oligon or petasti with ypsili, +4), apo (apostrofos, -1), yporroi (-1 then -1), elafron (-2), elafapo (elafron with apostrofos, -3), chamili (-4).
 For a combination not listed, use the listed code with the same total number of steps.
 Time field d: "" (one beat), "klasma" (klasma or apli: +1 beat), "dipli" (+2), "tripli" (+3), "gorgon" (gorgon over this neume).
 Accidental field a: moria of a diesis (positive) or yfesis (negative) on that neume: 2, 4, 6 or 8; otherwise 0.
@@ -1201,31 +1403,122 @@ Syllable field s: the syllable under the neume; empty string "" when the neume c
 Ignore martyriai, phthorai, ornaments not listed, titles, headers and page numbers.
 If visible on this page, also give: the mode as one of a, b, g, d, dl, pa, pb, v, vd, pd (α΄=a, β΄=b, γ΄=g, δ΄ άγια=d, δ΄ λέγετος=dl, πλ.α΄=pa, πλ.β΄=pb, βαρύς εναρμόνιος=v, βαρύς διατονικός=vd, πλ.δ΄=pd); the starting note from the opening martyria as one of Ni, Pa, Vou, Ga, Di, Ke, Zo; and the hymn title.
 Reply with ONLY this JSON: {"title": string or null, "mode": string or null, "startNote": string or null, "cells": [{"n":"oligon","s":"Κύ","d":"","a":0}]}`;
+/* ---- Κλειδί Claude για την εφαρμογή του κινητού (φυλάγεται μόνο σε αυτή τη συσκευή) ---- */
+const apiKey=()=>{ try{ return localStorage.getItem("okt-apikey")||""; }catch(e){ return ""; } };
+const setApiKey=k=>{ try{ if(k) localStorage.setItem("okt-apikey",k); else localStorage.removeItem("okt-apikey"); }catch(e){} };
+const canRead=()=>inClaude()||!!apiKey();
+let keyOpen=false;
+async function blobToB64(b){ const u=new Uint8Array(await b.arrayBuffer()); let s=""; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); }
+function parseJsonLoose(t){
+  t=String(t||"").replace(/```(?:json)?/g,"");
+  const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) return null;
+  try{ return JSON.parse(t.slice(a,b+1)); }catch(e){ return null; }
+}
+const API_MODELS=["claude-sonnet-5-5","claude-sonnet-4-5"];
+async function apiJson(key,prompt,images,signal){
+  if(navigator.onLine===false){ const e=new Error("offline"); e.code="offline"; throw e; }
+  const content=[];
+  for(const b of (images||[])) content.push({type:"image",source:{type:"base64",media_type:"image/jpeg",data:await blobToB64(b)}});
+  content.push({type:"text",text:prompt});
+  let last=null;
+  for(const model of API_MODELS){
+    let r;
+    try{ r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal,headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model,max_tokens:16000,messages:[{role:"user",content}]})}); }
+    catch(e){ if(e&&e.name==="AbortError") throw e; const x=new Error("offline"); x.code="offline"; throw x; }
+    if(r.ok){ const d=await r.json(); return parseJsonLoose((d.content||[]).filter(x=>x.type==="text").map(x=>x.text).join("")); }
+    let body=null; try{ body=await r.json(); }catch(e){}
+    const msg=JSON.stringify(body||{});
+    if(r.status===404||/not_found_error/.test(msg)){ last=new Error("model"); last.code="api"; continue; }   // δοκίμασε το επόμενο μοντέλο
+    const e=new Error("api"); e.detail=body&&body.error&&body.error.message;
+    e.code=r.status===401||r.status===403?"bad_key":/credit|billing|balance/i.test(msg)?"no_credit":r.status===429?"rate_limited":(r.status===529||r.status>=500)?"overloaded":"api";
+    throw e;
+  }
+  throw last||new Error("api");
+}
+// Όταν λείπει το κλειδί: εξήγηση και κουμπί που πηγαίνει στη ρύθμιση
+function showNeedKey(box){
+  if(!box) return; box.hidden=false;
+  box.innerHTML=`<p style="margin:0;font-size:18px">Για να διαβάζει ο Claude σελίδες μέσα στην εφαρμογή του κινητού, χρειάζεται <b>μία φορά</b> ένα κλειδί Claude.</p>
+    <button type="button" class="btn solid" data-gokey style="width:100%;margin-top:10px">Δείξε μου πώς (2 λεπτά)</button>
+    <p class="hint" style="margin-top:8px">Αλλιώς: άνοιξε την εφαρμογή από τον σύνδεσμό της μέσα στο Claude, όπου διαβάζει με τη συνδρομή σου. Ή γράψε τον ψαλμό μόνος σου με το «✎ Επεξεργασία».</p>`;
+  box.querySelector("[data-gokey]").onclick=()=>{ saveNow(); keyOpen=true; libView="list"; openId=null; editing=false; renderLib(); setTimeout(()=>{ const k=$("keyCard"); if(k) k.scrollIntoView({block:"start",behavior:"smooth"}); },80); };
+}
+function keyCardHTML(){
+  const k=apiKey();
+  if(k) return `<section class="card keycard" id="keyCard">
+    <p class="label" style="margin:0">✨ Ανάγνωση σελίδων με το Claude</p>
+    <p class="ok" style="margin:0">✓ Ενεργή σε αυτή τη συσκευή (κλειδί …${esc(k.slice(-4))}).</p>
+    <p class="hint">Πατάς «✨ Διάβασε» σε σελίδα βιβλίου, PDF ή φωτογραφία. Κάθε σελίδα κοστίζει λίγα λεπτά από την πίστωση του κλειδιού, όχι από τη συνδρομή σου.</p>
+    <div class="btnrow"><button type="button" class="btn small" id="keyTest">Δοκιμή κλειδιού</button><button type="button" class="btn small" id="keyDel">Αφαίρεση κλειδιού</button></div>
+    <p class="hint" id="keyMsg"></p></section>`;
+  return `<details class="card keycard" id="keyCard" ${keyOpen?"open":""}>
+    <summary class="label" style="margin:0;cursor:pointer;font-size:16px">✨ Ανάγνωση σελίδων με το Claude: ρύθμιση (μία φορά)</summary>
+    <p style="margin:10px 0 0;font-size:17px">Για να διαβάζει ο Claude μια σελίδα (από βιβλίο, PDF ή φωτογραφία) και να την κάνει ήχο μέσα σε αυτή την εφαρμογή, χρειάζεται ένα <b>κλειδί Claude</b>. Είναι ξεχωριστό από τη συνδρομή σου και πληρώνεις μόνο όσο το χρησιμοποιείς.</p>
+    <ol>
+      <li>Στον υπολογιστή, άνοιξε το <b>console.anthropic.com</b> και συνδέσου με το email σου.</li>
+      <li>Στο <b>Billing</b> πρόσθεσε ένα μικρό ποσό, π.χ. 5 $.</li>
+      <li>Στο <b>API Keys</b> πάτα <b>Create Key</b> και αντέγραψε το κλειδί (αρχίζει με <b>sk-ant-</b>).</li>
+      <li>Στείλ' το στον εαυτό σου (π.χ. με email), αντέγραψέ το στο κινητό και επικόλλησέ το εδώ:</li>
+    </ol>
+    <input type="password" id="keyIn" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false" style="margin-top:10px">
+    <button type="button" class="btn solid" id="keySave" style="width:100%;margin-top:10px">Αποθήκευση κλειδιού</button>
+    <p class="hint" id="keyMsg" style="margin-top:8px"></p>
+    <p class="hint">Το κλειδί φυλάγεται μόνο σε αυτή τη συσκευή. Χωρίς κλειδί, η ανάγνωση δουλεύει όταν ανοίγεις την εφαρμογή από τον σύνδεσμό της μέσα στο Claude.</p>
+  </details>`;
+}
+async function testKey(k){
+  const r=await apiJson(k,'Reply with only this JSON: {"ok":true}',[],null);
+  return !!(r&&r.ok);
+}
+function wireKeyCard(){
+  const msg=t=>{ const m=$("keyMsg"); if(m) m.textContent=t; };
+  const why=e=>{ const c=e&&e.code; return c==="bad_key"?"Το κλειδί δεν είναι σωστό. Αντέγραψέ το ξανά ολόκληρο.":c==="no_credit"?"Το κλειδί είναι σωστό, αλλά δεν έχει πίστωση. Πρόσθεσε ποσό στο Billing.":c==="offline"?"Δεν υπάρχει σύνδεση στο διαδίκτυο.":"Δεν απάντησε ο Claude. Δοκίμασε ξανά σε λίγο."; };
+  if($("keySave")) $("keySave").onclick=async()=>{
+    const k=($("keyIn").value||"").trim().replace(/\s+/g,"");
+    if(!/^sk-ant-/.test(k)){ msg("Το κλειδί πρέπει να αρχίζει με sk-ant-"); return; }
+    msg("Ελέγχω το κλειδί…");
+    try{ await testKey(k); setApiKey(k); keyOpen=false; renderLib(); const m=$("keyMsg"); if(m) m.textContent="✓ Το κλειδί δουλεύει. Έτοιμο!"; }
+    catch(e){ if(e&&e.code==="no_credit"){ setApiKey(k); renderLib(); } msg(why(e)); }
+  };
+  if($("keyTest")) $("keyTest").onclick=async()=>{ msg("Δοκιμάζω…"); try{ await testKey(apiKey()); msg("✓ Το κλειδί δουλεύει."); }catch(e){ msg(why(e)); } };
+  if($("keyDel")) $("keyDel").onclick=()=>{ setApiKey(""); renderLib(); };
+}
+// Ποιος διαβάζει: μέσα στο Claude η συνδρομή σου· στην εφαρμογή του κινητού το δικό σου κλειδί Claude
+async function getReader(){
+  if(inClaude()){
+    let sample=null; try{ sample=await window.claude.use("sample"); }catch(e){ sample=null; }
+    if(!sample) return {err:"Η ανάγνωση δεν είναι διαθέσιμη αυτή τη στιγμή μέσα στο Claude. Δοκίμασε ξανά σε λίγο."};
+    const caps=await sample.limits().catch(()=>null);
+    if(!caps||!caps.images) return {err:"Εδώ δεν μπορώ να στείλω εικόνες για ανάγνωση."};
+    return {maxN:Math.max(1,caps.images.maxCount||4),json:(p,imgs,signal)=>sample.json(p,{images:imgs,modelTier:"complex",signal})};
+  }
+  const key=apiKey();
+  if(!key) return {err:"Για να διαβάζει σελίδες εδώ, βάλε μία φορά το κλειδί Claude: Βιβλιοθήκη → «✨ Ανάγνωση σελίδων με το Claude»."};
+  return {maxN:6,json:(p,imgs,signal)=>apiJson(key,p,imgs,signal)};
+}
 async function transcribe(hy,pages){
-  let sample=null;
-  try{ sample=window.claude&&window.claude.use?await window.claude.use("sample"):null; }catch(e){ sample=null; }
-  if(!sample){ setRead("Η αυτόματη ανάγνωση λειτουργεί μόνο όταν ανοίγεις την εφαρμογή από τον σύνδεσμο μέσα στο Claude."); return; }
-  const caps=await sample.limits().catch(()=>null);
-  if(!caps||!caps.images){ setRead("Εδώ δεν μπορώ να στείλω εικόνες για ανάγνωση. Άνοιξε την εφαρμογή από τον σύνδεσμο μέσα στο Claude."); return; }
-  const maxN=Math.max(1,caps.images.maxCount||4);
+  const reader=await getReader();
+  if(reader.err){ setRead(reader.err); return; }
+  const maxN=reader.maxN;
   readCtl=new AbortController(); const ctl=readCtl; renderHymn();
   const cells=[]; let title=null, mode=null, startNote=null;
   try{
-    setRead("Ανοίγω το PDF…");
     const src=hymnSource(hy); if(!src) throw new Error("missing");
-    const pdf=await openPdf(src.path);
-    const list=src.page?[src.page]:Array.from({length:Math.min(pdf.numPages,12,pages||1)},(_,i)=>i+1);
+    setRead(src.img?"Ανοίγω τη φωτογραφία…":"Ανοίγω το PDF…");
+    const pdf=src.img?null:await openPdf(src.path);
+    const list=src.img?[1]:src.page?[src.page]:Array.from({length:Math.min(pdf.numPages,12,pages||1)},(_,i)=>i+1);
     const N=list.length;
     for(let li=0;li<N;li++){
       const p=list[li];
       if(ctl.signal.aborted) break;
-      setRead(N===1?`Διαβάζω τη σελίδα ${p}. Θέλει περίπου ένα λεπτό…`:`Διαβάζω τη σελίδα ${li+1} από ${N}. Κάθε σελίδα θέλει περίπου ένα λεπτό…`);
-      const strips=await stripBlobs(await pdf.getPage(p));
+      setRead(src.img?"Διαβάζω τη φωτογραφία. Θέλει περίπου ένα λεπτό…":N===1?`Διαβάζω τη σελίδα ${p}. Θέλει περίπου ένα λεπτό…`:`Διαβάζω τη σελίδα ${li+1} από ${N}. Κάθε σελίδα θέλει περίπου ένα λεπτό…`);
+      const strips=src.img?await imgStrips(await idb.get(src.img)):await stripBlobs(await pdf.getPage(p));
       for(let k=0;k<strips.length;k+=maxN){
         const part=strips.slice(k,k+maxN);
         const prev=cells.slice(-6).map(c=>c.s).filter(Boolean).join(" ");
         const prompt=READ_RULES+`\n\nThis is page ${li+1} of ${N}${strips.length>maxN?`, strips ${k+1}-${k+part.length} of ${strips.length} (continue from the previous strips)`:""}.`+(prev?` The previous part ended with the syllables: ${prev}`:"");
-        const r=await sample.json(prompt,{images:part,modelTier:"complex",signal:ctl.signal});
+        const r=await reader.json(prompt,part,ctl.signal);
         if(r&&typeof r==="object"){
           if(!title&&r.title) title=String(r.title);
           if(!mode&&r.mode&&MODES.some(m=>m.id===r.mode)) mode=r.mode;
@@ -1250,8 +1543,8 @@ async function transcribe(hy,pages){
       setRead(`Διάβασα ${cells.length} σημάδια${ctl.signal.aborted?" (σταμάτησε πριν το τέλος)":""}. Πάτα «Παίξε» για να το ακούσεις. Έλεγξέ το με την «Επεξεργασία», γιατί η ανάγνωση μπορεί να έχει λάθη.`);
     }
   }catch(e){
-    const c=e&&e.code;
-    setRead(c==="cancelled"?"Η ανάγνωση σταμάτησε.":c==="not_granted"?"Χρειάζεται να επιτρέψεις στο Claude να διαβάσει το PDF. Πάτα ξανά και διάλεξε «Επιτρέπεται».":c==="rate_limited"?"Πολλές αναγνώσεις μαζί. Περίμενε λίγο και δοκίμασε ξανά.":e&&e.message==="script"?"Δεν φόρτωσε ο αναγνώστης PDF. Έλεγξε τη σύνδεση στο διαδίκτυο.":"Η ανάγνωση δεν ολοκληρώθηκε. Δοκίμασε ξανά σε λίγο.");
+    const c=e&&(e.code||(e.name==="AbortError"?"cancelled":null));
+    setRead(c==="cancelled"?"Η ανάγνωση σταμάτησε.":c==="bad_key"?"Το κλειδί Claude δεν είναι σωστό. Βάλ' το ξανά στη Βιβλιοθήκη.":c==="no_credit"?"Τελείωσε η πίστωση του κλειδιού Claude. Πρόσθεσε πίστωση στο console.anthropic.com (Billing).":c==="overloaded"?"Ο Claude είναι πολύ απασχολημένος αυτή τη στιγμή. Δοκίμασε ξανά σε λίγο.":c==="offline"?"Δεν υπάρχει σύνδεση στο διαδίκτυο.":c==="not_granted"?"Χρειάζεται να επιτρέψεις στο Claude να διαβάσει το PDF. Πάτα ξανά και διάλεξε «Επιτρέπεται».":c==="rate_limited"?"Πολλές αναγνώσεις μαζί. Περίμενε λίγο και δοκίμασε ξανά.":e&&e.message==="script"?"Δεν φόρτωσε ο αναγνώστης PDF. Έλεγξε τη σύνδεση στο διαδίκτυο.":"Η ανάγνωση δεν ολοκληρώθηκε. Δοκίμασε ξανά σε λίγο.");
     if(cells.length&&c==="cancelled"){ hy.cells=cells; scheduleSave(); }
   }finally{
     readCtl=null; if(libView==="hymn"&&openId===hy.id&&tab==="lib") renderHymn();
@@ -1278,10 +1571,13 @@ function neumeGlyphHTML(cell){
 }
 // Υπολογισμός φθόγγων ψαλμού
 function hymnNotes(h){
-  const mode=modeById(h.mode); let deg=h.start||0; const out=[];
+  const mode=modeById(h.mode); let deg=h.start||0; const out=[]; let carry=0;
   h.cells.forEach((c,ci)=>{
     const N=NEUMES[c.n]||NEUMES.ison; const first=out.length;
-    N.steps.forEach((s,k)=>{ deg+=s; out.push({deg,m:degPos(mode,deg)+(c.a||0),beats:N.steps.length>1?0.5:1,cell:ci,s:c.s||"",newSyl:k===0&&!!(c.s&&c.s.trim())}); });
+    N.steps.forEach((s,k)=>{ deg+=s;
+      // Ίσον = ακριβώς ο ίδιος φθόγγος με τον προηγούμενο, μαζί με τη δίεση/ύφεση που είχε εκείνος
+      const a=c.a?c.a:(s===0?carry:0); carry=a;
+      out.push({deg,m:degPos(mode,deg)+a,beats:N.steps.length>1?0.5:1,cell:ci,s:c.s||"",newSyl:k===0&&!!(c.s&&c.s.trim())}); });
     const T=TIMES[c.d||""]||TIMES[""];
     out[out.length-1].beats+=T.extra;
     if(c.d==="gorgon"){ out[out.length-1].beats=0.5; if(first>0) out[first-1].beats=Math.max(0.5,out[first-1].beats-0.5); }
@@ -1289,9 +1585,31 @@ function hymnNotes(h){
   return out;
 }
 
+// Κουμπί 🗑 δίπλα σε βιβλίο/ψαλμό: πρώτο πάτημα ρωτά «Σίγουρα;», δεύτερο σβήνει
+function withDel(btn,onDel,label){
+  const w=document.createElement("div"); w.className="itemrow";
+  const d=document.createElement("button"); d.type="button"; d.className="delbtn";
+  const idle=()=>{ d.classList.remove("armed"); d.innerHTML="🗑<small>Διαγραφή</small>"; };
+  idle(); d.setAttribute("aria-label","Διαγραφή: "+label);
+  let armed=false, tm=null;
+  d.onclick=()=>{ if(!armed){ armed=true; d.classList.add("armed"); d.innerHTML="Σίγουρα;<small>πάτα ξανά</small>"; tm=setTimeout(()=>{ armed=false; idle(); },4000); return; }
+    clearTimeout(tm); onDel(); };
+  w.append(btn,d); return w;
+}
+function deleteBook(bk){
+  if(!bk.local) pendingFiles[bk.pdf]=null; idb.del(bk.pdf); delete pdfCache[bk.pdf]; delete pdfDocs[bk.pdf];
+  idb.keys().then(keys=>keys.filter(k=>typeof k==="string"&&k.startsWith("ocr:"+bk.pdf+":")).forEach(k=>idb.del(k)));
+  lib.books=(lib.books||[]).filter(b=>b!==bk); scheduleSave(800); setStatus("Το βιβλίο σβήστηκε.");
+}
+function deleteHymn(hy){
+  stopSeq();
+  if(hy.pdf){ pendingFiles[hy.pdf]=null; idb.del(hy.pdf); delete pdfCache[hy.pdf]; }
+  if(hy.img){ idb.del(hy.img); }
+  lib.hymns=lib.hymns.filter(x=>x.id!==hy.id); scheduleSave(800);
+}
 function withVowels(notes){ let last="a"; return notes.map(n=>{ const has=n.s&&n.s.trim(); if(has) last=vowelOf(n.s); return {...n,vowel:last}; }); }
 function renderLib(){
-  const v=$("viewLib");
+  const v=$("viewLib"); document.body.classList.remove("editing");
   if(libView==="hymn"&&findHymn(openId)) return renderHymn();
   if(libView==="book"&&findBook(openId)) return renderBook();
   libView="list"; openId=null; editing=false;
@@ -1299,6 +1617,9 @@ function renderLib(){
   let h=`<section><p class="label">Τα βιβλία μου</p><div class="list" id="books"></div></section>
     <button class="btn solid" id="btnPdf" type="button">+ Πρόσθεσε βιβλίο (PDF)</button>
     <input type="file" id="pdfInput" accept="application/pdf,.pdf" hidden>
+    <button class="btn red" id="btnPhoto" type="button">📷 Φωτογραφία σελίδας → να παίξει</button>
+    <input type="file" id="photoInput" accept="image/*" hidden>
+    ${inClaude()?"":keyCardHTML()}
     <section><p class="label">Οι ψαλμοί μου</p><div class="list" id="mine"></div></section>
     <button class="btn solid" id="btnNew" type="button">+ Νέος ψαλμός</button>
     <p class="status" id="libStatus">${esc(statusMsg)}</p>
@@ -1314,7 +1635,7 @@ function renderLib(){
   const item=(hy)=>{ const b=document.createElement("button"); b.type="button"; b.className="item";
     b.innerHTML=`<span><span class="tt">${esc(hy.title||"Χωρίς τίτλο")}</span><br><span class="mm">${modeById(hy.mode).name} · ${hy.cells.length} σημάδια</span></span><span class="badge">${modeById(hy.mode).short}</span>`;
     b.onclick=()=>{ navPush(); libView="hymn"; openId=hy.id; editing=false; sel=-1; renderLib(); window.scrollTo(0,0); }; return b; };
-  if(mine.length) mine.forEach(x=>$("mine").appendChild(item(x)));
+  if(mine.length) mine.forEach(x=>$("mine").appendChild(withDel(item(x),()=>{ deleteHymn(x); renderLib(); },x.title||"ψαλμός")));
   else $("mine").innerHTML=`<p class="empty">Δεν έχεις βάλει ακόμα ψαλμό. Πάτα «Νέος ψαλμός» για να γράψεις τον πρώτο.</p>`;
   EXAMPLES.forEach(x=>$("exlist").appendChild(item(x)));
   const books=(lib.books||[]).slice().sort((a,b)=>(a.title||"").localeCompare(b.title||"","el"));
@@ -1322,10 +1643,22 @@ function renderLib(){
     const nh=lib.hymns.filter(h=>h.book&&h.book.id===bk.id).length;
     b.innerHTML=`<span><span class="tt">${esc(bk.title)}</span><br><span class="mm">${bk.pages?bk.pages+" σελίδες":"βιβλίο"}${(bk.marks||[]).length?" · "+bk.marks.length+" σελιδοδείκτες":""}${nh?" · "+nh+" ψαλμοί":""}${bk.local?" · μόνο σε αυτή τη συσκευή":""}</span></span><span class="badge">Βιβλίο</span>`;
     b.onclick=()=>{ navPush(); libView="book"; openId=bk.id; renderLib(); window.scrollTo(0,0); };
-    $("books").appendChild(b); });
+    $("books").appendChild(withDel(b,()=>{ deleteBook(bk); renderLib(); },bk.title)); });
   else $("books").innerHTML=`<p class="empty">Βάλε εδώ τα βιβλία σου σε PDF: Αναστασιματάριο, Πολυέλεους, Μουσική Κυψέλη και ό,τι άλλο θέλεις.</p>`;
   MODES.forEach(m=>$("aplist").appendChild(item(getApech(m.id))));
   $("btnPdf").onclick=()=>$("pdfInput").click();
+  if(!inClaude()) wireKeyCard();
+  $("btnPhoto").onclick=()=>$("photoInput").click();
+  $("photoInput").onchange=async e=>{
+    const f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f) return;
+    setStatus("Ανοίγω τη φωτογραφία…");
+    let blob; try{ blob=await shrinkImage(f,2400); }catch(err){ setStatus("Δεν μπόρεσα να ανοίξω αυτή τη φωτογραφία."); return; }
+    const id=newId(), path="imgs/"+id+".jpg"; await idb.put(path,blob);
+    const hy={id,title:"Σελίδα από φωτογραφία "+new Date().toLocaleDateString("el-GR"),mode:current.id,start:0,tempo:72,cells:[],img:path,local:true};
+    lib.hymns.push(hy); scheduleSave(); setStatus("");
+    navPush(); libView="hymn"; openId=id; editing=false; sel=-1; pdfShown=true; renderLib(); window.scrollTo(0,0);
+    setTimeout(async()=>{ const box=$("readConfirm"); if(!box) return; if(canRead()) await showReadConfirm(hy); else showNeedKey(box); box.scrollIntoView({block:"center",behavior:"smooth"}); },150);
+  };
   $("pdfInput").onchange=async e=>{
     const f=e.target.files&&e.target.files[0]; if(!f) return;
     const id=newId(), path="pdfs/"+id+".pdf", big=f.size>15*1024*1024;
@@ -1478,13 +1811,13 @@ function renderBook(){
     <div id="bookPage" style="overflow-x:auto;min-height:200px"></div>
     <section class="card">
       <p class="label" style="margin:0">Με αυτή τη σελίδα</p>
-      ${inClaude()?`<button class="btn red" id="bkRead" type="button">✨ Διάβασε τη σελίδα και κάν' την ήχο</button>
+      <button class="btn red" id="bkRead" type="button">✨ Διάβασε τη σελίδα και κάν' την ήχο</button>
       <div id="bkReadBox" ${bookReadBox?"":"hidden"} style="border:2px solid var(--cinnabar);border-radius:12px;padding:12px">
-        <p style="margin:0;font-size:18px"><b>Θα διαβαστεί μόνο η σελίδα <span class="curpg">${pg}</span>.</b> Χρησιμοποιεί λίγη από τη συνδρομή σου στο Claude και φτιάχνει νέο ψαλμό με αυτή τη σελίδα.</p>
+        <p style="margin:0;font-size:18px"><b>Θα διαβαστεί μόνο η σελίδα <span class="curpg">${pg}</span>.</b> ${inClaude()?"Χρησιμοποιεί λίγη από τη συνδρομή σου στο Claude":"Κοστίζει λίγα λεπτά από την πίστωση του κλειδιού σου Claude"} και φτιάχνει νέο ψαλμό με αυτή τη σελίδα, που μετά τον παίζεις και τον διορθώνεις.</p>
         <button type="button" class="btn red" id="bkReadYes" style="width:100%;margin-top:10px">Ναι, διάβασέ την</button>
         <button type="button" class="btn small" id="bkReadNo" style="width:100%;margin-top:10px">Άκυρο</button>
-      </div>`:""}
-      ${inClaude()?"":`<p class="hint" style="color:var(--parch)">Το κουμπί «✨ Διάβασε τη σελίδα και κάν' την ήχο» εμφανίζεται μόνο όταν ανοίγεις την εφαρμογή από τον σύνδεσμό της μέσα στο Claude. Εδώ μπορείς να γράψεις τον ψαλμό με το «✍ Γράψε ψαλμό».</p>`}
+      </div>
+      <div id="bkNeedKey" hidden style="border:2px solid var(--cinnabar);border-radius:12px;padding:12px"></div>
       <button class="btn" id="bkWrite" type="button">✍ Γράψε ψαλμό από αυτή τη σελίδα</button>
       <button class="btn" id="bkOcr" type="button">📄 Κείμενο της σελίδας (για Word)</button>
       <div id="ocrBox" hidden></div>
@@ -1549,7 +1882,7 @@ function renderBook(){
   const newHymn=()=>{ const hy={id:newId(),title:bk.title+" – σελ. "+pg,mode:current.id,start:0,tempo:72,cells:[],book:{id:bk.id,page:pg}}; lib.hymns.push(hy); scheduleSave(); return hy; };
   $("bkWrite").onclick=()=>{ const hy=newHymn(); navPush(); libView="hymn"; openId=hy.id; editing=true; sel=-1; quickOpen=true; renderLib(); window.scrollTo(0,0); };
   if($("bkRead")){
-    $("bkRead").onclick=()=>{ bookReadBox=true; $("bkReadBox").hidden=false; };
+    $("bkRead").onclick=()=>{ if(!canRead()){ showNeedKey($("bkNeedKey")); return; } bookReadBox=true; $("bkReadBox").hidden=false; };
     $("bkReadNo").onclick=()=>{ bookReadBox=false; $("bkReadBox").hidden=true; };
     $("bkReadYes").onclick=()=>{ bookReadBox=false; const hy=newHymn(); navPush(); libView="hymn"; openId=hy.id; editing=false; sel=-1; renderLib(); window.scrollTo(0,0); transcribe(hy,1); };
   }
@@ -1557,8 +1890,7 @@ function renderBook(){
   $("bkTitle").addEventListener("change",e=>{ bk.title=e.target.value.trim()||bk.title; scheduleSave(); });
   $("bkDel").onclick=()=>{
     if(!bookDelArm){ bookDelArm=true; $("bkDel").textContent="Σίγουρα; Πάτα ξανά"; setTimeout(()=>{ bookDelArm=false; const b=$("bkDel"); if(b) b.textContent="Διαγραφή βιβλίου"; },4000); return; }
-    bookDelArm=false; if(!bk.local) pendingFiles[bk.pdf]=null; idb.del(bk.pdf); delete pdfCache[bk.pdf]; delete pdfDocs[bk.pdf];
-    lib.books=lib.books.filter(b=>b!==bk); scheduleSave(800); libView="list"; openId=null; renderLib();
+    bookDelArm=false; deleteBook(bk); libView="list"; openId=null; renderLib();
   };
   wireBookSearch(bk,show);
 }
@@ -1575,21 +1907,21 @@ function renderHymn(){
       <button class="btn${drone&&drone.key==="hymn"?" red":""}" id="btnHIson" type="button">Ίσον ${CAPS[mode.notes[0].n]}</button></div>
     ${hymnSource(hy)?`<section class="card" id="pdfCard">
       ${hy.book?`<p style="margin:0;font-size:17px">Από το βιβλίο <b>${esc(hymnSource(hy).book.title)}</b>, σελίδα <b>${hy.book.page}</b></p>`:""}
-      ${inClaude()?"":`<p class="hint">Η αυτόματη ανάγνωση του PDF υπάρχει μόνο στην έκδοση μέσα στο Claude. Εδώ βλέπεις το PDF και γράφεις τα σημάδια με την «Επεξεργασία».</p>`}
-      <div class="btnrow"><button class="btn red" id="btnRead" type="button" ${inClaude()?"":"hidden"}>${hy.book?"✨ Διάβασε τη σελίδα και κάν' την ήχο":"✨ Διάβασέ το και κάν' το ήχο"}</button>
-        <button class="btn" id="btnPdfToggle" type="button">${pdfShown?"Κρύψε το PDF":"Δείξε το PDF"}</button></div>
+      <div class="btnrow"><button class="btn red" id="btnRead" type="button">${hy.img?"✨ Διάβασε τη φωτογραφία και κάν' τη ήχο":hy.book?"✨ Διάβασε τη σελίδα και κάν' την ήχο":"✨ Διάβασέ το και κάν' το ήχο"}</button>
+        <button class="btn" id="btnPdfToggle" type="button">${pdfShown?(hy.img?"Κρύψε τη φωτογραφία":"Κρύψε το PDF"):(hy.img?"Δείξε τη φωτογραφία":"Δείξε το PDF")}</button></div>
       <div id="readConfirm" hidden style="border:2px solid var(--cinnabar);border-radius:12px;padding:12px"></div>
       <p class="status" id="readStatus" style="color:var(--parch)">${esc(readMsg)}</p>
       <div class="btnrow" id="pdfZoom" ${pdfShown?"":"hidden"}><button class="btn small" id="zOut" type="button">− Μικρότερο</button><button class="btn small" id="zIn" type="button">+ Μεγαλύτερο</button></div>
       <div id="pdfPages" ${pdfShown?"":"hidden"} style="overflow-x:auto;display:flex;flex-direction:column;gap:8px"></div>
     </section>`:""}
-    <div class="score" id="score"></div>`;
+    ${editing&&!ro?`<div class="desk"><div class="score" id="score"></div>${toolsHTML(hy,mode)}</div>`:`<div class="score" id="score"></div>`}`;
   if(ro) h+=`<button class="btn" id="btnCopyEx" type="button">Αντέγραψέ το στους ψαλμούς μου</button>`;
   else h+=`<div class="btnrow"><button class="btn${editing?" solid":""}" id="btnEdit" type="button">${editing?"✓ Τέλος επεξεργασίας":"✎ Επεξεργασία"}</button>
     <button class="btn" id="btnDel" type="button">${delArm?"Σίγουρα; Πάτα ξανά":(hy.apech?"Επαναφορά αρχικού":"Διαγραφή ψαλμού")}</button></div>
     <p class="status" id="libStatus">${esc(statusMsg)}</p>`;
-  if(editing&&!ro) h+=editorHTML(hy,mode);
+  if(editing&&!ro) h+=settingsHTML(hy,mode);
   v.innerHTML=h;
+  document.body.classList.toggle("editing",!!(editing&&!ro));
 
   // παρτιτούρα
   const sc=$("score");
@@ -1634,8 +1966,7 @@ function renderHymn(){
     if(!delArm){ delArm=true; $("btnDel").textContent="Σίγουρα; Πάτα ξανά"; setTimeout(()=>{ delArm=false; const b=$("btnDel"); if(b) b.textContent=lbl; },4000); return; }
     delArm=false; stopSeq();
     if(hy.apech){ delete lib.apech[hy.mode]; scheduleSave(800); editing=false; renderHymn(); return; }
-    if(hy.pdf){ pendingFiles[hy.pdf]=null; idb.del(hy.pdf); delete pdfCache[hy.pdf]; }
-    lib.hymns=lib.hymns.filter(x=>x.id!==hy.id); scheduleSave(800); libView="list"; renderLib();
+    deleteHymn(hy); libView="list"; renderLib();
   };
   if(hymnSource(hy)) wirePdf(hy);
   if(editing) wireEditor(hy,mode);
@@ -1647,29 +1978,35 @@ function markPlaying(ci){
   if(el&&el.scrollIntoView) el.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
 
-function editorHTML(hy,mode){
+// Γραφή ψαλμού: τα εργαλεία (συλλαβή, σημάδια, χρόνος, δίεση) μπαίνουν ΔΙΠΛΑ στην παρτιτούρα
+function toolsHTML(hy,mode){
   const selCell=sel>=0?hy.cells[sel]:null;
   const dur=selCell?(selCell.d||""):draftDur, acc=selCell?(selCell.a||0):draftAcc;
-  let h=`<section class="editor">
+  return `<section class="tools" aria-label="Σημάδια για γράψιμο">
+    <p class="wherehint">${selCell?`<b>Αλλάζεις το σημάδι ${sel+1}</b> (κόκκινο πλαίσιο).`:`<b>Γράφεις στο τέλος</b> (στο «+»). Γράψε τη συλλαβή και πάτα σημάδι.`}</p>
+    <div><p class="label">Συλλαβή</p><input type="text" id="edSyl" value="${esc(selCell?selCell.s:"")}" placeholder="π.χ. Κύ-" autocomplete="off"></div>
+    <div><p class="label">Σημάδια (φωνές)</p><div class="pal" id="edPal">${NEUME_ORDER.map(k=>`<button type="button" class="pbtn" data-v="${k}"${selCell&&selCell.n===k?' style="outline:3px solid var(--cinnabar)"':""}><span class="ng">${neumeGlyphHTML({n:k})}</span><span class="pn">${NEUMES[k].name}</span><span class="pe">${NEUMES[k].fx}</span></button>`).join("")}</div></div>
+    <div><p class="label">Χρόνος</p><div class="chips" id="edDur">${TIME_ORDER.map(k=>`<button type="button" class="chip" data-v="${k}" aria-pressed="${k===dur}">${TIMES[k].name} <span style="opacity:.75">${TIMES[k].fx}</span></button>`).join("")}</div></div>
+    <div><p class="label">Δίεση / ύφεση σε μόρια</p><div class="stepper"><button type="button" class="btn small" id="edAccDn">▼ ύφεση</button><output id="edAccOut">${acc===0?"Χωρίς":(acc>0?"Δίεση +"+acc:"Ύφεση "+acc)}</output><button type="button" class="btn small" id="edAccUp">δίεση ▲</button></div></div>
+    ${selCell?`<div class="btnrow"><button type="button" class="btn" id="edDelCell">Σβήσε το σημάδι</button><button type="button" class="btn" id="edDone">Συνέχισε στο τέλος</button></div>`:(hy.cells.length?`<button type="button" class="btn small" id="edUndo">↶ Σβήσε το τελευταίο</button>`:"")}
+  </section>`;
+}
+// Ρυθμίσεις του ψαλμού (τίτλος, ήχος, αρχή, ταχύτητα, γρήγορη γραφή)
+function settingsHTML(hy,mode){
+  return `<section class="editor">
+    <p class="label" style="margin:0">Ρυθμίσεις ψαλμού</p>
     <div><p class="label">Τίτλος</p><input type="text" id="edTitle" value="${esc(hy.title)}" autocomplete="off"></div>
     <div ${hy.apech?"hidden":""}><p class="label">Ήχος</p><div class="chips" id="edMode">${MODES.map(m=>`<button type="button" class="chip" data-v="${m.id}" aria-pressed="${m.id===hy.mode}">${m.short} <span style="opacity:.75">${m.tag}</span></button>`).join("")}</div></div>
     <div><p class="label">Αρχίζει από (μαρτυρία)</p><div class="chips" id="edStart">${[-2,-1,0,1,2,3,4,5,6,7].map(i=>`<button type="button" class="chip" data-v="${i}" aria-pressed="${i===(hy.start||0)}">${degName(mode,i)}${i===7?"΄":i<0?" κάτω":""}</button>`).join("")}</div></div>
-    <details class="quick" ${(quickOpen||!hy.cells.length)?"open":""}><summary class="label" style="cursor:pointer;font-size:15px">✍ Γρήγορη γραφή με φθόγγους</summary>
-      <p class="hint" style="color:var(--parch);margin:8px 0">Γράψε τους φθόγγους με τη σειρά, π.χ. <b>Νη Πα Πα</b>, και τις συλλαβές, π.χ. <b>Ἀ-να-νές</b>. Βάλε <b>΄</b> για πιο ψηλά (π.χ. Πα΄) ή <b>,</b> για πιο χαμηλά (π.χ. Κε,). Για μεγαλύτερο χρόνο γράψε <b>:2</b>, <b>:3</b> ή <b>:4</b> (π.χ. Πα:3).</p>
+    <div><p class="label">Αγωγή (ταχύτητα)</p><div class="chips" id="edTempo">${[[56,"Αργή"],[72,"Μέτρια"],[90,"Γρήγορη"],[110,"Πολύ γρήγορη"]].map(([t,n])=>`<button type="button" class="chip" data-v="${t}" aria-pressed="${t===hy.tempo}">${n}</button>`).join("")}</div></div>
+    <details class="quick" ${quickOpen?"open":""}><summary class="label" style="cursor:pointer;font-size:15px">✍ Γρήγορη γραφή με φθόγγους</summary>
+      <p class="hint" style="color:var(--parch);margin:8px 0">Γράψε τους φθόγγους με τη σειρά, π.χ. <b>Νη Πα Πα</b>, και τις συλλαβές, π.χ. <b>Ἀ-να-νές</b>. Βάλε <b>΄</b> για πιο ψηλά (π.χ. Πα΄) ή <b>,</b> για πιο χαμηλά (π.χ. Κε,). Για μεγαλύτερο χρόνο γράψε <b>:2</b>, <b>:3</b> ή <b>:4</b> (π.χ. Πα:3). Αν γράψεις τον ίδιο φθόγγο δύο φορές, μπαίνει ίσον.</p>
       <p class="label" style="margin:8px 0 4px">Φθόγγοι</p><input type="text" id="qNotes" autocomplete="off" placeholder="Νη Πα Πα:3">
       <p class="label" style="margin:10px 0 4px">Συλλαβές</p><input type="text" id="qSyl" autocomplete="off" placeholder="Ἀ-να-νές">
       <button type="button" class="btn solid" id="qMake" style="width:100%;margin-top:10px">Φτιάξε τα σημάδια</button>
       <p class="hint" id="qMsg" style="margin-top:6px"></p>
     </details>
-    <div><p class="label">Αγωγή (ταχύτητα)</p><div class="chips" id="edTempo">${[[56,"Αργή"],[72,"Μέτρια"],[90,"Γρήγορη"],[110,"Πολύ γρήγορη"]].map(([t,n])=>`<button type="button" class="chip" data-v="${t}" aria-pressed="${t===hy.tempo}">${n}</button>`).join("")}</div></div>
-    <p class="hint" style="color:var(--parch)">${selCell?`<b>Επιλεγμένο σημάδι ${sel+1}.</b> Ό,τι πατήσεις παρακάτω αλλάζει αυτό.`:`<b>Προσθήκη στο τέλος.</b> Γράψε τη συλλαβή και πάτα σημάδι.`}</p>
-    <div><p class="label">Συλλαβή</p><input type="text" id="edSyl" value="${esc(selCell?selCell.s:"")}" placeholder="π.χ. Κύ-" autocomplete="off"></div>
-    <div><p class="label">Χρόνος</p><div class="chips" id="edDur">${TIME_ORDER.map(k=>`<button type="button" class="chip" data-v="${k}" aria-pressed="${k===dur}">${TIMES[k].name} <span style="opacity:.75">${TIMES[k].fx}</span></button>`).join("")}</div></div>
-    <div><p class="label">Δίεση / ύφεση σε μόρια</p><div class="stepper"><button type="button" class="btn small" id="edAccDn">▼ ύφεση</button><output id="edAccOut">${acc===0?"Χωρίς":(acc>0?"Δίεση +"+acc:"Ύφεση "+acc)}</output><button type="button" class="btn small" id="edAccUp">δίεση ▲</button></div></div>
-    <div><p class="label">Σημάδια (φωνές)</p><div class="pal" id="edPal">${NEUME_ORDER.map(k=>`<button type="button" class="pbtn" data-v="${k}"><span class="ng">${neumeGlyphHTML({n:k})}</span><span class="pn">${NEUMES[k].name}</span><span class="pe">${NEUMES[k].fx}</span></button>`).join("")}</div></div>
-    ${selCell?`<div class="btnrow"><button type="button" class="btn" id="edDelCell">Σβήσε το σημάδι</button><button type="button" class="btn" id="edDone">Συνέχισε στο τέλος</button></div>`:""}
   </section>`;
-  return h;
 }
 // Γρήγορη γραφή: από ονόματα φθόγγων σε σημάδια παρασημαντικής
 const NOTE_WORD={νη:"Ni",νι:"Ni",πα:"Pa",βου:"Vou",βο:"Vou",γα:"Ga",δι:"Di",κε:"Ke",ζω:"Zo",ζο:"Zo"};
@@ -1724,11 +2061,37 @@ function wireEditor(hy,mode){
     const notes=hymnNotes(hy); const ci=c?sel:hy.cells.length-1; const last=notes.filter(x=>x.cell===ci).pop();
     if(last){ noteOn(freq(last.m),"pal",vowelOf(last.s)); setTimeout(()=>noteOff("pal"),420); }
     renderHymn();
-    const syl=$("edSyl"); if(syl&&!c) syl.focus({preventScroll:true});
+    const syl=$("edSyl"); if(syl&&!c&&window.matchMedia&&window.matchMedia("(pointer:fine)").matches) syl.focus({preventScroll:true});
   };
   if($("edDelCell")) $("edDelCell").onclick=()=>{ hy.cells.splice(sel,1); sel=-1; changed(); renderHymn(); };
   if($("edDone")) $("edDone").onclick=()=>{ sel=-1; renderHymn(); };
+  if($("edUndo")) $("edUndo").onclick=()=>{ hy.cells.pop(); changed(); renderHymn(); };
+  // η παρτιτούρα δείχνει πάντα το σημείο όπου γράφεις
+  const sc=$("score"); if(sc){ if(sel<0) sc.scrollTop=sc.scrollHeight; else { const c=sc.querySelector(`.cell[data-ci="${sel}"]`); if(c) sc.scrollTop=Math.max(0,c.offsetTop-sc.offsetTop-20); } }
 }
+
+/* ============ ΕΠΑΝΑΦΟΡΑ ============ */
+// Επιστρέφει τα πάντα στην αρχική κατάσταση και φτιάχνει από την αρχή τον ήχο.
+// Δεν σβήνει βιβλία, ψαλμούς ή τα δικά σου διαστήματα.
+$("btnReset").onclick=()=>{
+  stopAll(false); resumeInfo=null; renderStopBtn();
+  rebuildAudio();
+  pitchPos=0; volPos=0; store.set("okt-pitch2",0); store.set("okt-vol2",0);
+  $("pitch").value=0; $("vol").value=0; applyPitch(); applyVol();
+  timbre="voice"; store.set("okt-timbre",timbre); renderTimbre();
+  octShift=0; renderOct();
+  showAcc=true; accSize=null; current=MODES[0]; tuneOpen=false; renderTuner();
+  closeSheet(); editing=false; libView="list"; openId=null; sel=-1;
+  showTab("scales"); window.scrollTo(0,0);
+  // δοκιμαστικός ήχος: αν τον ακούς, ο ήχος δουλεύει
+  setTimeout(()=>{ noteOn(freq(current.notes[0].m),"reset","a"); setTimeout(()=>noteOff("reset"),450); },120);
+  const m=$("resetMsg"); m.hidden=false; m.textContent="✓ Έγινε επαναφορά. Ακούς έναν σύντομο ήχο: ο ήχος δουλεύει.";
+  clearTimeout(m._t); m._t=setTimeout(()=>{ m.hidden=true; },5000);
+};
+// Οριζόντια οθόνη: πηγαίνει μόνο του στην κλίμακα, για να χωράει όλη χωρίς σκρολ
+const landscapeMQ=window.matchMedia("(orientation:landscape) and (max-height:600px)");
+const onLandscape=()=>{ updateHome(); if(tab==="scales") renderScale(); if(landscapeMQ.matches&&tab==="scales"&&$("sheet").hidden&&!document.body.classList.contains("editing")) setTimeout(()=>{ const sc=$("scaleSec"); if(sc) sc.scrollIntoView({block:"start",behavior:"smooth"}); },300); };
+try{ landscapeMQ.addEventListener("change",onLandscape); }catch(e){ try{ landscapeMQ.addListener(onLandscape); }catch(_){} }
 
 /* ============ ΕΚΚΙΝΗΣΗ ============ */
 try{ const ui=JSON.parse(sessionStorage.getItem("okt-ui")||"null"); sessionStorage.removeItem("okt-ui");
@@ -1737,6 +2100,7 @@ applyTuning();
 showTab(tab);
 loadRemote();
 updateHome();
+if(landscapeMQ.matches) onLandscape();
 (function(){ const was=inClaude(); setTimeout(()=>{ if(!was&&inClaude()){ if(tab==="lib") renderLib(); } },1500); })();
 // Αυτόνομη εφαρμογή: λειτουργία και χωρίς διαδίκτυο
 if(!inClaude()&&"serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){
