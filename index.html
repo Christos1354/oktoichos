@@ -126,6 +126,7 @@
   .cell.sel{border-color:var(--cinnabar);background:#fbe3d8}
   .cell.endmark{justify-content:center;min-height:90px;color:#8a5a1c;font-size:30px;border:2px dashed #c9a86a}
   .cell.endmark.sel{border-style:solid;border-color:var(--cinnabar)}
+  .cell.delmark{color:#fff;background:var(--cinnabar);border:2px solid var(--cinnabar);min-width:74px;gap:2px;text-align:center}
   /* θέσεις σημαδιών μέσα στη σύνθεση */
   .g-right{justify-self:end}
   .g-left{justify-self:start}
@@ -1630,7 +1631,7 @@ function renderLib(){
     <section><p class="label">Απηχήματα (μπορείς να τα διορθώσεις)</p><div class="list" id="aplist"></div></section>
     <section><p class="label">Ασκήσεις για αρχή</p><div class="list" id="exlist"></div></section>
     <section class="restore"><p class="label">Αντίγραφο ασφαλείας</p>
-      <div class="btnrow"><button class="btn small" id="btnCopy" type="button">Αντιγραφή όλων</button><button class="btn small" id="btnPasteOpen" type="button">Επαναφορά</button></div>
+      <div class="btnrow"><button class="btn small" id="btnCopy" type="button">Αντιγραφή όλων</button><button class="btn small" id="btnPasteOpen" type="button">Επικόλληση αντιγράφου</button></div>
       <div id="pasteBox" hidden style="margin-top:10px;display:flex;flex-direction:column;gap:10px">
         <textarea id="pasteText" rows="4" placeholder="Επικόλλησε εδώ το αντίγραφο"></textarea>
         <button class="btn small solid" id="btnPasteDo" type="button">Πρόσθεσε στη βιβλιοθήκη</button></div>
@@ -1921,7 +1922,8 @@ function renderHymn(){
     ${editing&&!ro?`<div class="desk"><div class="score" id="score"></div>${toolsHTML(hy,mode)}</div>`:`<div class="score" id="score"></div>`}`;
   if(ro) h+=`<button class="btn" id="btnCopyEx" type="button">Αντέγραψέ το στους ψαλμούς μου</button>`;
   else h+=`<div class="btnrow"><button class="btn${editing?" solid":""}" id="btnEdit" type="button">${editing?"✓ Τέλος επεξεργασίας":"✎ Επεξεργασία"}</button>
-    <button class="btn" id="btnDel" type="button">${delArm?"Σίγουρα; Πάτα ξανά":(hy.apech?"Επαναφορά αρχικού":"Διαγραφή ψαλμού")}</button></div>
+    <button class="btn${hy.apech&&lib.apech[hy.mode]?" solid":""}" id="btnDel" type="button" ${hy.apech&&!lib.apech[hy.mode]?"disabled style='opacity:.45'":""}>${delArm?"Σίγουρα; Πάτα ξανά":(hy.apech?(lib.apech[hy.mode]?"↺ Γύρνα στο αρχικό απήχημα":"Είναι το αρχικό"):"Διαγραφή ψαλμού")}</button></div>
+    ${hy.apech&&lib.apech[hy.mode]?`<p class="hint" style="color:var(--parch)">Το απήχημα έχει δικές σου αλλαγές. Με το «↺ Γύρνα στο αρχικό απήχημα» (δύο πατήματα) σβήνουν και επανέρχεται το αρχικό.</p>`:""}
     <p class="status" id="libStatus">${esc(statusMsg)}</p>`;
   if(editing&&!ro) h+=settingsHTML(hy,mode);
   v.innerHTML=h;
@@ -1943,6 +1945,13 @@ function renderHymn(){
   if(editing){
     const e=document.createElement("button"); e.type="button"; e.className="cell endmark"+(sel===-1?" sel":""); e.textContent="+";
     e.setAttribute("aria-label","Προσθήκη στο τέλος"); e.onclick=()=>{ sel=-1; renderHymn(); }; sc.appendChild(e);
+    if(hy.cells.length){
+      const x=document.createElement("button"); x.type="button"; x.className="cell endmark delmark";
+      x.innerHTML=`<span style="font-size:34px;line-height:1">⌫</span><span style="font-size:13px;font-weight:700">${sel>=0?"σβήσε<br>αυτό":"σβήσε<br>τελευταίο"}</span>`;
+      x.setAttribute("aria-label",sel>=0?"Σβήσε το επιλεγμένο σημάδι":"Σβήσε το τελευταίο σημάδι");
+      x.onclick=()=>{ if(sel>=0){ hy.cells.splice(sel,1); sel=-1; } else hy.cells.pop(); scheduleSave(); renderHymn(); };
+      sc.appendChild(x);
+    }
   }
   if(!hy.cells.length&&!editing) sc.innerHTML=`<p class="empty" style="color:#5a3a14;margin:0">Ο ψαλμός είναι άδειος. Πάτα «Επεξεργασία» για να βάλεις σημάδια.</p>`;
 
@@ -1966,10 +1975,10 @@ function renderHymn(){
   }
   $("btnEdit").onclick=()=>{ if(editing){ editing=false; saveNow(); } else { if(hy.apech&&!lib.apech[hy.mode]) lib.apech[hy.mode]=hy; editing=true; sel=-1; } renderHymn(); };
   $("btnDel").onclick=()=>{
-    const lbl=hy.apech?"Επαναφορά αρχικού":"Διαγραφή ψαλμού";
-    if(!delArm){ delArm=true; $("btnDel").textContent="Σίγουρα; Πάτα ξανά"; setTimeout(()=>{ delArm=false; const b=$("btnDel"); if(b) b.textContent=lbl; },4000); return; }
+    const lbl=hy.apech?"↺ Γύρνα στο αρχικό απήχημα":"Διαγραφή ψαλμού";
+    if(!delArm){ delArm=true; $("btnDel").textContent="Σίγουρα; Πάτα ξανά"; $("btnDel").classList.add("red"); setTimeout(()=>{ delArm=false; const b=$("btnDel"); if(b){ b.textContent=lbl; b.classList.remove("red"); } },4000); return; }
     delArm=false; stopSeq();
-    if(hy.apech){ delete lib.apech[hy.mode]; scheduleSave(800); editing=false; renderHymn(); return; }
+    if(hy.apech){ delete lib.apech[hy.mode]; scheduleSave(800); editing=false; sel=-1; setStatus("✓ Επανήλθε το αρχικό απήχημα."); renderHymn(); return; }
     deleteHymn(hy); libView="list"; renderLib();
   };
   if(hymnSource(hy)) wirePdf(hy);
@@ -1987,12 +1996,13 @@ function toolsHTML(hy,mode){
   const selCell=sel>=0?hy.cells[sel]:null;
   const dur=selCell?(selCell.d||""):draftDur, acc=selCell?(selCell.a||0):draftAcc;
   return `<section class="tools" aria-label="Σημάδια για γράψιμο">
-    <p class="wherehint">${selCell?`<b>Αλλάζεις το σημάδι ${sel+1}</b> (κόκκινο πλαίσιο).`:`<b>Γράφεις στο τέλος</b> (στο «+»). Γράψε τη συλλαβή και πάτα σημάδι.`}</p>
+    ${hy.cells.length?`<button type="button" class="btn red" id="edErase" style="min-height:52px">⌫ ${selCell?"Σβήσε το σημάδι "+(sel+1):"Σβήσε το τελευταίο σημάδι"}</button>`:""}
+    <p class="wherehint">${selCell?`<b>Αλλάζεις το σημάδι ${sel+1}</b> (κόκκινο πλαίσιο). Πάτα ένα σημάδι για να το αλλάξεις.`:`<b>Γράφεις στο τέλος</b> (στο «+»). Γράψε τη συλλαβή και πάτα σημάδι.`}</p>
     <div><p class="label">Συλλαβή</p><input type="text" id="edSyl" value="${esc(selCell?selCell.s:"")}" placeholder="π.χ. Κύ-" autocomplete="off"></div>
     <div><p class="label">Σημάδια (φωνές)</p><div class="pal" id="edPal">${NEUME_ORDER.map(k=>`<button type="button" class="pbtn" data-v="${k}"${selCell&&selCell.n===k?' style="outline:3px solid var(--cinnabar)"':""}><span class="ng">${neumeGlyphHTML({n:k})}</span><span class="pn">${NEUMES[k].name}</span><span class="pe">${NEUMES[k].fx}</span></button>`).join("")}</div></div>
     <div><p class="label">Χρόνος</p><div class="chips" id="edDur">${TIME_ORDER.map(k=>`<button type="button" class="chip" data-v="${k}" aria-pressed="${k===dur}">${TIMES[k].name} <span style="opacity:.75">${TIMES[k].fx}</span></button>`).join("")}</div></div>
     <div><p class="label">Δίεση / ύφεση σε μόρια</p><div class="stepper"><button type="button" class="btn small" id="edAccDn">▼ ύφεση</button><output id="edAccOut">${acc===0?"Χωρίς":(acc>0?"Δίεση +"+acc:"Ύφεση "+acc)}</output><button type="button" class="btn small" id="edAccUp">δίεση ▲</button></div></div>
-    ${selCell?`<div class="btnrow"><button type="button" class="btn" id="edDelCell">Σβήσε το σημάδι</button><button type="button" class="btn" id="edDone">Συνέχισε στο τέλος</button></div>`:(hy.cells.length?`<button type="button" class="btn small" id="edUndo">↶ Σβήσε το τελευταίο</button>`:"")}
+    ${selCell?`<div class="btnrow"><button type="button" class="btn" id="edDone" style="grid-column:1 / -1">Συνέχισε να γράφεις στο τέλος</button></div>`:""}
   </section>`;
 }
 // Ρυθμίσεις του ψαλμού (τίτλος, ήχος, αρχή, ταχύτητα, γρήγορη γραφή)
@@ -2070,6 +2080,7 @@ function wireEditor(hy,mode){
   if($("edDelCell")) $("edDelCell").onclick=()=>{ hy.cells.splice(sel,1); sel=-1; changed(); renderHymn(); };
   if($("edDone")) $("edDone").onclick=()=>{ sel=-1; renderHymn(); };
   if($("edUndo")) $("edUndo").onclick=()=>{ hy.cells.pop(); changed(); renderHymn(); };
+  if($("edErase")) $("edErase").onclick=()=>{ if(sel>=0){ hy.cells.splice(sel,1); sel=-1; } else hy.cells.pop(); changed(); renderHymn(); };
   // η παρτιτούρα δείχνει πάντα το σημείο όπου γράφεις
   const sc=$("score"); if(sc){ if(sel<0) sc.scrollTop=sc.scrollHeight; else { const c=sc.querySelector(`.cell[data-ci="${sel}"]`); if(c) sc.scrollTop=Math.max(0,c.offsetTop-sc.offsetTop-20); } }
 }
@@ -2089,7 +2100,7 @@ $("btnReset").onclick=()=>{
   showTab("scales"); window.scrollTo(0,0);
   // δοκιμαστικός ήχος: αν τον ακούς, ο ήχος δουλεύει
   setTimeout(()=>{ noteOn(freq(current.notes[0].m),"reset","a"); setTimeout(()=>noteOff("reset"),450); },120);
-  const m=$("resetMsg"); m.hidden=false; m.textContent="✓ Έγινε επαναφορά. Ακούς έναν σύντομο ήχο: ο ήχος δουλεύει.";
+  const m=$("resetMsg"); m.hidden=false; m.textContent="✓ Έγινε επαναφορά του ήχου και των ρυθμίσεων. Ακούς έναν σύντομο ήχο: ο ήχος δουλεύει. (Τα απηχήματα και οι ψαλμοί σου δεν αλλάζουν· αυτά επανέρχονται μέσα στο καθένα.)";
   clearTimeout(m._t); m._t=setTimeout(()=>{ m.hidden=true; },5000);
 };
 // Οριζόντια οθόνη: πηγαίνει μόνο του στην κλίμακα, για να χωράει όλη χωρίς σκρολ
