@@ -73,6 +73,11 @@
   .ison small{font-family:"Noto Sans",sans-serif;font-size:12px;letter-spacing:0;color:var(--muted)}
   .ison.on{background:var(--cinnabar);border-color:var(--cinnabar);color:#fff}
   .ison.on small{color:#ffe3dc}
+  .desp-label{margin-top:14px;color:#cdbff0}
+  .ison.desp{border-color:#b9a9e6;color:#e4dbfb;background:rgba(185,169,230,.12)}
+  .ison.desp small{color:#c3b6e8}
+  .ison.desp.on{background:#b9a9e6;border-color:#b9a9e6;color:#2a2150}
+  .ison.desp.on small{color:#3d3270}
 
   .accsize{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .accsize button{appearance:none;cursor:pointer;border:2px solid var(--line);background:var(--lapis);color:var(--parch);border-radius:12px;min-height:54px;font-size:16px;font-weight:600}
@@ -236,6 +241,8 @@
     <section>
       <p class="label">Ισοκρατήματα</p>
       <div class="isons" id="isons"></div>
+      <p class="label desp-label">Δεσπόζοντες φθόγγοι</p>
+      <div class="isons" id="desp"></div>
     </section>
     <section style="display:flex;flex-direction:column;gap:12px">
       <p class="label" style="margin:0">Κλίμακα με τις μαρτυρίες της</p>
@@ -300,25 +307,25 @@ function build(start,m0,steps){const names=rot(start);const out=[{n:start,m:m0}]
 const C=(n,s,d)=>d?{n,s,d}:{n,s};
 const MODES=[
  {id:"a", gen:"dia", mk:["modeWordEchos","modeFirst.salt01","modePa"], short:"Α΄", tag:"Πα", name:"Πρώτος ήχος", genus:"Διατονικό γένος", apech:"Ἀνανές", btn:"Ανανές", notes:build("Pa",12,[10,8,12,12,10,8,12]), color:"#2f6fd0",
-  isons:[{n:"Pa",o:0},{n:"Ke",o:0}], apStart:-1, ap:[C("ison","Ἀ"),C("oligon","να"),C("ison","νές","dipli")]},   // Νη – Πα – Πα
+  desp:[{n:"Pa",o:0},{n:"Ga",o:0},{n:"Di",o:0}], isons:[{n:"Pa",o:0},{n:"Ke",o:0}], apStart:-1, ap:[C("ison","Ἀ"),C("oligon","να"),C("ison","νές","dipli")]},   // Νη – Πα – Πα
  {id:"b", gen:"soft", mk:["modeWordEchos","modeSecond","modeDi","fthoraSoftChromaticDiAbove"], short:"Β΄", tag:"Δι", name:"Δεύτερος ήχος", genus:"Μαλακό χρωματικό γένος", apech:"Νεανές", btn:"Νεανές", notes:build("Di",42,[8,14,8,12,8,14,8]), color:"#1f9a7a",
-  isons:[{n:"Di",o:0},{n:"Vou",o:-1},{n:"Ni",o:-1}], ap:[C("ison","Νε"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
+  desp:[{n:"Di",o:0},{n:"Zo",o:0},{n:"Vou",o:-1}], isons:[{n:"Di",o:0},{n:"Vou",o:-1},{n:"Ni",o:-1}], ap:[C("ison","Νε"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
  {id:"g", gen:"dia", mk:["modeWordEchos","modeThirdNana","modeGa"], short:"Γ΄", tag:"Γα", name:"Τρίτος ήχος", genus:"Εναρμόνιο γένος (Ζω ύφεση)", apech:"Νανά", btn:"Νανά", notes:build("Ga",30,[12,12,6,12,12,12,6]), color:"#8b4fc4",
-  isons:[{n:"Ga",o:0},{n:"Ni",o:-1}], ap:[C("ison","Να"),C("oligon",""),C("apo","νά","dipli")]},
+  desp:[{n:"Ga",o:0},{n:"Ke",o:0},{n:"Ni",o:0}], isons:[{n:"Ga",o:0},{n:"Ni",o:-1}], ap:[C("ison","Να"),C("oligon",""),C("apo","νά","dipli")]},
  {id:"d", gen:"dia", mk:["modeWordEchos","modeFourth.salt01","modeDi","fthoraDiatonicDiAbove"], short:"Δ΄", tag:"Άγια", name:"Τέταρτος ήχος (Άγια)", genus:"Διατονικό γένος, βάση Δι", btn:"Άγια", apech:"Ἅγια", notes:build("Di",42,[12,10,8,12,10,8,12]), color:"#c26a1c",
-  isons:[{n:"Di",o:0},{n:"Pa",o:-1},{n:"Vou",o:-1}], ap:[C("ison","Ἅ"),C("oligon","γι","klasma"),C("apo","α","dipli")]},
+  desp:[{n:"Di",o:0},{n:"Zo",o:0},{n:"Vou",o:-1}], isons:[{n:"Di",o:0},{n:"Pa",o:-1},{n:"Vou",o:-1}], ap:[C("ison","Ἅ"),C("oligon","γι","klasma"),C("apo","α","dipli")]},
  {id:"dl", gen:"dia", mk:["modeWordEchos","modeLegetos","modeVou"], short:"Δ΄", tag:"Λέγετος", name:"Τέταρτος ήχος Λέγετος", genus:"Διατονικό γένος, βάση Βου", btn:"Λέγετος", apech:"Ἅγια", notes:build("Vou",22,[8,12,12,10,8,12,10]), color:"#b0591a",
-  isons:[{n:"Vou",o:0},{n:"Di",o:0}], ap:[C("ison","Ἅ"),C("oligon","γι","klasma"),C("apo","α","dipli")]},
+  desp:[{n:"Vou",o:0},{n:"Di",o:0}], isons:[{n:"Vou",o:0},{n:"Di",o:0}], ap:[C("ison","Ἅ"),C("oligon","γι","klasma"),C("apo","α","dipli")]},
  {id:"pa", gen:"dia", mk:["modeWordEchos","modePlagal","modePlagalFirst","modePa","fthoraDiatonicPaAbove"], short:"Πλ.Α΄",tag:"Πα", name:"Πλάγιος του Πρώτου", genus:"Διατονικό γένος", apech:"Ἀνέανες", btn:"Ανέανες", notes:build("Pa",12,[10,8,12,12,10,8,12]), color:"#2a86b8",
-  isons:[{n:"Pa",o:0},{n:"Ke",o:-1},{n:"Di",o:0}], ap:[C("ison","Ἀ"),C("oligon","νέ"),C("apo","α"),C("ison","νες","dipli")]},
+  desp:[{n:"Pa",o:0},{n:"Ga",o:0},{n:"Di",o:0}], isons:[{n:"Pa",o:0},{n:"Ke",o:-1},{n:"Di",o:0}], ap:[C("ison","Ἀ"),C("oligon","νέ"),C("apo","α"),C("ison","νες","dipli")]},
  {id:"pb", gen:"hard", mk:["modeWordEchos","modePlagal","modePlagalSecond","modePa","fthoraHardChromaticPaAbove"], short:"Πλ.Β΄",tag:"Πα", name:"Πλάγιος του Δευτέρου", genus:"Σκληρό χρωματικό γένος", apech:"Νεχέανες", btn:"Νεχέανες", notes:build("Pa",12,[6,20,4,12,6,20,4]), color:"#c23a4a",
-  isons:[{n:"Pa",o:0},{n:"Di",o:0}], ap:[C("ison","Νε"),C("oligon","χέ"),C("oligon","α","klasma"),C("elafron","νες","dipli")]},
+  desp:[{n:"Pa",o:0},{n:"Di",o:0}], isons:[{n:"Pa",o:0},{n:"Di",o:0}], ap:[C("ison","Νε"),C("oligon","χέ"),C("oligon","α","klasma"),C("elafron","νες","dipli")]},
  {id:"v", gen:"dia", mk:["modeWordEchos","modeWordVarys","modeVarys","modeZo","fthoraEnharmonicAbove"], short:"Βαρύς",tag:"Ζω εναρμ.", name:"Βαρύς εναρμόνιος", genus:"Εναρμόνιο γένος, βάση Ζω ύφεση", btn:"Αανές · Ζω", apech:"Ἀανές", notes:build("Zo",-12,[12,12,12,6,12,12,6]), color:"#5a5fb8",
-  isons:[{n:"Zo",o:0,t:"ύφεση"},{n:"Ga",o:0}], ap:[C("ison","Ἀ"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
+  desp:[{n:"Zo",o:0},{n:"Ga",o:0}], isons:[{n:"Zo",o:0,t:"ύφεση"},{n:"Ga",o:0}], ap:[C("ison","Ἀ"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
  {id:"vd", gen:"dia", mk:["modeWordEchos","modeWordVarys","modeVarys","modeGa","fthoraDiatonicGaAbove"], short:"Βαρύς",tag:"Γα διατ.", name:"Βαρύς διατονικός", genus:"Διατονικό γένος, βάση Γα, με Ζω ύφεση", btn:"Αανές · Γα", apech:"Ἀανές", notes:build("Ga",30,[12,12,4,14,12,10,8]), color:"#4a6fa8",
-  isons:[{n:"Ga",o:0},{n:"Ni",o:-1}], ap:[C("ison","Ἀ"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
+  desp:[{n:"Ga",o:0},{n:"Zo",o:-1}], isons:[{n:"Ga",o:0},{n:"Ni",o:-1}], ap:[C("ison","Ἀ"),C("oligon","α","klasma"),C("apo","νές","dipli")]},
  {id:"pd", gen:"dia", mk:["modeWordEchos","modePlagal","modePlagalFourth","modeNi","fthoraDiatonicNiLowAbove"], short:"Πλ.Δ΄",tag:"Νη", name:"Πλάγιος του Τετάρτου", genus:"Διατονικό γένος", apech:"Νεάγιε", btn:"Νεάγιε", notes:build("Ni",0,[12,10,8,12,12,10,8]), color:"#3c9a3a",
-  isons:[{n:"Ni",o:0},{n:"Ga",o:0}], ap:[C("ison","Νε"),C("oligon","ά"),C("apo","γι"),C("ison","ε","dipli")]}
+  desp:[{n:"Ni",o:0},{n:"Vou",o:0},{n:"Di",o:0}], isons:[{n:"Ni",o:0},{n:"Ga",o:0}], ap:[C("ison","Νε"),C("oligon","ά"),C("apo","γι"),C("ison","ε","dipli")]}
 ];
 // Χρόες: τετράχορδο χωρίς και με τη χρόα (θέσεις σε μόρια από τον Νη)
 const CHROAI=[
@@ -734,9 +741,19 @@ function renderScales(){
     b.onclick=()=>{ if(drone&&drone.key===key){droneOff();} else {droneOn(m,key);} renderIsons(); };
     b.dataset.key=key; iz.appendChild(b);
   });
+  // Δεσπόζοντες φθόγγοι (απαλό χρώμα)
+  const dz=$("desp"); dz.innerHTML="";
+  (current.desp||[]).forEach((is,k)=>{
+    const key=current.id+"-d"+k, m=isonMoria(current,is);
+    const b=document.createElement("button"); b.type="button"; b.className="ison desp"+(drone&&drone.key===key?" on":"");
+    const sub=m<current.notes[0].m?"χαμηλό":(m===current.notes[0].m?"βάση":(m>=current.notes[0].m+72?"ψηλό":"δεσπόζων"));
+    b.innerHTML=CAPS[is.n]+"<small>"+sub+"</small>";
+    b.onclick=()=>{ if(drone&&drone.key===key){droneOff();} else {droneOn(m,key);} renderIsons(); };
+    b.dataset.key=key; dz.appendChild(b);
+  });
   renderScale();
 }
-function renderIsons(){ [...$("isons").children].forEach(b=>b.classList.toggle("on",!!(drone&&drone.key===b.dataset.key))); }
+function renderIsons(){ [...$("isons").children,...$("desp").children].forEach(b=>b.classList.toggle("on",!!(drone&&drone.key===b.dataset.key))); }
 
 function holdable(el,getF,owner,vowel){
   el.addEventListener("pointerdown",e=>{ e.preventDefault(); try{el.setPointerCapture(e.pointerId);}catch(_){}; noteOn(getF(),owner,vowel); el.classList.add("playing"); });
@@ -873,7 +890,7 @@ const BG=t=>`<span style="font-family:ByzNeumes;font-size:40px;line-height:.8;ve
 function renderInfo(){
   const rows=MODES.map(m=>{
     const d=[]; for(let i=1;i<m.notes.length;i++) d.push(m.notes[i].m-m.notes[i-1].m);
-    return `<tr><td>${m.short} ${m.tag}</td><td>${NAMES[m.notes[0].n]}</td><td>${m.genus}</td><td style="white-space:nowrap">${d.join("-")}</td><td>${m.apech}</td><td>${m.isons.map(i=>CAPS[i.n]).join(", ")}</td></tr>`;
+    return `<tr><td>${m.short} ${m.tag}</td><td>${NAMES[m.notes[0].n]}</td><td>${m.genus}</td><td style="white-space:nowrap">${d.join("-")}</td><td>${m.apech}</td><td>${m.isons.map(i=>CAPS[i.n]).join(", ")}</td><td>${(m.desp||[]).map(i=>CAPS[i.n]).join(", ")}</td></tr>`;
   }).join("");
   const neu=NEUME_ORDER.map(k=>`<tr><td><span class="ngi">${neumeGlyphHTML({n:k})}</span></td><td>${NEUMES[k].name}</td><td>${NEUMES[k].fx}</td></tr>`).join("");
   $("sheetIn").innerHTML=`
@@ -885,7 +902,7 @@ function renderInfo(){
 
   <h3>Οι ήχοι</h3>
   <p>Η κλίμακα κάθε ήχου ξεκινά από τη βάση του και ανεβαίνει μία οκτάβα. Τα διαστήματα γράφονται από κάτω προς τα πάνω.</p>
-  <div class="mtable"><table><thead><tr><th>Ήχος</th><th>Βάση</th><th>Γένος</th><th>Διαστήματα</th><th>Απήχημα</th><th>Ίσον</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="mtable"><table><thead><tr><th>Ήχος</th><th>Βάση</th><th>Γένος</th><th>Διαστήματα</th><th>Απήχημα</th><th>Ίσον</th><th>Δεσπόζοντες</th></tr></thead><tbody>${rows}</tbody></table></div>
   <ul>
     <li><b>Διατονικό γένος</b> (Α΄, Δ΄, Πλ.Α΄, Πλ.Δ΄, Βαρύς διατονικός): τόνοι 12, 10 και 8 μορίων.</li>
     <li><b>Μαλακό χρωματικό</b> (Β΄): τετράχορδο 8-14-8, απαλό χρώμα.</li>
@@ -901,6 +918,8 @@ function renderInfo(){
 
   <h3>Ισοκρατήματα</h3>
   <p>Το ίσον κρατιέται συνεχώς όσο ψάλλεται ο ύμνος, συνήθως στη βάση του ήχου. Όταν η μελωδία ανεβαίνει ή κατεβαίνει, ο ισοκράτης μετακινείται σε άλλον φθόγγο, π.χ. στον Α΄ από ΠΑ σε ΚΕ. Κάθε ήχος έχει στην εφαρμογή τα πιο συνηθισμένα ισοκρατήματά του.</p>
+  <h3>Δεσπόζοντες φθόγγοι</h3>
+  <p>Οι δεσπόζοντες είναι οι φθόγγοι όπου «στηρίζεται» η μελωδία κάθε ήχου: εκεί κάνει στάσεις και καταλήξεις, και εκεί συχνά πηγαίνει και το ίσον. Στην εφαρμογή φαίνονται με απαλό λιλά χρώμα κάτω από τα ισοκρατήματα, και ακούγονται σαν ίσον. Διαφέρουν λίγο ανάλογα με το είδος του μέλους (ειρμολογικό, στιχηραρικό, παπαδικό) και τη σχολή. Εδώ δίνονται οι πιο συνηθισμένοι.</p>
 
   <h3>Διέσεις και υφέσεις</h3>
   <p>Η δίεση ανεβάζει τον φθόγγο και η ύφεση τον χαμηλώνει, κατά 2, 4, 6 ή 8 μόρια. Η απλή αλλάζει 2 μόρια, η μονόγραμμος 4, η δίγραμμος 6 και η τρίγραμμος 8.</p>
