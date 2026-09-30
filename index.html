@@ -618,7 +618,18 @@ async function audioReady(){
 ["pointerdown","touchend","click","keydown"].forEach(t=>document.addEventListener(t,()=>{ if(t==="pointerdown"||t==="keydown"||!ctx||ctx.state!=="running") ensureAudio(); },{capture:true,passive:true}));
 // Όταν φεύγεις από την εφαρμογή: σταματά ο ήχος (και θυμάται τι έπαιζε, για το «ΣΥΝΕΧΕΙΑ»).
 // Όταν γυρνάς: την επόμενη φορά που θα πατήσεις κάτι, φτιάχνεται καινούργιο ηχητικό κύκλωμα.
-document.addEventListener("visibilitychange",()=>{ if(document.hidden){ if(ctx) stopAll(true); } else needRebuild=true; });
+// Όταν φεύγεις από την εφαρμογή (ή κλειδώνει το κινητό): κλείνει εντελώς ο ήχος,
+// ώστε να ΜΗΝ μένει στην οθόνη του κινητού το πλαίσιο «αναπαραγωγής» με το play-pause.
+function releaseAudio(){
+  if(ctx) stopAll(true);
+  const old=ctx; ctx=null; master=null; voice=null; drone=null; seq=null;
+  setTimeout(()=>{ try{ if(old&&old.state!=="closed") old.close(); }catch(e){} },200);
+  try{ if(navigator.audioSession) navigator.audioSession.type="auto"; }catch(e){}
+  try{ if(navigator.mediaSession){ navigator.mediaSession.metadata=null; navigator.mediaSession.playbackState="none";
+    ["play","pause","stop","seekbackward","seekforward","previoustrack","nexttrack"].forEach(a=>{ try{ navigator.mediaSession.setActionHandler(a,null); }catch(_){} }); } }catch(e){}
+}
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) releaseAudio(); else needRebuild=true; });
+window.addEventListener("pagehide",releaseAudio);
 window.addEventListener("pageshow",()=>{ needRebuild=true; });
 try{ if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener("devicechange",()=>{ needRebuild=true; }); }catch(e){}
 
@@ -633,6 +644,10 @@ const FORM={
   u:[[350,0,40],[600,-20,80],[2400,-32,100],[2675,-28,120],[2950,-36,120]]
 };
 const dB=x=>Math.pow(10,x/20);
+// Κλίμακες, χρόες και κουμπιά φθόγγων: ΕΝΑ ίδιο φωνήεν για όλους, ώστε να ακούγονται ομοιόμορφα, σαν μία φωνή
+const NOTE_VOWEL="a";
+// Πλάτος των «φίλτρων φωνής»: πιο πλατιά = πιο ομοιόμορφος ήχος από φθόγγο σε φθόγγο
+const BW_K=3.2;
 function vowelOf(syl){
   const x=String(syl||"").normalize("NFD").replace(/[̀-ͯͅ]/g,"").toLowerCase();
   if(/ου/.test(x)) return "u";
@@ -653,12 +668,12 @@ function makeVoice(f,vowel){
     [o2,o3].forEach((x,k)=>{ x.type="sawtooth"; x.frequency.value=f; x.detune.value=k?9:-9; fps.push({p:x.frequency,r:1}); extra.push(x); });
     lfo.frequency.value=5.6; lg.gain.setValueAtTime(0,t); lg.gain.linearRampToValueAtTime(f*0.009,t+0.4);
     const drift=ctx.createOscillator(), dg=ctx.createGain(); drift.frequency.value=0.27; dg.gain.value=f*0.002; drift.connect(dg); dg.connect(o.frequency); drift.start(t); extra.push(drift);
-    const sum=ctx.createGain(); sum.gain.value=2.4; sum.connect(g);
+    const sum=ctx.createGain(); sum.gain.value=1.5; sum.connect(g);
     const tilt=ctx.createBiquadFilter(); tilt.type="lowpass"; tilt.frequency.value=3500;
     nodes.push(o2,o3,drift,dg,sum,tilt);
     [o,o2,o3].forEach(x=>x.connect(tilt));
     const F=FORM[vowel]||FORM.a;
-    formants=F.map(([fr,db,bw])=>{ const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=fr; bp.Q.value=fr/(bw*0.75);
+    formants=F.map(([fr,db,bw])=>{ const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=fr; bp.Q.value=fr/(bw*BW_K);
       const gg=ctx.createGain(); gg.gain.value=dB(db); tilt.connect(bp); bp.connect(gg); gg.connect(sum); nodes.push(bp,gg); return {bp,gg}; });
     const ns=ctx.createBufferSource(); ns.buffer=noiseBuf; ns.loop=true;
     const nf=ctx.createBiquadFilter(); nf.type="bandpass"; nf.frequency.value=1800; nf.Q.value=0.8;
@@ -681,7 +696,7 @@ function makeVoice(f,vowel){
 function setF(v,f,t,glide){ (v.fps||[{p:v.o.frequency,r:1}]).forEach(({p,r})=>{ if(glide){ p.exponentialRampToValueAtTime(f*r,t+glide); } else p.setValueAtTime(f*r,t); }); }
 function setVowel(v,vowel,t){
   if(!v.formants) return; const F=FORM[vowel]||FORM.a;
-  v.formants.forEach(({bp,gg},i)=>{ bp.frequency.setTargetAtTime(F[i][0],t,0.03); bp.Q.setTargetAtTime(F[i][0]/F[i][2],t,0.03); gg.gain.setTargetAtTime(dB(F[i][1]),t,0.03); });
+  v.formants.forEach(({bp,gg},i)=>{ bp.frequency.setTargetAtTime(F[i][0],t,0.03); bp.Q.setTargetAtTime(F[i][0]/(F[i][2]*BW_K),t,0.03); gg.gain.setTargetAtTime(dB(F[i][1]),t,0.03); });
 }
 function stopNodes(v,at){
   try{ v.o.onended=()=>{ (v.nodes||[]).forEach(n=>{ try{ n.disconnect(); }catch(e){} }); }; }catch(e){}   // καθάρισμα, να μη «γεμίζει» το κύκλωμα
@@ -933,7 +948,7 @@ function renderScale(){
   rows.forEach(({nt,i})=>{
     const row=document.createElement("div"); row.className="row"+(showAcc?"":" solo");
     const k=0.72+0.5*(i/7);
-    const mk=(cls,html,m,owner)=>{ const b=document.createElement("button"); b.type="button"; b.className="key "+cls; b.innerHTML=html; holdable(b,()=>freq(m),owner,vowelOf(NAMES[nt.n])); return b; };
+    const mk=(cls,html,m,owner)=>{ const b=document.createElement("button"); b.type="button"; b.className="key "+cls; b.innerHTML=html; holdable(b,()=>freq(m),owner,NOTE_VOWEL); return b; };
     const nm=NAMES[nt.n]+(i===7?"΄":"");
     const main=mk("main"+((i===0||i===7)?" base":""),`${martyriaHTML(stepOf(nt),current.gen)}<span class="nm">${nm}</span><span class="hz">${freq(nt.m).toFixed(1)} Hz</span>`,nt.m,"n"+i);
     main.style.background=`linear-gradient(160deg,${shade(current.color,k+.12)},${shade(current.color,k-.12)})`;
@@ -973,14 +988,14 @@ $("tuneBox").addEventListener("click",e=>{
   if(b.dataset.d){
     const st=stepsOf(current.notes), i=+b.dataset.i; st[i]=Math.max(1,st[i]+(+b.dataset.d));
     tuning().modes[current.id]=st; scheduleSave(); applyTuning(); renderScale(); renderTuner();
-    const nt=current.notes[i+1]; noteOn(freq(nt.m),"tune",vowelOf(NAMES[nt.n])); setTimeout(()=>noteOff("tune"),380);
+    const nt=current.notes[i+1]; noteOn(freq(nt.m),"tune",NOTE_VOWEL); setTimeout(()=>noteOff("tune"),380);
   }
 });
 $("btnScale").onclick=()=>{
   toggleSeq("scale",()=>{
     const beat=0.62, ev=[];
     const keyOf=i=>$("scale").querySelector(`.key[data-idx="${i}"]`);
-    const vw=i=>vowelOf(NAMES[current.notes[i].n]);
+    const vw=i=>NOTE_VOWEL;
     for(let i=0;i<=7;i++) ev.push({m:current.notes[i].m,vowel:vw(i),newSyl:true,dur:i===7?beat*2:beat,onStart:()=>flash(keyOf(i),380)});
     ev.push({rest:true,dur:1.1});                                   // παύση στην κορυφή
     for(let i=7;i>=0;i--) ev.push({m:current.notes[i].m,vowel:vw(i),newSyl:true,dur:i===0?beat*2:beat,onStart:()=>flash(keyOf(i),380)});
@@ -1011,7 +1026,7 @@ function renderChroai(){
         b.style.background=kind==="plain"?"linear-gradient(160deg,#3a5aa8,#243d80)":"linear-gradient(160deg,#b8504a,#8a2f2b)";
         const tag=kind==="chroa"&&diff!==0?(diff>0?" δίεση +"+diff:" ύφεση "+diff):"";
         b.innerHTML=`<span class="nm" style="font-size:30px">${ch.names[i]}</span><span class="hz">${freq(m).toFixed(1)} Hz${tag}</span>`;
-        holdable(b,()=>freq(m),ch.id+kind+i,vowelOf(ch.names[i]));
+        holdable(b,()=>freq(m),ch.id+kind+i,NOTE_VOWEL);
         keys[kind][i]=b; grid.appendChild(b);
       });
     }
@@ -1022,9 +1037,9 @@ function renderChroai(){
       b.onclick=()=>{
         toggleSeq("chroa-"+ch.id+"-"+kind,()=>{
           const pos=chroaPos(ch)[kind], beat=0.6, ev=[];
-          for(let i=0;i<pos.length;i++) ev.push({m:pos[i],vowel:vowelOf(ch.names[i]),newSyl:true,dur:i===pos.length-1?beat*1.8:beat,onStart:()=>flash(keys[kind][i],360)});
+          for(let i=0;i<pos.length;i++) ev.push({m:pos[i],vowel:NOTE_VOWEL,newSyl:true,dur:i===pos.length-1?beat*1.8:beat,onStart:()=>flash(keys[kind][i],360)});
           ev.push({rest:true,dur:0.9});
-          for(let i=pos.length-1;i>=0;i--) ev.push({m:pos[i],vowel:vowelOf(ch.names[i]),newSyl:true,dur:i===0?beat*1.8:beat,onStart:()=>flash(keys[kind][i],360)});
+          for(let i=pos.length-1;i>=0;i--) ev.push({m:pos[i],vowel:NOTE_VOWEL,newSyl:true,dur:i===0?beat*1.8:beat,onStart:()=>flash(keys[kind][i],360)});
           return ev; },
           ()=>{ b.textContent="■ Σταμάτα"; },
           ()=>{ b.textContent=label; });
@@ -1044,7 +1059,7 @@ function renderChroai(){
       if(b.dataset.reset){ delete tuning().chroai[ch.id]; scheduleSave(); renderChroai(); return; }
       if(b.dataset.d){ const st=P.steps.slice(), i=+b.dataset.i; st[i]=Math.max(1,st[i]+(+b.dataset.d));
         tuning().chroai[ch.id]=st; scheduleSave(); renderChroai();
-        const m=chroaPos(ch).chroa[i+1]; noteOn(freq(m),"tunec",vowelOf(ch.names[i+1])); setTimeout(()=>noteOff("tunec"),380); }
+        const m=chroaPos(ch).chroa[i+1]; noteOn(freq(m),"tunec",NOTE_VOWEL); setTimeout(()=>noteOff("tunec"),380); }
     });
     card.append(tb,box);
     v.appendChild(card);
@@ -1106,7 +1121,7 @@ function renderInfo(){
   </ul>
 
   <h3>Φωνή, όργανο και ΣΤΟΠ</h3>
-  <p>Στην κάτω μπάρα διαλέγεις πώς ακούγονται όλα. Με τη <b>Φωνή</b>, η εφαρμογή «ψάλλει» τα φωνήεντα των συλλαβών. Στο απήχημα Ἀ-να-νε-α-νές ακούς α, α, ε, α, ε, και στην κλίμακα τα φωνήεντα των φθόγγων (Πα, Βου, Γα…). Το <b>Όργανο</b> δίνει καθαρό ήχο, βολικό για να πιάσεις ακριβώς τον τόνο. Το κόκκινο κουμπί <b>ΣΤΟΠ</b> σωπαίνει αμέσως τα πάντα: κλίμακα, απήχημα, ψαλμό και ίσον.</p>
+  <p>Στην κάτω μπάρα διαλέγεις πώς ακούγονται όλα. Με τη <b>Φωνή</b>, η εφαρμογή «ψάλλει» τα φωνήεντα των συλλαβών. Στους ψαλμούς ακούς τα φωνήεντα των συλλαβών· στο ίσον η φωνή μένει ίδια με τον προηγούμενο φθόγγο. Στις κλίμακες και στις χρόες όλοι οι φθόγγοι ψάλλονται με την ίδια φωνή («α»), ώστε να ακούγονται ομοιόμορφα. Το <b>Όργανο</b> δίνει καθαρό ήχο, βολικό για να πιάσεις ακριβώς τον τόνο. Το κόκκινο κουμπί <b>ΣΤΟΠ</b> σωπαίνει αμέσως τα πάντα: κλίμακα, απήχημα, ψαλμό και ίσον.</p>
 
   <h3>PDF στη βιβλιοθήκη</h3>
   <p>Στη Βιβλιοθήκη πάτα «Πρόσθεσε PDF» και διάλεξε ένα αρχείο με ψαλμό σε παρασημαντική. Το PDF φαίνεται μέσα στην εφαρμογή, με κουμπιά για να το μεγαλώσεις. Με το «Διάβασέ το και κάν' το ήχο», το Claude κοιτάζει τις σελίδες και γράφει τα σημάδια και τις συλλαβές στην παρτιτούρα, για να πατήσεις «Παίξε». Η πρώτη φορά ζητά την άδειά σου και κάθε ανάγνωση χρησιμοποιεί λίγο από τη συνδρομή σου στο Claude. Η ανάγνωση βυζαντινής γραφής από εικόνα μπορεί να έχει λάθη, οπότε έλεγξέ την με την «Επεξεργασία». Τα PDF μέχρι 15 MB αποθηκεύονται μαζί με τη βιβλιοθήκη.</p>
