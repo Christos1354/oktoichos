@@ -109,7 +109,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v14 · αναγνώστης PDF Μελωδού (χωρίς κόστος, μέσα στη συσκευή)</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v15 · αναγνώστης PDF Μελωδού (χωρίς κόστος, μέσα στη συσκευή)</div>
 </div>
 
 <a class="homebtn backbtn" style="bottom:20px" id="btnBackLib" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -149,7 +149,7 @@
 </div></div>
 
 <script src="foni-xorodia.js?v=2"></script>
-<script src="foni.js?v=2"></script>
+<script src="foni.js?v=3"></script>
 <script src="melodos-reader.js?v=1"></script>
 <script>
 function BOOT(D){
@@ -364,19 +364,25 @@ function playChoir(list,onEnd){
   const mel=Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
-  let t=ctx.currentTime+0.2,isoT=null,isoF=0;
-  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT)iso.note(isoT,isoF,tEnd-isoT,{soft:true,tail:0.35});isoT=null;};
+  // (19-10-2026) Οι νότες ετοιμάζονται λίγο-λίγο (1,5″ μπροστά), όχι όλες μαζί: αλλιώς σε μεγάλες σελίδες
+  // το κινητό/ο υπολογιστής «πνίγεται» από χιλιάδες ήχους και η φωνή κόβεται ή δεν ακούγεται.
+  let t=ctx.currentTime+0.25,isoT=null,isoF=0;const ev=[];
+  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const a=isoT,fq=isoF,d=tEnd-isoT;ev.push({t:a,run:()=>iso.note(a,fq,d,{soft:true,tail:0.35})});}isoT=null;};
   list.forEach((n,k)=>{
     const dur=beat*n.dur*(n.tf||1);
-    if(n.rest){mel.rest();t+=dur;return;}
-    const f=freq(n.idx,n.acc,n.sc);
-    mel.note(t,f,dur,{pet:n.pet});
+    if(n.rest){const tr=t;ev.push({t:tr,run:()=>mel.rest()});t+=dur;return;}
+    const f=freq(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
+    ev.push({t:tn,run:()=>mel.note(tn,f,dur,{pet})});
     if(iso){const fi=freq(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;}}
     const cc=cols[n.l+"-"+n.i];
     if(cc){const d=(t-ctx.currentTime)*1000;timers.push(setTimeout(()=>{Object.values(cols).forEach(x=>x.classList.remove("now"));cc.classList.add("now");cc.scrollIntoView({block:"center",behavior:"smooth"});},Math.max(0,d)));}
     t+=dur;
   });
   flushIso(t);
+  ev.forEach((e,i)=>e.i=i);ev.sort((a,b)=>a.t-b.t||a.i-b.i);
+  const tok=choirLines;let ei=0;
+  const pump=()=>{if(choirLines!==tok)return;const lim=ctx.currentTime+1.5;while(ei<ev.length&&ev[ei].t<lim){try{ev[ei].run();}catch(e){}ei++;}if(ei<ev.length)timers.push(setTimeout(pump,250));};
+  pump();
   timers.push(setTimeout(()=>{stopAll();if(onEnd)onEnd();},(t-ctx.currentTime+1.2)*1000));
 }
 function play(list,onEnd){

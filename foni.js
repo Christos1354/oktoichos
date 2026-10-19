@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026 (β)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -105,7 +105,7 @@
     src.stop(t1 + fadeOut + 0.05);
     const rec = { src, g };
     active.add(rec);
-    src.onended = () => active.delete(rec);
+    src.onended = () => { active.delete(rec); try { src.disconnect(); g.disconnect(); } catch (e) { } };   // καθάρισμα
     return rec;
   }
 
