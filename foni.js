@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -25,6 +25,8 @@
   function setup(c) {
     if (ctx === c && bus) return;
     ctx = c;
+    for (const k in bufs) delete bufs[k];
+    for (const k in loading) delete loading[k];
     const comp = c.createDynamicsCompressor();
     comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.25;
     out = c.createGain(); out.gain.value = 0.9;
@@ -47,13 +49,33 @@
 
   function has(key) { return !!(window.FONI_SETS && window.FONI_SETS[key]); }
 
+  // Μία νότα: πρώτα η δική μας αποκωδικοποίηση (ADPCM, δουλεύει παντού, και στο iPhone).
+  // Μόνο για παλιά δεδομένα mp3 χρησιμοποιεί τον browser, με όριο χρόνου ώστε να μην «κολλάει» ποτέ.
+  function decodeNote(n) {
+    if (n.adpcm && window.FONI_ADPCM) {
+      try { return Promise.resolve({ hz: n.hz, buf: window.FONI_ADPCM(ctx, n) }); } catch (e) { return Promise.resolve(null); }
+    }
+    if (!n.b64) return Promise.resolve(null);
+    return new Promise(res => {
+      let done = false; const fin = v => { if (!done) { done = true; res(v); } };
+      setTimeout(() => fin(null), 8000);
+      try {
+        const p = ctx.decodeAudioData(b64ToBuf(n.b64), b => fin({ hz: n.hz, buf: b }), () => fin(null));
+        if (p && p.catch) p.catch(() => fin(null));
+      } catch (e) { fin(null); }
+    });
+  }
+
   function load(key) {
     if (bufs[key]) return Promise.resolve(bufs[key]);
     if (loading[key]) return loading[key];
-    const S = window.FONI_SETS[key];
-    loading[key] = Promise.all(S.notes.map(n => new Promise((res, rej) => {
-      ctx.decodeAudioData(b64ToBuf(n.b64), b => res({ hz: n.hz, buf: b }), rej);
-    }))).then(arr => { bufs[key] = arr; return arr; });
+    const S = window.FONI_SETS && window.FONI_SETS[key];
+    if (!S || !ctx) return Promise.reject(new Error("no set"));
+    loading[key] = Promise.all(S.notes.map(decodeNote)).then(arr => {
+      arr = arr.filter(Boolean);
+      if (!arr.length) { delete loading[key]; throw new Error("choir not decoded"); }
+      bufs[key] = arr; bufs[key].ctx = ctx; return arr;
+    });
     return loading[key];
   }
 

@@ -109,7 +109,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 18-10-2026 · Οκτώηχος v13 · αναγνώστης PDF Μελωδού (χωρίς κόστος, μέσα στη συσκευή)</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v14 · αναγνώστης PDF Μελωδού (χωρίς κόστος, μέσα στη συσκευή)</div>
 </div>
 
 <a class="homebtn backbtn" style="bottom:20px" id="btnBackLib" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -148,8 +148,8 @@
   </div>
 </div></div>
 
-<script src="foni-xorodia.js?v=1"></script>
-<script src="foni.js?v=1"></script>
+<script src="foni-xorodia.js?v=2"></script>
+<script src="foni.js?v=2"></script>
 <script src="melodos-reader.js?v=1"></script>
 <script>
 function BOOT(D){
@@ -296,9 +296,10 @@ function dest(){if(window.Foni&&Foni.input){Foni.setup(ctx);return Foni.input();
 function ensureCtx(){try{if(navigator.audioSession&&navigator.audioSession.type!=="playback")navigator.audioSession.type="playback";}catch(e){}if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==="suspended")ctx.resume();}
 const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
+function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
-  if(k.indexOf("xorodia")===0&&!isChoir()){document.getElementById("voiceSel").value="apech";return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
-  if(isChoir()){try{await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){document.getElementById("voiceSel").value="apech";return loadVoice();}return;}
+  if(k.indexOf("xorodia")===0&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
+  if(isChoir()){try{await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
   const bin=atob(V.b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
