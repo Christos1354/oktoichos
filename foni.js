@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026 (β)
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026 (γ, με πιάνο)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -143,6 +143,40 @@
     };
   }
 
+  // (19-10-2026) Πιάνο: κάθε νότα «χτυπιέται» και σβήνει σιγά-σιγά, όπως στο πιάνο (χωρίς δείγματα, ακριβές σε κάθε μόριο)
+  let hammer = null;
+  function piano(level) {
+    const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
+    if (!hammer || hammer.sampleRate !== ctx.sampleRate) {
+      hammer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.03), ctx.sampleRate);
+      const d = hammer.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
+    }
+    return {
+      level: level,
+      note(t, f, dur) {
+        const end = t + Math.max(0.15, dur), dec = Math.max(0.7, 3.4 * Math.pow(110 / f, 0.35));
+        const out = ctx.createGain(); out.gain.value = 0; out.connect(lg);
+        out.gain.setValueAtTime(0, t); out.gain.linearRampToValueAtTime(0.9, t + 0.006);
+        out.gain.setTargetAtTime(0.0001, t + 0.006, dec / 3);
+        out.gain.setTargetAtTime(0, end, 0.09);
+        const osc = [], amps = [1, 0.5, 0.3, 0.2, 0.11, 0.07, 0.045], B = 0.0004;
+        amps.forEach((a, i) => {
+          const n = i + 1, fr = f * n * Math.sqrt(1 + B * n * n); if (fr > ctx.sampleRate / 2 - 500) return;
+          const o = ctx.createOscillator(); o.frequency.value = fr;
+          const g = ctx.createGain(); g.gain.setValueAtTime(a, t); g.gain.setTargetAtTime(a * 0.2, t + 0.01, dec / (1.5 + n));
+          o.connect(g); g.connect(out); o.start(t); o.stop(end + 0.7); osc.push(o);
+        });
+        const hs = ctx.createBufferSource(); hs.buffer = hammer; const hf = ctx.createBiquadFilter(); hf.type = "bandpass"; hf.frequency.value = Math.min(4000, f * 6); hf.Q.value = 0.8;
+        const hg = ctx.createGain(); hg.gain.value = 0.18; hs.connect(hf); hf.connect(hg); hg.connect(out); hs.start(t);
+        const rec = { src: { stop: w => osc.forEach(o => { try { o.stop(w); } catch (e) { } }) }, g: out };
+        active.add(rec);
+        if (osc[0]) osc[0].onended = () => { active.delete(rec); try { out.disconnect(); } catch (e) { } };
+      },
+      rest() { },
+      setLevel(v) { this.level = v; lg.gain.setTargetAtTime(v, ctx.currentTime, 0.08); }
+    };
+  }
+
   function stopAll(fade) {
     if (!ctx) return;
     const t = ctx.currentTime, f = fade == null ? 0.06 : fade;
@@ -152,5 +186,5 @@
     active.clear();
   }
 
-  window.Foni = { setup, load, has, line, stopAll, setReverb, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
+  window.Foni = { setup, load, has, line, piano, stopAll, setReverb, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
 })();

@@ -96,14 +96,14 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v15</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v18</div>
 </div>
 
 <a class="homebtn backbtn" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
 <a class="homebtn" href="./index.html" aria-label="Πίσω στην αρχή"><span class="ar">←</span><span class="tx">ΑΡΧΗ</span></a>
 <div class="bar">
   <button class="play" id="playBtn">▶ Ψάλλε</button>
-  <label>Ταχύτητα <input type="range" id="tempo" min="0.25" max="0.9" step="0.05" value="0.5"></label>
+  <label>Ταχύτητα <input type="range" id="tempo" min="50" max="150" step="1" value="70"> <b id="tempoLbl" style="display:inline-block;min-width:2.2em;text-align:right">70</b> χτύποι/λεπτό</label>
   <button class="oct" id="octDown">▼ Οκτάβα</button>
   <label>Τονικότητα <input type="range" id="pitch" min="0" max="1" step="0.001" value="0.333"><span id="pitchLbl"></span></label>
   <button class="oct" id="octUp">▲ Οκτάβα</button>
@@ -111,7 +111,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_a2">🎶 Χορωδία «ααα» (2)</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
 </div>
 
@@ -135,8 +135,8 @@
   </div>
 </div></div>
 
-<script src="foni-xorodia.js?v=2"></script>
-<script src="foni.js?v=3"></script>
+<script src="foni-xorodia.js?v=3"></script>
+<script src="foni.js?v=4"></script>
 <script>
 const G={"ison": {"c": "", "w": 1.524, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.713, 0.125], "heteronConnecting": [1.7, -0.019], "heteron": [1.027, 0.207], "omalonConnecting": [1.471, 0.133], "omalon": [1.031, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraBottom": [0.789, 0.209], "fthoraTop": [0.788, 0.507], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "klasmaTop": [0.873, 0.487], "gorgonTop": [0.786, 0.505]}}, "oligon": {"c": "", "w": 1.515, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.686, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.667, 0.125], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "psifiston": [0.84, 0.113], "gorgonTop": [0.78, 0.5]}}, "apostrofos": {"c": "", "w": 0.703, "a": {"omalonConnecting": [1.044, 0.089], "yfenAbove": [0.47, 0.891], "yfenBelow": [0.509, -0.04], "koronis": [0.37, 0.891], "endofonon": [0.502, -0.126], "heteronConnecting": [0.879, -0.019], "measureNumber": [0.172, 0.783], "isonIndicator": [0.366, 0.939], "gorgonBottom": [0.348, -0.018], "apli": [0.5, 0.013], "antikenoma": [0.461, 0.101], "noteTop": [0.17, 0.643], "fthoraTop": [0.386, 0.642], "fthoraBottom": [0.34, 0.099], "gorgonTop": [0.4, 0.58], "diesis": [0.233, 0.1], "yfesis": [0.648, 0.557], "klasmaTop": [0.408, 0.567]}}, "petasti": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.769, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.691], "measureNumber": [0.172, 0.743], "isonIndicator": [0.664, 0.913], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.636], "fthoraTop": [0.656, 0.6], "diesis": [0.464, 0.147], "psifiston": [0.795, 0.14], "klasmaBottom": [0.8, 0.083]}}, "elafron": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.65, 0.901], "yfenBelow": [0.659, -0.04], "koronis": [0.56, 0.746], "endofonon": [0.632, -0.037], "measureNumber": [0.172, 0.613], "isonIndicator": [0.528, 0.939], "gorgonBottom": [0.487, -0.018], "heteronConnecting": [1.42, -0.019], "omalonConnecting": [1.241, 0.089], "apli": [0.588, -0.043], "antikenoma": [0.566, 0.07], "noteTop": [0.242, 0.703], "fthoraTop": [0.518, 0.66], "fthoraBottom": [0.609, 0.07], "gorgonTop": [0.627, 0.58], "diesis": [0.427, 0.02], "yfesis": [0.98, 0.536], "klasmaTop": [0.56, 0.62]}}, "yporroi": {"c": "", "w": 0.4, "a": {"diesisSecondary": [0.587, 0.887], "yfesisSecondary": [-0.019, -0.223], "yfesis": [0.308, 0.609], "barline": [0.286, 0.59], "yfenAbove": [0.217, 0.887], "yfenBelow": [0.159, -0.04], "koronis": [0.21, 0.881], "endofonon": [0.192, -0.146], "heteronConnecting": [0.583, -0.019], "measureNumber": [0.072, 0.483], "isonIndicator": [0.212, 0.913], "heteron": [0.316, -0.086], "apli": [0.161, 0.012], "antikenoma": [0.197, 0.1], "noteTop": [0.156, 0.675], "fthoraTop": [0.308, 0.609], "fthoraBottom": [0.148, 0.101], "diesis": [0.267, 0.06], "gorgonTop": [0.4, 0.527]}}, "oligonKentimaBelow": {"c": "", "w": 1.515, "a": {"apli": [0.763, -0.168], "gorgonBottom": [0.45, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.692, -0.051], "heteron": [1.027, -0.033], "omalon": [1.033, -0.067], "omalonConnecting": [1.473, -0.053], "antikenoma": [0.82, -0.055], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.42, 0.107], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.78, 0.5], "psifiston": [0.84, 0.113]}}, "klasmaAbove": {"c": "", "w": 0.0, "a": {"klasmaTop": [0.084, 0.604]}}, "gorgonAbove": {"c": "", "w": 0.0, "a": {"gorgonTop": [0.0, 0.8]}}, "diesis2": {"c": "", "w": 0.0, "a": {"diesis": [0.196, 0.612]}}, "diesis4": {"c": "", "w": 0.0, "a": {"diesis": [0.177, 0.682]}}, "diesis6": {"c": "", "w": 0.0, "a": {"diesis": [0.152, 0.652]}}, "diesis8": {"c": "", "w": 0.0, "a": {"diesis": [0.012, 0.553]}}, "yfesis2": {"c": "", "w": 0.0, "a": {"yfesis": [-0.213, 0.452]}}, "yfesis4": {"c": "", "w": 0.0, "a": {"yfesis": [-0.134, 0.429]}}, "yfesis6": {"c": "", "w": 0.0, "a": {"yfesis": [-0.153, 0.456]}}, "yfesis8": {"c": "", "w": 0.0, "a": {"yfesis": [-0.159, 0.44]}}, "isonIndicatorNi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorPa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorVou": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorGa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorDi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorKe": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorZo": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "martyriaNoteNi": {"c": "", "w": 0.731, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.417], "martyriaBottom": [0.487, -0.03], "fthoraTop": [0.517, 0.588]}}, "martyriaNotePa": {"c": "", "w": 0.737, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.448], "martyriaBottom": [0.52, -0.047], "fthoraTop": [0.517, 0.59]}}, "martyriaNoteVou": {"c": "", "w": 0.701, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.523], "martyriaBottom": [0.453, -0.04], "fthoraTop": [0.517, 0.651]}}, "martyriaNoteGa": {"c": "", "w": 0.692, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.529], "martyriaBottom": [0.493, -0.027], "fthoraTop": [0.515, 0.613]}}, "martyriaNoteDi": {"c": "", "w": 0.738, "a": {"barline": [0.517, 0.59], "agogi": [0.539, 0.548], "martyriaBottom": [0.533, -0.027], "fthoraTop": [0.54, 0.653]}}, "martyriaNoteKe": {"c": "", "w": 0.746, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.449], "fthoraTop": [0.517, 0.59], "martyriaBottom": [0.507, -0.027]}}, "martyriaNoteZo": {"c": "", "w": 0.783, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.541], "martyriaBottom": [0.527, -0.033], "fthoraTop": [0.517, 0.64]}}, "martyriaDeltaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaAlphaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.328]}}, "martyriaLegetosBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaNanaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.248]}}, "martyriaDeltaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.398]}}, "martyriaAlphaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.001, 0.427]}}, "modeWordEchos": {"c": "", "w": 1.588, "a": {}}, "modeFourth": {"c": "", "w": 0.98, "a": {}}, "modeDi": {"c": "", "w": 1.073, "a": {"fthoraTop": [0.634, 0.94], "modeTop": [0.617, 0.981]}}, "petastiIson": {"c": "", "w": 1.318, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.729, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.179, 0.915], "psifiston": [0.854, 0.14], "measureNumber": [0.172, 1.073], "isonIndicator": [0.714, 1.096], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.298, 1.04], "fthoraTop": [0.734, 0.846], "diesis": [0.464, 0.147], "klasmaBottom": [0.8, 0.083]}}, "petastiOligon": {"c": "", "w": 1.367, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.789, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.991], "psifiston": [0.86, 0.14], "measureNumber": [0.172, 0.953], "isonIndicator": [0.724, 0.913], "apli": [0.785, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.916], "fthoraTop": [0.734, 0.846], "klasmaBottom": [0.8, 0.083], "diesis": [0.464, 0.147]}}, "oligonKentimaMiddle": {"c": "", "w": 1.794, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.97, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.681, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.708, 0.459], "psifiston": [0.84, 0.113]}}, "oligonKentimataAbove": {"c": "", "w": 1.465, "a": {"fthoraTopSecondary": [0.24, 0.48], "yfenAbove": [0.93, 0.901], "yfenBelow": [0.929, -0.04], "endofonon": [0.772, -0.047], "heteronConnecting": [1.594, -0.019], "omalonConnecting": [1.59, 0.13], "measureNumber": [0.172, 0.753], "isonIndicator": [0.71, 1.126], "antikenoma": [0.82, 0.165], "noteTop": [0.262, 0.561], "fthoraBottom": [0.746, 0.194], "fthoraTop": [0.767, 0.791], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "gorgonTop": [0.842, 0.767]}}, "antikenoma": {"c": "", "w": 0.0, "a": {"antikenoma": [0.008, 0.113]}}, "oligonYpsiliRight": {"c": "", "w": 1.515, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 1.203], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 1.098], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.557, 0.489], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.598, 0.487], "klasmaBottom": [0.785, 0.16], "gorgonTop": [0.708, 0.5], "psifiston": [0.84, 0.113]}}, "oligonKentimataBelow": {"c": "", "w": 1.515, "a": {"diesisSecondary": [1.596, 0.897], "yfesisSecondary": [0.425, -0.145], "barline": [0.277, 0.59], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.686, 0.801], "endofonon": [0.772, -0.277], "heteron": [1.087, 0.227], "heteronConnecting": [1.684, -0.138], "apli": [0.803, -0.198], "measureNumber": [0.172, 0.753], "diesis": [0.71, 0.133], "isonIndicator": [0.71, 0.913], "omalonConnecting": [1.46, -0.04], "omalon": [1.04, -0.12], "antikenoma": [0.82, -0.085], "noteTop": [0.262, 0.561], "fthoraBottom": [0.384, 0.16], "fthoraTop": [0.743, 0.515], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.763, 0.505], "psifiston": [0.84, 0.113]}}};
 const FS=54; // μέγεθος χαρακτήρων
@@ -286,7 +286,7 @@ let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
   if(k.indexOf("xorodia")===0&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
-  if(isChoir()){try{await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
+  if(isChoir()){try{if(k!=="piano")await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
   const bin=atob(V.b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
@@ -325,13 +325,24 @@ function isonLevel(){return (isonV&&isonV.kind==="s"?0.5:0.11)*isonVol();}
 document.getElementById("isonVol").oninput=()=>{document.getElementById("isonVolLbl").textContent=Math.round(isonVol()*100)+"%";if(isonV&&ctx)isonV.out.gain.setTargetAtTime(isonLevel(),ctx.currentTime,0.08);if(choirLines&&choirLines.iso)choirLines.iso.setLevel(choirIsonLevel());};
 document.getElementById("isonVolLbl").textContent=Math.round(isonVol()*100)+"%";
 try{const v=localStorage.getItem('okt-voice2');if(v)document.getElementById('voiceSel').value=v;}catch(e){}
+if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel').value="xorodia_a";
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
+(function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();})();
 document.getElementById('revAmt').oninput=e=>{try{localStorage.setItem('okt-rev',e.target.value);}catch(_){} if(window.Foni&&ctx){Foni.setup(ctx);Foni.setReverb(Number(e.target.value));}};
-document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value);}catch(_){} if(isPlaying()){stopAll();playSel();}};
+document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value);}catch(_){} if(isPlaying()){resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null);stopAll();playSel();}};
 let looping=false;
 function isPlaying(){return !!voice||looping;}
-function setPlayBtn(){const b=document.getElementById("playBtn");if(!b)return;const on=isPlaying();b.textContent=on?"■ Σταμάτα":"▶ Ψάλλε";b.classList.toggle("on",on);}
+function setPlayBtn(){const b=document.getElementById("playBtn");if(!b)return;const on=isPlaying();b.textContent=on?"■ Σταμάτα":(resumeId?"▶ Συνέχεια":"▶ Ψάλλε");b.classList.toggle("on",on);}
+// (19-10-2026) Ο φωτισμός της συλλαβής ακολουθεί το «ρολόι» του ήχου (μαζί με την καθυστέρηση των ηχείων), όχι χρονόμετρα
+let HL=[],hlRaf=0,hlCur=null;
+var resumeId=null;   // πού σταμάτησες: το επόμενο «Ψάλλε» συνεχίζει από εκεί
+function hlMark(t,cc){HL.push([t,cc]);if(!hlRaf)hlRaf=requestAnimationFrame(hlTick);}
+function hlTick(){hlRaf=0;if(!ctx||!HL.length)return;const lat=(ctx.outputLatency||0)+(ctx.baseLatency||0),now=ctx.currentTime-lat;let k=-1;
+  for(let i=0;i<HL.length&&HL[i][0]<=now;i++)k=i;
+  if(k>=0){const cc=HL[k][1];HL=HL.slice(k+1);if(cc!==hlCur){Object.values(cols).forEach(x=>x.classList.remove("now"));cc.classList.add("now");cc.scrollIntoView({block:"center",behavior:"smooth"});hlCur=cc;}}
+  if(HL.length)hlRaf=requestAnimationFrame(hlTick);}
 function stopAll(){
+  HL=[];hlCur=null;if(hlRaf){cancelAnimationFrame(hlRaf);hlRaf=0;}
   looping=false;timers.forEach(clearTimeout);timers=[];
   Object.values(cols).forEach(c=>c.classList.remove("now"));
   if(!ctx)return;const t=ctx.currentTime;
@@ -342,13 +353,13 @@ function stopAll(){
 
 // ---------- Χορωδία (αληθινά δείγματα, foni.js) ----------
 let choirLines=null;
-const isChoir=()=>voiceSel().indexOf("xorodia")===0&&window.Foni&&Foni.has(voiceSel());
+const isChoir=()=>!!window.Foni&&(voiceSel()==="piano"||(voiceSel().indexOf("xorodia")===0&&Foni.has(voiceSel())));
 function choirIsonLevel(){return 0.33*isonVol();}
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
-  const beat=Number(document.getElementById("tempo").value);
+  const beat=(60/Number(document.getElementById("tempo").value));
   const key=voiceSel(), isoKey=Foni.has("xorodia_ou")?"xorodia_ou":key;
-  const mel=Foni.line(key,0.62);
+  const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
   // (19-10-2026) Οι νότες ετοιμάζονται λίγο-λίγο (1,5″ μπροστά), όχι όλες μαζί: αλλιώς σε μεγάλες σελίδες
@@ -362,7 +373,7 @@ function playChoir(list,onEnd){
     ev.push({t:tn,run:()=>mel.note(tn,f,dur,{pet})});
     if(iso){const fi=freq(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;}}
     const cc=cols[n.l+"-"+n.i];
-    if(cc){const d=(t-ctx.currentTime)*1000;timers.push(setTimeout(()=>{Object.values(cols).forEach(x=>x.classList.remove("now"));cc.classList.add("now");cc.scrollIntoView({block:"center",behavior:"smooth"});},Math.max(0,d)));}
+    if(cc)hlMark(t,cc);
     t+=dur;
   });
   flushIso(t);
@@ -375,7 +386,7 @@ function playChoir(list,onEnd){
 function play(list,onEnd){
   if(isChoir())return playChoir(list,onEnd);
   stopAll();ensureCtx();
-  const beat=Number(document.getElementById("tempo").value);
+  const beat=(60/Number(document.getElementById("tempo").value));
   const mine=useMine();
   voice=mine?makeSampleVoice():makeSynthVoice();setPlayBtn();
   const V=mine?0.62:0.42, Vlow=mine?0.45:0.26;
@@ -393,7 +404,7 @@ function play(list,onEnd){
       if(k===0){isonV.params.forEach(p=>p.setValueAtTime(ci(fi),t));isonV.out.gain.setTargetAtTime(isonLevel(),t,0.15);}
       else isonV.params.forEach(p=>p.setTargetAtTime(ci(fi),t,0.1));}
     const cc=cols[n.l+"-"+n.i];
-    if(cc){const d=(t-ctx.currentTime)*1000;timers.push(setTimeout(()=>{Object.values(cols).forEach(x=>x.classList.remove("now"));cc.classList.add("now");cc.scrollIntoView({block:"center",behavior:"smooth"});},Math.max(0,d)));}
+    if(cc)hlMark(t,cc);
     t+=dur;
   });
   voice.out.gain.setTargetAtTime(0,t,0.12);
@@ -404,20 +415,27 @@ function play(list,onEnd){
 async function playSel(){
   ensureCtx();try{await loadVoice();}catch(e){}
   compute();
-  const a=selStart??0,b=selEnd??1e9;
+  let a=selStart??0;const b=selEnd??1e9;
+  if(resumeId){const rp=order.indexOf(resumeId);if(rp>=a&&rp<=b)a=rp;}
+  resumeId=null;
   const list=flat.filter(n=>{const p=order.indexOf(n.l+"-"+n.i);return p>=a&&p<=b;});
   if(!list.length)return;
   play(list,()=>{if(document.getElementById("loopOn").checked){looping=true;setPlayBtn();timers.push(setTimeout(()=>{looping=false;playSel();},700));}});
 }
-document.getElementById("playBtn").onclick=()=>{ if(isPlaying()){ stopAll(); } else { playSel(); } };
+let starting=false;
+document.getElementById("playBtn").onclick=async()=>{ if(starting)return; if(isPlaying()){ resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null); stopAll(); setPlayBtn(); return; }
+  starting=true;const pb=document.getElementById("playBtn");pb.textContent="⏳ Ετοιμάζω…";
+  try{await playSel();}catch(e){}finally{starting=false;setPlayBtn();} };
+// (19-10-2026) Η χορωδία ετοιμάζεται από πριν, για να ξεκινά αμέσως
+setTimeout(()=>{try{if(window.FONI_ADPCM&&FONI_ADPCM.pcm)["xorodia_a","xorodia_ou"].forEach(k=>FONI_SETS[k]&&FONI_SETS[k].notes.forEach(FONI_ADPCM.pcm));}catch(e){}},700);
 let mcur=null;
 function openMenu(l,i,pos){stopAll();mcur={l,i,pos};document.getElementById("mTitle").textContent="«"+data[l][i][0]+"»";document.getElementById("menu").style.display="flex";}
 function closeMenu(){document.getElementById("menu").style.display="none";}
-document.getElementById("mFrom").onclick=()=>{selStart=mcur.pos;if(selEnd!==null&&selEnd<selStart)selEnd=null;closeMenu();render();playSel();};
+document.getElementById("mFrom").onclick=()=>{resumeId=null;selStart=mcur.pos;if(selEnd!==null&&selEnd<selStart)selEnd=null;closeMenu();render();playSel();};
 document.getElementById("mTo").onclick=()=>{selEnd=mcur.pos;if(selStart!==null&&selStart>selEnd)selStart=null;closeMenu();render();};
 document.getElementById("mEdit").onclick=()=>{closeMenu();openPanel(mcur.l,mcur.i);};
 document.getElementById("mClose").onclick=closeMenu;
-document.getElementById("clearSel").onclick=()=>{selStart=null;selEnd=null;render();};
+document.getElementById("clearSel").onclick=()=>{resumeId=null;selStart=null;selEnd=null;render();setPlayBtn();};
 
 
 // ---------- Διόρθωση ----------
