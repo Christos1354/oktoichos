@@ -83,12 +83,34 @@
   .opts button.sel{background:#ead9fb;border-color:var(--lilac);border-width:3px}
   .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
   .row button{flex:1;font-size:22px;padding:12px 6px;border-radius:12px;border:2px solid #ccb;background:#fbf6ec;cursor:pointer}
+
+  /* (19-10-2026) πιο μικρή κάτω μπάρα · μικρότερο παράθυρο διόρθωσης που μετακινείται */
+  .bar{padding:6px 8px!important;gap:6px!important;font-size:15px!important}
+  .bar label{font-size:15px!important}
+  .bar button{font-size:16px!important;padding:6px 10px!important;min-height:0!important}
+  .bar button.play{font-size:20px!important;padding:8px 16px!important}
+  .bar button.on{background:#ead9fb!important;border-color:#8b5cf6!important}
+  .bar select{font-size:15px!important;padding:3px!important}
+  .bar input[type=range]{width:90px!important}
+  .bar input[type=checkbox]{width:18px!important;height:18px!important}
+  .loopchk{font-size:15px!important}
+  @media (max-width:700px){.wrap{padding-bottom:210px!important}.bar button{font-size:15px!important;padding:5px 8px!important}}
+  .taphint{margin:4px 0 8px;font-size:16px;color:#6b3f1f;background:#fff6dd;border-radius:10px;padding:6px 10px}
+  #panel{background:transparent!important;pointer-events:none;align-items:flex-end!important}
+  #panel .box{pointer-events:auto;max-height:52vh!important;max-width:560px!important;padding:8px 10px!important;margin-bottom:calc(var(--bar-h,150px) + 8px);box-shadow:0 10px 40px rgba(0,0,0,.55)}
+  #panel h2{font-size:21px!important;cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;background:#f3e6c9;border-radius:10px;padding:6px;margin:0 0 4px!important}
+  #panel .opts{gap:5px!important}
+  #panel .opts button{font-size:13px!important;padding:3px 2px!important}
+  #panel .opts svg{height:42px!important}
+  #panel .opts canvas{height:46px!important}
+  #panel .row button{font-size:18px!important;padding:8px 6px!important}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1 class="ttl">Ο ευσχήμων Ιωσήφ</h1>
   <p class="sb">Απολυτίκια Μεγάλης Παρασκευής (εσπέρας) · Ήχος Β΄ · σελίδες 19–20 · πάτα μια συλλαβή για να ψάλλει από εκεί</p>
+  <p class="taphint">👆 Πάτα μια συλλαβή: ψάλλει από εκεί. Ξαναπάτα στη σελίδα: σταματά ή συνεχίζει. Κράτα πατημένη μια συλλαβή για διόρθωση.</p>
   <div id="pages"></div>
   <div class="msg" id="status"></div>
   <div class="tools">
@@ -96,7 +118,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v18</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v20</div>
 </div>
 
 <a class="homebtn backbtn" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -107,6 +129,7 @@
   <button class="oct" id="octDown">▼ Οκτάβα</button>
   <label>Τονικότητα <input type="range" id="pitch" min="0" max="1" step="0.001" value="0.333"><span id="pitchLbl"></span></label>
   <button class="oct" id="octUp">▲ Οκτάβα</button>
+  <button class="oct" id="editMode">✏️ Διόρθωση</button>
   <label class="loopchk"><input type="checkbox" id="loopOn" style="width:24px;height:24px"> 🔁 Επανάληψη</label>
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
@@ -117,7 +140,7 @@
 
 <div id="menu"><div class="box">
   <h2 id="mTitle"></h2>
-  <button id="mFrom" style="background:#e3f5ea;border-color:#2e9d57">▶ Ψάλλε από εδώ</button>
+  <button id="mFrom" hidden style="display:none" style="background:#e3f5ea;border-color:#2e9d57">▶ Ψάλλε από εδώ</button>
   <button id="mTo" style="background:#fde8e6;border-color:#c62828">⏹ Τέλος κομματιού εδώ</button>
   <button id="mEdit">✏️ Διόρθωση χαρακτήρα</button>
   <button id="mClose">✕ Κλείσιμο</button>
@@ -273,7 +296,7 @@ function render(){
     const d=document.createElement("div");order.push(id);const pos=order.length-1;
     d.className="hb"+(edits[id]?" mine":(s[8]?" q":""))+(pos===selStart?" st":"")+(pos===selEnd?" en":"")+((selStart!==null||selEnd!==null)&&pos>=(selStart??0)&&pos<=(selEnd??1e9)?" inrange":"");
     d.style.left=(b[0]/P.w*100)+"%";d.style.top=(b[1]/P.h*100)+"%";d.style.width=(b[2]/P.w*100)+"%";d.style.height=(b[3]/P.h*100)+"%";
-    d.title="«"+s[0]+"»";d.onclick=()=>openMenu(l,i,pos);
+    d.title="«"+s[0]+"»";wireBox(d,l,i,pos);
     pe.appendChild(d);cols[id]=d;
   });});
   const bad=Object.keys(checks).filter(k=>checks[k]===false).map(k=>Number(k.split("-")[0])+1);
@@ -434,9 +457,12 @@ async function playSel(){
   let a=selStart??0;const b=selEnd??1e9;
   if(resumeId){const rp=order.indexOf(resumeId);if(rp>=a&&rp<=b)a=rp;}
   resumeId=null;
-  const list=flat.filter(n=>{const p=order.indexOf(n.l+"-"+n.i);return p>=a&&p<=b;});
+  let list=flat.filter(n=>{const p=order.indexOf(n.l+"-"+n.i);return p>=a&&p<=b;});
   if(!list.length)return;
-  play(list,()=>{if(document.getElementById("loopOn").checked){looping=true;setPlayBtn();timers.push(setTimeout(()=>{looping=false;playSel();},700));}});
+  // (19-10-2026) παύση στο τέλος κάθε γραμμής: συνεχίζει με πάτημα στη σελίδα ή στο «▶ Συνέχεια»
+  let nextId=null;const lp=document.getElementById("linePause");
+  if(lp&&lp.checked){const L0=list[0].l;const cut=list.findIndex(n=>n.l!==L0);if(cut>0){nextId=list[cut].l+"-"+list[cut].i;list=list.slice(0,cut);}}
+  play(list,()=>{if(nextId){resumeId=nextId;setPlayBtn();return;}if(document.getElementById("loopOn").checked){looping=true;setPlayBtn();timers.push(setTimeout(()=>{looping=false;playSel();},700));}});
 }
 let starting=false;
 document.getElementById("playBtn").onclick=async()=>{ if(starting)return; if(isPlaying()){ resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null); stopAll(); setPlayBtn(); return; }
@@ -444,10 +470,31 @@ document.getElementById("playBtn").onclick=async()=>{ if(starting)return; if(isP
   try{await playSel();}catch(e){}finally{starting=false;setPlayBtn();} };
 // (19-10-2026) Η χορωδία ετοιμάζεται από πριν, για να ξεκινά αμέσως
 setTimeout(()=>{try{if(window.FONI_ADPCM&&FONI_ADPCM.pcm)["xorodia_a","xorodia_ou"].forEach(k=>FONI_SETS[k]&&FONI_SETS[k].notes.forEach(FONI_ADPCM.pcm));}catch(e){}},700);
+// (19-10-2026) Πάτημα σε συλλαβή: ψάλλει από εκεί · πάτημα ενώ ψάλλει: σταματά · κράτημα (ή «✏️ Διόρθωση»): μενού διόρθωσης
+var editMode=false;
+function tapBox(l,i,pos){ if(typeof starting!=="undefined"&&starting)return; const pb=document.getElementById("playBtn");
+  if(editMode){openMenu(l,i,pos);return;}
+  if(isPlaying()){pb.click();return;}
+  if(selStart!==null&&pos<selStart)selStart=null; if(selEnd!==null&&pos>selEnd)selEnd=null;
+  resumeId=l+"-"+i; pb.click(); }
+function wireBox(d,l,i,pos){ let t=null,lp=false;
+  d.addEventListener("pointerdown",()=>{lp=false;clearTimeout(t);t=setTimeout(()=>{lp=true;openMenu(l,i,pos);},650);});
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>d.addEventListener(ev,()=>clearTimeout(t)));
+  d.addEventListener("contextmenu",e=>e.preventDefault());
+  d.onclick=e=>{e.stopPropagation();if(lp){lp=false;return;}tapBox(l,i,pos);}; }
+document.getElementById("pages").addEventListener("click",e=>{ if(e.target.closest(".hb"))return; if(typeof starting!=="undefined"&&starting)return;
+  if(isPlaying()||resumeId)document.getElementById("playBtn").click(); });
+document.getElementById("editMode").onclick=()=>{editMode=!editMode;const b=document.getElementById("editMode");b.classList.toggle("on",editMode);b.textContent=editMode?"✏️ Διόρθωση: ναι":"✏️ Διόρθωση";};
+(function(){const c=document.getElementById("linePause");if(!c)return;try{const v=localStorage.getItem("okt-linepause");if(v!==null)c.checked=v==="1";}catch(e){}c.onchange=()=>{try{localStorage.setItem("okt-linepause",c.checked?"1":"0");}catch(e){}};})();
+// παράθυρο διόρθωσης: σέρνεται από τον τίτλο
+(function(){const box=document.querySelector("#panel .box"),h=document.getElementById("pTitle");if(!box||!h)return;let sx=0,sy=0,ox=0,oy=0,dx=0,dy=0,on=false;
+  h.addEventListener("pointerdown",e=>{on=true;sx=e.clientX;sy=e.clientY;try{h.setPointerCapture(e.pointerId);}catch(_){}});
+  h.addEventListener("pointermove",e=>{if(!on)return;dx=ox+e.clientX-sx;dy=oy+e.clientY-sy;box.style.transform="translate("+dx+"px,"+dy+"px)";});
+  ["pointerup","pointercancel"].forEach(ev=>h.addEventListener(ev,()=>{on=false;ox=dx;oy=dy;}));})();
 let mcur=null;
 function openMenu(l,i,pos){stopAll();mcur={l,i,pos};document.getElementById("mTitle").textContent="«"+data[l][i][0]+"»";document.getElementById("menu").style.display="flex";}
 function closeMenu(){document.getElementById("menu").style.display="none";}
-document.getElementById("mFrom").onclick=()=>{resumeId=null;selStart=mcur.pos;if(selEnd!==null&&selEnd<selStart)selEnd=null;closeMenu();render();playSel();};
+document.getElementById("mFrom").onclick=()=>{resumeId=null;selStart=mcur.pos;if(selEnd!==null&&selEnd<selStart)selEnd=null;closeMenu();render();document.getElementById("playBtn").click();};
 document.getElementById("mTo").onclick=()=>{selEnd=mcur.pos;if(selStart!==null&&selStart>selEnd)selStart=null;closeMenu();render();};
 document.getElementById("mEdit").onclick=()=>{closeMenu();openPanel(mcur.l,mcur.i);};
 document.getElementById("mClose").onclick=closeMenu;
@@ -466,7 +513,7 @@ Object.keys(BASE).forEach(k=>oBase.appendChild(optBtn(svgGroup([[BASE[k].g,0,0]]
 function cell(){return data[cur.l][cur.i];}
 function openPanel(l,i){stopAll();cur={l,i};refresh();document.getElementById("panel").style.display="flex";}
 function refresh(){const s=cell();
-  document.getElementById("pTitle").innerHTML="«"+s[0]+"»";
+  document.getElementById("pTitle").innerHTML="✋ «"+s[0]+"» <small style=\"font-size:13px;font-weight:normal\">(σύρε με το δάχτυλο)</small>";
   [...oBase.children].forEach(b=>b.classList.toggle("sel",b.dataset.v===s[1]));
   [...oTime.children].forEach(b=>b.classList.toggle("sel",!!s[Number(b.dataset.v)]));
   [...oAcc.children].forEach(b=>b.classList.toggle("sel",Number(b.dataset.v)===s[4]));
@@ -488,6 +535,12 @@ document.getElementById("copyBtn").onclick=async()=>{
 };
 if(document.fonts&&document.fonts.load){document.fonts.load(FS+"px Neanes").then(render,render);}else render();
 render();
+</script>
+<script>
+// (19-10-2026) ΠΙΣΩ: ένα βήμα πίσω (εκεί απ' όπου ήρθες), όχι στην αρχή
+document.querySelectorAll("a.backbtn").forEach(a=>a.addEventListener("click",e=>{try{if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin){e.preventDefault();history.back();}}catch(_){}}));
+// (20-10-2026) ΑΡΧΗ: κατευθείαν στην αρχική σελίδα (ξεχνά πού ήσουν)
+document.querySelectorAll("a.homebtn:not(.backbtn)").forEach(a=>a.addEventListener("click",()=>{try{sessionStorage.removeItem("okt-ui");sessionStorage.removeItem("okt-navstack");}catch(_){}}));
 </script>
 </body>
 </html>
