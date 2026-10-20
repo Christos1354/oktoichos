@@ -97,7 +97,7 @@
   @media (max-width:700px){.wrap{padding-bottom:210px!important}.bar button{font-size:15px!important;padding:5px 8px!important}}
   .taphint{margin:4px 0 8px;font-size:16px;color:#6b3f1f;background:#fff6dd;border-radius:10px;padding:6px 10px}
   #panel{background:transparent!important;pointer-events:none;align-items:flex-end!important}
-  #panel .box{pointer-events:auto;max-height:52vh!important;max-width:560px!important;padding:8px 10px!important;margin-bottom:calc(var(--bar-h,150px) + 8px);box-shadow:0 10px 40px rgba(0,0,0,.55)}
+  #panel .box{position:relative;pointer-events:auto;max-height:52vh!important;max-width:560px!important;padding:8px 10px!important;margin-bottom:calc(var(--bar-h,150px) + 8px);box-shadow:0 10px 40px rgba(0,0,0,.55)}
   #panel h2{font-size:21px!important;cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;background:#f3e6c9;border-radius:10px;padding:6px;margin:0 0 4px!important}
   #panel .opts{gap:5px!important}
   #panel .opts button{font-size:13px!important;padding:3px 2px!important}
@@ -118,7 +118,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v20</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v21</div>
 </div>
 
 <a class="homebtn backbtn" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -146,7 +146,7 @@
   <button id="mClose">✕ Κλείσιμο</button>
 </div></div>
 
-<div id="panel"><div class="box">
+<div id="panel"><div class="box"><button id="pX" type="button" aria-label="Κλείσιμο" style="position:absolute;top:6px;right:8px;z-index:3;font-size:24px;width:46px;height:46px;border-radius:50%;border:2px solid #c62828;background:#fde8e6;color:#c62828;font-weight:bold;cursor:pointer">✕</button>
   <h2 id="pTitle"></h2>
   <div class="grp">Χαρακτήρας ποσότητας</div><div class="opts" id="oBase"></div>
   <div class="grp">Χρόνος</div><div class="opts" id="oTime"></div>
@@ -261,7 +261,7 @@ function compute(){
     if(s[9]){const f0=flat[flat.length-idxs.length];f0.dur=0.5;f0.pet=1;}
     const last=flat[flat.length-1];
     if(s[2])last.dur+=s[2];
-    if(s[3]){last.dur=0.5;if(flat.length>1)flat[flat.length-2].dur=0.5;}
+    if(s[3]){const pv=flat.length>idxs.length?flat[flat.length-1-idxs.length]:null;if(pv&&!pv.rest)pv.dur=Math.max(0.5,pv.dur-0.5);last.dur=0.5+(s[2]||0);}   // (20-10-2026) γοργόν μετά από κλάσμα
   }));
 }
 
@@ -508,6 +508,7 @@ function changed(){const s=cell();const o=ORIGINAL[cur.l][cur.i];const id=cur.l+
   saveEdits();refresh();hear();}
 async function hear(){ensureCtx();try{await loadVoice();}catch(e){}compute();const id=[cur.l,cur.i];const ns=flat.filter(n=>n.l===id[0]&&n.i===id[1]);play(ns.map(n=>Object.assign({},n,{l:-1})));}
 document.getElementById("pHear").onclick=hear;
+document.getElementById("pX").onclick=()=>document.getElementById("pClose").click();   // (20-10-2026) ✕ κλείνει το παράθυρο
 document.getElementById("pClose").onclick=()=>{document.getElementById("panel").style.display="none";render();};
 document.getElementById("resetBtn").onclick=()=>{if(!confirm("Να σβηστούν όλες οι διορθώσεις σου;"))return;edits={};saveEdits();fresh();render();};
 function desc(e){const p=[BASE[e[0]].t];if(e[1])p.push("κλάσμα");if(e[2])p.push("γοργόν");if(e[3])p.push((e[3]>0?"δίεση ":"ύφεση ")+Math.abs(e[3])+" μόρια");if(e[4]!==null&&e[4]!==undefined)p.push("ισοκράτημα "+(e[4]==="M"?"Μ":NAMES[e[4]]));if(e[6])p.push("αντικένωμα");return p.join(" + ");}
