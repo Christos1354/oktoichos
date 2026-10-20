@@ -133,7 +133,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v21 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
+  <div class="ver">έκδοση 19-10-2026 · Οκτώηχος v22 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
 </div>
 
 <a class="homebtn backbtn" style="bottom:20px" id="btnBackLib" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -150,7 +150,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="psaltis">🎙 Ψάλτης</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
 </div>
 
@@ -176,7 +176,8 @@
 </div></div>
 
 <script src="foni-xorodia.js?v=3"></script>
-<script src="foni.js?v=4"></script>
+<script src="foni-psaltis.js?v=1"></script>
+<script src="foni.js?v=5"></script>
 <script src="anagnostis-vivlion.js?v=2"></script>
 <script>
 function BOOT(D){
@@ -334,7 +335,7 @@ const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
-  if(k.indexOf("xorodia")===0&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
+  if((k.indexOf("xorodia")===0||k==="psaltis")&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
   if(isChoir()){try{if(k!=="piano")await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
@@ -375,6 +376,11 @@ document.getElementById("isonVol").oninput=()=>{document.getElementById("isonVol
 document.getElementById("isonVolLbl").textContent=Math.round(isonVol()*100)+"%";
 try{const v=localStorage.getItem('okt-voice2');if(v)document.getElementById('voiceSel').value=v;}catch(e){}
 if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel').value="xorodia_a";
+// (20-10-2026) Φωνή «Ψάλτης» από την ηχογράφηση: γίνεται η φωνή των σελίδων την πρώτη φορά, και ανεβαίνει ο τόνος στο ύψος της
+(function(){const vs=document.getElementById('voiceSel');try{if(!localStorage.getItem('okt-psaltis-v1')&&window.FONI_SETS&&FONI_SETS.psaltis){localStorage.setItem('okt-psaltis-v1','1');vs.value='psaltis';localStorage.setItem('okt-voice2','psaltis');}}catch(e){}
+  const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='psaltis'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+0.2));pe.dispatchEvent(new Event('input'));}}catch(e){}};
+  fit();vs.addEventListener('change',fit);})();
+
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
 (function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();})();
 document.getElementById('revAmt').oninput=e=>{try{localStorage.setItem('okt-rev',e.target.value);}catch(_){} if(window.Foni&&ctx){Foni.setup(ctx);Foni.setReverb(Number(e.target.value));}};
@@ -402,12 +408,12 @@ function stopAll(){
 
 // ---------- Χορωδία (αληθινά δείγματα, foni.js) ----------
 let choirLines=null;
-const isChoir=()=>!!window.Foni&&(voiceSel()==="piano"||(voiceSel().indexOf("xorodia")===0&&Foni.has(voiceSel())));
+const isChoir=()=>!!window.Foni&&(voiceSel()==="piano"||Foni.has(voiceSel()));
 function choirIsonLevel(){return 0.33*isonVol();}
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
-  const key=voiceSel(), isoKey=Foni.has("xorodia_ou")?"xorodia_ou":key;
+  const key=voiceSel(), isoKey=key==="psaltis"?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
   const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
@@ -489,7 +495,7 @@ document.getElementById("apBtn").onclick=()=>{   // (20-10-2026) το απήχη
   if(apAud&&!apAud.paused){apAud.pause();apAud=null;return;}
   if(isPlaying())stopAll();
   const ss=document.getElementById("secSel");let k=ss&&ss.value!==""?Number(ss.value):-1;
-  if(k<0){const gp=D.goPage||0;k=0;SECT.forEach((S,q)=>{const pg=PAGES[LINEPG[S.l0]];if(pg&&pg.pageNo<=gp)k=q;});}
+  if(k<0){const gp=D.gp||0;k=0;SECT.forEach((S,q)=>{const pg=PAGES[LINEPG[S.l0]];if(pg&&pg.pageNo<=gp)k=q;});}
   const S=SECT[k]||SECT[0],md=(S&&S.mode)||"";
   const id={"Α΄":"a","Β΄":"b","Γ΄":"g","Δ΄":"d","Πλ. Α΄":"pa","Πλ. Β΄":"pb","Βαρύς":"v","Πλ. Δ΄":"pd"}[md];
   if(!id){alert("Δεν βρήκα τον ήχο αυτού του ύμνου.");return;}
@@ -692,27 +698,35 @@ render();
       if(!goPage)goPage=1;
       // διαβάζει τη σελίδα που ζήτησες και τις γύρω της (από την αποθήκη, αν έχουν ήδη διαβαστεί)
       let first=1,last=n; const pnums=[];
-      if(n>12){first=Math.max(1,goPage-1);last=Math.min(n,goPage+3);
+      let preHead=null;
+      if(n>12){first=goPage;last=Math.min(n,goPage+3);
         // πιο πίσω, η επικεφαλίδα «Ἦχος …» του ύμνου: για ήχο, βάση και κλίμακα
         for(let p=first;p>=Math.max(1,first-30);p--){msg("Βρίσκω τον ήχο του ύμνου · σελίδα "+p);
-          try{const X=(await pageData(u8,key,p,p>=first)).X;if(MRB.findHeaders(X,0).length){if(p<first)pnums.push(p);break;}}catch(e){}}}
+          try{const X=(await pageData(u8,key,p,p>=first)).X;const hs=MRB.findHeaders(X,0);if(hs.length){if(p<first)preHead=hs[hs.length-1];break;}}catch(e){}}}
       for(let p=first;p<=last;p++)pnums.push(p);
       const P=[],imgs=[];
       for(let q=0;q<pnums.length;q++){const p=pnums[q];msg("Ετοιμάζω τη σελίδα "+p+" ("+(q+1)+" από "+pnums.length+")");bar((q+1)/pnums.length);
         const c=await pageData(u8,key,p,true);P.push(c.X);imgs.push(c.img);await new Promise(r=>setTimeout(r,0));}
       const D=MRB.build(P); D.pages.forEach(pg=>{pg.pageNo=pnums[pg.pageNo-1];});
+      if(preHead&&D.sect.length&&preHead.mode){const S0=D.sect[0];if(!S0.mode||/^βάση/.test(S0.mode)){S0.mode=preHead.mode[0];S0.sc=preHead.mode[1];if(preHead.title&&/^Ύμνος/.test(S0.t))S0.t=preHead.title;}}
       if(!D.lines.length){
         const fonts=new Set();P.forEach(X=>(X.chars||[]).forEach(ch=>{const f=String(ch.font||"").replace(/^[A-Z]{6}\+/,"");if(f&&!/^g_d|Times|Arial|Calibri|Cambria|Tahoma|Didot|Genesis|Sylfaen/i.test(f))fonts.add(f);}));
         msg("Σε αυτές τις σελίδες ("+pnums[0]+"–"+pnums[pnums.length-1]+") δεν βρήκα βυζαντινή σημειογραφία που να ξέρω."+(fonts.size?" Γραμματοσειρές του βιβλίου: "+[...fonts].slice(0,8).join(", ")+". Στείλε στον Claude μια σελίδα με αυτή τη γραμματοσειρά για να τη μάθει.":" Αν το βιβλίο είναι σκαναρισμένο (φωτογραφία), δεν διαβάζεται αυτόματα."));
         $("ldFile").parentElement.style.display="";return;}
       D.pagesImg=D.pages.map(pg=>({img:imgs[pnums.indexOf(pg.pageNo)],w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
-      D.key=key;D.title=title||"Βιβλίο PDF";D.goPage=goPage||0;
+      D.key=key;D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;
       $("docTitle").textContent=D.title;
       $("docSub").textContent="Σελίδες "+pnums[0]+"–"+pnums[pnums.length-1]+" από "+n+" · "+D.sect.length+" ύμνοι"+(D.nfail?" · ⚠ "+D.nfail+" σημεία θέλουν έλεγχο (πορτοκαλί)":"");
       // κουμπιά για τις προηγούμενες / επόμενες σελίδες του βιβλίου
       const nav=$("pgNav");if(nav){nav.style.display=n>12?"":"none";
         const go=pp=>{const u=new URL(location.href);u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
-        $("pgPrevW").disabled=first<=1;$("pgNextW").disabled=last>=n;$("pgPrevW").onclick=()=>go(Math.max(1,first-4));$("pgNextW").onclick=()=>go(Math.min(n,last+1));}
+        $("pgPrevW").disabled=first<=1;$("pgNextW").disabled=last>=n;
+        const hold=(b,d,lbl)=>{let t=null,iv=null,tg=0,moved=false;
+          b.onclick=()=>{if(moved){moved=false;return;}go(d<0?Math.max(1,first-4):Math.min(n,last+1));};
+          b.addEventListener("pointerdown",()=>{moved=false;tg=d<0?first:last;t=setTimeout(()=>{iv=setInterval(()=>{tg=Math.max(1,Math.min(n,tg+d*2));moved=true;b.textContent=(d<0?"◀ ":"")+"Σελίδα "+tg+(d>0?" ▶":"");},150);},450);});
+          const up=()=>{clearTimeout(t);if(iv){clearInterval(iv);iv=null;}if(moved){b.textContent="⏳ Σελίδα "+tg;go(tg);}};
+          b.addEventListener("pointerup",up);b.addEventListener("pointercancel",up);};
+        hold($("pgPrevW"),-1);hold($("pgNextW"),1);}
       $("loader").style.display="none";$("mainWrap").style.display="";$("mainBar").style.display="";
       $("btnBackLib").style.bottom="";$("btnHome").style.bottom="";
       BOOT(D);

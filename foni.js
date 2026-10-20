@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 19-10-2026 (γ, με πιάνο)
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 20-10-2026 (γ, με πιάνο)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -111,19 +111,23 @@
 
   // Μια «γραμμή» φωνής (μελωδία ή ίσον): κάθε νότα δένει με την προηγούμενη
   function line(key, level) {
-    let lastEnd = -1, lastHz = 0;
+    let lastEnd = -1, lastHz = 0, lastS = null;
     const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
     return {
       level: level,
       note(t, f, dur, opts) {
         if (!bufs[key]) return;
         opts = opts || {};
-        const s = pick(key, f), rate = f / s.hz;
         const legato = !opts.detached && lastEnd > 0 && t - lastEnd < 0.03;
+        // (20-10-2026) σε γρήγορες νότες (γοργά, τρίγοργα) μένει στο ίδιο δείγμα: δεν αλλάζει χροιά «σαν άλλο όργανο»
+        let s = pick(key, f);
+        if (legato && lastS && Math.abs(12 * Math.log2(f / lastS.hz)) < 4.5) s = lastS;
+        const rate = f / s.hz;
         const from = legato && lastHz ? (lastHz / s.hz) : rate;
         const L = s.buf.duration;
-        const first0 = legato ? 0.22 : 0.02;           // στη σύνδεση παραλείπουμε την «επίθεση» του δείγματος
-        const fadeIn = legato ? 0.07 : (opts.soft ? 0.25 : 0.06);
+        const short = dur < 0.3;
+        const first0 = (legato || short) ? 0.22 : 0.02;           // στη σύνδεση και στις σύντομες νότες παραλείπουμε την «επίθεση»
+        const fadeIn = legato ? (short ? 0.03 : 0.07) : (opts.soft ? 0.25 : (short ? 0.03 : 0.06));
         const tail = opts.tail != null ? opts.tail : 0.09;
         const usable = (L - 0.15) / rate;              // πόσα δευτερόλεπτα δίνει ένα δείγμα σε αυτό το ύψος
         let ts = t, off = first0, first = true;
@@ -136,9 +140,9 @@
           if (last) break;
           ts = te; off = 0.35 + Math.random() * 0.2; first = false; // συνέχεια με διασταύρωση (για μεγάλες νότες και ίσον)
         }
-        lastEnd = end; lastHz = f;
+        lastEnd = end; lastHz = f; lastS = s;
       },
-      rest() { lastEnd = -1; lastHz = 0; },
+      rest() { lastEnd = -1; lastHz = 0; lastS = null; },
       setLevel(v) { this.level = v; lg.gain.setTargetAtTime(v, ctx.currentTime, 0.08); }
     };
   }
