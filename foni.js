@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 20-10-2026 (γ, με πιάνο)
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 21-10-2026 (v24: καθαρή φωνή Ψάλτη)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -111,6 +111,7 @@
 
   // Μια «γραμμή» φωνής (μελωδία ή ίσον): κάθε νότα δένει με την προηγούμενη
   function line(key, level) {
+    if (PS_KEYS[key]) return psLine(key, level);
     let lastEnd = -1, lastHz = 0, lastS = null;
     const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
     return {
@@ -181,6 +182,122 @@
     };
   }
 
+
+  // ================= (21-10-2026, v24) Φωνή «Ψάλτης»: μία καθαρή φωνή =================
+  // Χρησιμοποιεί ΜΟΝΟ τις ηχογραφήσεις με το ίδιο φωνήεν («α/ο», 116–151 Hz). Για κάθε άλλο ύψος η φωνή
+  // ξαναχτίζεται κύμα-κύμα (PSOLA): αλλάζει το ύψος χωρίς να αλλάζει το «χρώμα» της φωνής — δεν λεπταίνει,
+  // δεν γίνεται όργανο, δεν ακούγονται δεύτερες φωνές. Οι δεμένες νότες συνεχίζουν το ίδιο κύμα χωρίς ραφές.
+  const PS_KEYS = { psaltis: { maxHz: 155 } };
+  const psSrc = {};
+  function psMarks(x, sr, hz) {
+    // κάθε περίοδος της φωνής: βρίσκουμε το «χτύπημα» της (κορυφή του χαμηλού κύματος)
+    const P = sr / hz, n = x.length, lp = new Float32Array(n);
+    const a = Math.exp(-2 * Math.PI * hz * 1.3 / sr); let y1 = 0, y2 = 0;
+    for (let i = 0; i < n; i++) { y1 = (1 - a) * x[i] + a * y1; y2 = (1 - a) * y1 + a * y2; lp[i] = y2; }
+    const marks = []; let best = Math.round(P), bv = -1e9;
+    for (let i = Math.round(P); i < Math.round(2 * P); i++) if (lp[i] > bv) { bv = lp[i]; best = i; }
+    let prev = best, per = P; marks.push(best);
+    while (true) {
+      const c = prev + per, lo = Math.round(c - 0.22 * P), hi = Math.round(c + 0.22 * P);
+      if (hi >= n - Math.round(P)) break;
+      let m = lo, mv = -1e9;
+      for (let i = lo; i <= hi; i++) if (lp[i] > mv) { mv = lp[i]; m = i; }
+      const d = m - prev; if (d > 0.75 * P && d < 1.3 * P) per = 0.8 * per + 0.2 * d;
+      marks.push(m); prev = m;
+    }
+    return { marks: Int32Array.from(marks), P };
+  }
+  function psPrep(key) {
+    if (psSrc[key]) return psSrc[key];
+    const arr = bufs[key]; if (!arr) return null;
+    const lim = PS_KEYS[key].maxHz;
+    let use = arr.filter(s => s.hz <= lim); if (!use.length) use = arr.slice();
+    const out = use.map(s => {
+      const x = s.buf.getChannelData(0), sr = s.buf.sampleRate, mk = psMarks(x, sr, s.hz);
+      let lo = 0, hi = mk.marks.length - 1;                       // μένουμε στο σταθερό μέρος (χωρίς αρχή/τέλος της ηχογράφησης)
+      while (lo < hi && mk.marks[lo] < 0.18 * sr) lo++;
+      while (hi > lo && mk.marks[hi] > x.length - 0.18 * sr) hi--;
+      let e = 0; for (let i = 0; i < x.length; i++) e += x[i] * x[i];
+      return { hz: s.hz, sr, x, marks: mk.marks, P: mk.P, lo, hi, rms: Math.sqrt(e / x.length) || 0.25 };
+    }).sort((a, b) => a.hz - b.hz);
+    const ref = out.reduce((a, s) => a + s.rms, 0) / out.length;
+    out.forEach(s => s.norm = ref / s.rms);
+    out.sr = out[0].sr; psSrc[key] = out; return out;
+  }
+  function psPick(srcs, f) { let b = srcs[0], bd = 1e9; for (const s of srcs) { const d = Math.abs(Math.log(f / s.hz)); if (d < bd) { bd = d; b = s; } } return b; }
+  // Ζωγραφίζει τα κύματα από τη στιγμή tA ως tB (δευτερόλεπτα του ήχου). fOf(t): ύψος, envOf(t): ένταση.
+  function psRender(st, srcs, tA, tB, fOf, envOf) {
+    const sr = srcs.sr, Hmax = Math.ceil(sr / srcs[0].hz) + 2;
+    const t0 = Math.min(tA, st.next) - Hmax / sr;
+    const N = Math.max(1, Math.ceil((tB - t0) * sr) + Hmax + 2), out = new Float32Array(N);
+    let tm = Math.max(st.next, tA - 0.5);
+    while (tm < tB) {
+      const f = fOf(tm), S = st.src || psPick(srcs, f);
+      // θέση μέσα στην ηχογράφηση: προχωρά με τον φυσικό χρόνο, και γυρίζει πίσω-μπρος (χωρίς «ραφή»)
+      const M = S.marks, span = M[S.hi] - M[S.lo];
+      let pos = M[S.lo] + st.frac * span;
+      let lo = S.lo, hi = S.hi;
+      while (hi - lo > 1) { const md = (lo + hi) >> 1; if (M[md] <= pos) lo = md; else hi = md; }
+      const k = (pos - M[lo] < M[hi] - pos) ? lo : hi, m = M[k];
+      const H = Math.round(S.P), Pout = sr / f;
+      const g = envOf(tm) * Math.min(2, Pout / S.P) * S.norm;
+      const c = Math.round((tm - t0) * sr);
+      if (g > 1e-5) for (let j = -H; j <= H; j++) {
+        const q = m + j, o = c + j; if (q < 0 || q >= S.x.length || o < 0 || o >= N) continue;
+        out[o] += S.x[q] * g * (0.5 + 0.5 * Math.cos(Math.PI * j / (H + 1)));
+      }
+      tm += 1 / f;
+      st.frac += st.dir * (Pout / span);
+      if (st.frac > 1) { st.frac = 2 - st.frac; st.dir = -1; } else if (st.frac < 0) { st.frac = -st.frac; st.dir = 1; }
+    }
+    st.next = tm;
+    return { t0, data: out };
+  }
+  function psPlay(rd, sr, dest, recSet) {
+    const b = ctx.createBuffer(1, rd.data.length, sr); b.getChannelData(0).set(rd.data);
+    const src = ctx.createBufferSource(); src.buffer = b;
+    const g = ctx.createGain(); g.gain.value = 1; src.connect(g); g.connect(dest);
+    const st = Math.max(ctx.currentTime, rd.t0);
+    src.start(st, Math.max(0, st - rd.t0)); src.stop(rd.t0 + b.duration + 0.02);
+    const rec = { src, g }; active.add(rec);
+    src.onended = () => { active.delete(rec); try { src.disconnect(); g.disconnect(); } catch (e) { } };
+    return rec;
+  }
+  function psLine(key, level) {
+    const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
+    let st = null, lastEnd = -1, lastF = 0, tail = null;
+    return {
+      level: level,
+      note(t, f, dur, opts) {
+        const srcs = psPrep(key); if (!srcs) return;
+        opts = opts || {};
+        const legato = !opts.detached && st && lastEnd > 0 && Math.abs(t - lastEnd) < 0.03;
+        if (legato && tail) { try { tail.src.stop(0); } catch (e) { } try { tail.g.disconnect(); } catch (e) { } active.delete(tail); tail = null; }
+        if (!legato) { st = { next: t, frac: 0.15 + Math.random() * 0.7, dir: 1, src: null }; lastF = 0; }
+        const from = legato && lastF ? lastF : f, end = t + dur;
+        const up = f * Math.pow(2, 12 / 72), pet = !!opts.pet;
+        const fOf = tt => {
+          const x = tt - t;
+          let v = from === f ? f : f * Math.pow(from / f, Math.exp(-Math.max(0, x) / 0.03));    // ομαλό δέσιμο με την προηγούμενη νότα
+          if (pet && x > 0.05 && x < 0.2) { const w = Math.sin(Math.PI * (x - 0.05) / 0.15); v *= Math.pow(up / f, w); }  // πεταστή: σύντομο τίναγμα προς τα πάνω
+          return v;
+        };
+        const fin = legato ? 0 : (opts.soft ? 0.25 : 0.05);
+        const envOf = tt => fin ? Math.min(1, Math.max(0, (tt - t) / fin)) : 1;
+        st.src = psPick(srcs, f);
+        const rd = psRender(st, srcs, t, end, fOf, envOf);
+        psPlay(rd, srcs.sr, lg);
+        // «ουρά»: αν δεν ακολουθήσει δεμένη νότα, η φωνή σβήνει απαλά
+        const tl = opts.tail != null ? opts.tail : 0.12, save = { next: st.next, frac: st.frac, dir: st.dir, src: st.src };
+        const rt = psRender(save, srcs, end, end + tl, fOf, tt => Math.max(0, 1 - (tt - end) / tl));
+        tail = psPlay(rt, srcs.sr, lg);
+        lastEnd = end; lastF = f;
+      },
+      rest() { st = null; lastEnd = -1; lastF = 0; tail = null; },
+      setLevel(v) { this.level = v; lg.gain.setTargetAtTime(v, ctx.currentTime, 0.08); }
+    };
+  }
+
   function stopAll(fade) {
     if (!ctx) return;
     const t = ctx.currentTime, f = fade == null ? 0.06 : fade;
@@ -190,5 +307,5 @@
     active.clear();
   }
 
-  window.Foni = { setup, load, has, line, piano, stopAll, setReverb, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
+  window.Foni = { setup, load, has, line, piano, stopAll, setReverb, _ps: { psMarks, psPrep, psRender, psSrc }, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
 })();

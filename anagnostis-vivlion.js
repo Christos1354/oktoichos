@@ -521,16 +521,46 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
     return pet ? "P" : "O";
   }
 
+  // (21-10-2026, v24) Ο ήχος από το κείμενο της επικεφαλίδας: δέχεται τόνους/πνεύματα, κάθε είδος «΄» και ολογράφως
   function modeFromText(t) {
-    const x = t.replace(/[ʹ'’`]/g, "΄").toLowerCase();
-    if (/πλ\.?\s*β/.test(x)) return ["Πλ. Β΄", "hard"];
-    if (/πλ\.?\s*α/.test(x)) return ["Πλ. Α΄", "dia"];
-    if (/πλ\.?\s*δ/.test(x)) return ["Πλ. Δ΄", "dia"];
-    if (/βαρ/.test(x)) return ["Βαρύς", "vary"];
-    if (/(^|[\s.])α΄/.test(x)) return ["Α΄", "dia"];
-    if (/(^|[\s.])β΄/.test(x)) return ["Β΄", "soft"];
-    if (/(^|[\s.])γ΄/.test(x)) return ["Γ΄", "g"];
-    if (/(^|[\s.])δ΄/.test(x)) return ["Δ΄", "dia"];
+    let x = String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    x = x.replace(/[ʹʹ'’`´΄′]/g, "΄").replace(/\s+/g, " ");
+    const pl = /πλ(\.|αγιο[υς]?)?\s*(του\s*)?/;
+    const num = (r) => new RegExp("(^|[\\s.(])" + r + "(΄|\\b|\\s|$|[.,·)])");
+    const isN = (k) => num(["α", "β", "γ", "δ"][k]).test(x) || [/πρωτ/, /δευτερ/, /τριτ/, /τεταρτ/][k].test(x);
+    if (/λεγετ/.test(x)) return ["Δ΄ Λέγετος", "dia"];
+    if (/βαρ[υε]/.test(x)) return ["Βαρύς", "vary"];
+    const plm = /πλ(\.|αγι)/.test(x);
+    if (plm) {
+      const r = x.slice(x.search(/πλ(\.|αγι)/));
+      if (/^πλ\S*\s*(του\s*)?(β|δευτερ)/.test(r)) return ["Πλ. Β΄", "hard"];
+      if (/^πλ\S*\s*(του\s*)?(α|πρωτ)/.test(r)) return ["Πλ. Α΄", "dia"];
+      if (/^πλ\S*\s*(του\s*)?(δ|τεταρτ)/.test(r)) return ["Πλ. Δ΄", "dia"];
+      if (/^πλ\S*\s*(του\s*)?(γ|τριτ)/.test(r)) return ["Βαρύς", "vary"];
+    }
+    if (isN(0)) return ["Α΄", "dia"];
+    if (isN(1)) return ["Β΄", "soft"];
+    if (isN(2)) return ["Γ΄", "g"];
+    if (isN(3)) return ["Δ΄", "dia"];
+    return null;
+  }
+  // (21-10-2026, v24) Όταν δεν γράφει ήχο: τον βρίσκουμε από τη μαρτυρία της αρχής (βάση), τη φθορά της αρχής
+  // και τη μαρτυρία του τέλους (κατάληξη). Σημειώνεται ως «;» ώστε να μπορείς να τον αλλάξεις.
+  function inferMode(base, fth, fin) {
+    const b = ((base % 7) + 7) % 7, e = fin == null ? null : ((fin % 7) + 7) % 7;
+    if (fth) {
+      if (fth[0] === "hard") return ["Πλ. Β΄", "hard"];
+      if (fth[0] === "soft") return ["Β΄", "soft"];
+    }
+    switch (b) {
+      case 0: return ["Πλ. Δ΄", "dia"];
+      case 1: return e === 0 ? ["Πλ. Δ΄", "dia"] : ["Α΄", "dia"];
+      case 2: return ["Δ΄ Λέγετος", "dia"];
+      case 3: return (e === 6 || e === 2) ? ["Βαρύς", "vary"] : ["Γ΄", "g"];
+      case 4: return ["Δ΄", "dia"];
+      case 5: return ["Α΄", "dia"];
+      case 6: return ["Βαρύς", "vary"];
+    }
     return null;
   }
 
@@ -679,9 +709,21 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
       if (PG.lines.length) pages.push(PG);
     });
     sect.forEach((s, i) => { s.l1 = i + 1 < sect.length ? sect[i + 1].l0 - 1 : lines.length - 1; delete s.hk; });
+    // (21-10-2026, v24) ήχος από τις μαρτυρίες, όπου η επικεφαλίδα δεν τον λέει
+    sect.forEach(S => {
+      if (S.mode && !/^βάση/.test(S.mode)) return;
+      let base = null, fin = null, fth = null, nn = 0;
+      for (let l = S.l0; l <= S.l1 && l < lines.length; l++) for (const c of lines[l]) {
+        if (Array.isArray(c)) { nn++; if (nn <= 3 && !fth && c[11]) fth = c[11]; continue; }
+        if (c.m !== undefined) { if (base === null) base = c.m; fin = c.m; }
+      }
+      if (base === null) return;
+      const md = inferMode(base, fth, fin);
+      if (md) { S.mode = md[0]; S.sc = md[1]; S.guess = 1; }
+    });
     // διόρθωση: δείκτες σελίδας στις ενότητες
     return { lines, pages, sect, start: start === null ? 0 : start, nfail, nchk, scales: SCALES };
   }
 
-  window.MRB = { build, SCALES, modeFromText, findHeaders };
+  window.MRB = { build, SCALES, modeFromText, findHeaders, inferMode };
 })();
