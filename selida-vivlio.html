@@ -136,7 +136,7 @@
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 23-10-2026 · Οκτώηχος v28 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
+  <div class="ver">έκδοση 23-10-2026 · Οκτώηχος v29 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
 </div>
 
 <a class="homebtn backbtn" style="bottom:20px" id="btnBackLib" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -153,7 +153,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
 </div>
 
@@ -180,6 +180,7 @@
 
 <script src="foni-xorodia.js?v=3"></script>
 <script src="foni-psaltis.js?v=2"></script>
+<script src="foni-christos.js?v=1"></script>
 <script src="foni.js?v=7"></script>
 <script src="anagnostis-vivlion.js?v=4"></script>
 <script>
@@ -366,7 +367,7 @@ const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
-  if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
+  if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0||k.indexOf("christos")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
   if(isChoir()){try{if(k!=="piano")await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
@@ -409,7 +410,10 @@ try{let v=localStorage.getItem('okt-voice2');if(v==='psaltis_v'||v==='psaltis_o'
 if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel').value="xorodia_a";
 // (20-10-2026) Φωνή «Ψάλτης» από την ηχογράφηση: γίνεται η φωνή των σελίδων την πρώτη φορά, και ανεβαίνει ο τόνος στο ύψος της
 (function(){const vs=document.getElementById('voiceSel');try{if(!localStorage.getItem('okt-psaltis-v1')&&window.FONI_SETS&&FONI_SETS.psaltis){localStorage.setItem('okt-psaltis-v1','1');vs.value='psaltis';localStorage.setItem('okt-voice2','psaltis');}}catch(e){}
-  const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value.indexOf('psaltis')===0&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+0.2));pe.dispatchEvent(new Event('input'));}}catch(e){}};
+  // (23-10-2026) η φωνή του Χρίστου γίνεται η φωνή των βιβλίων (μία φορά), με τον Δι κοντά στα 120 Hz
+  try{if(!localStorage.getItem('okt-christos-v1')&&window.FONI_SETS&&FONI_SETS.christos){localStorage.setItem('okt-christos-v1','1');vs.value='christos';localStorage.setItem('okt-voice2','christos');}}catch(e){}
+  const fit=()=>{try{const pe=document.getElementById('pitch');const v=vs.value,up=v.indexOf('christos')===0?0.1:(v.indexOf('psaltis')===0?0.2:0);
+    if(up&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+up));pe.dispatchEvent(new Event('input'));}}catch(e){}};
   fit();vs.addEventListener('change',fit);})();
 
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
@@ -450,7 +454,7 @@ function choirIsonLevel(){return 0.33*isonVol();}
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
-  const key=voiceSel(), isoKey=key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
+  const key=voiceSel(), isoKey=key.indexOf("christos")===0?"christos":key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
   const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();

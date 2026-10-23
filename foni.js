@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v27: Ψάλτης «α», «ο», «ε», «μμμ»)
+// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -192,6 +192,7 @@
   // «Ψάλτης με λόγια»: η ίδια φωνή, που σε κάθε συλλαβή λέει το φωνήεν της (α, ε, ι, ο) και κάνει
   //   ένα μικρό «άρθρωμα» στην αρχή κάθε νέας συλλαβής, ώστε να ξεχωρίζουν οι συλλαβές.
   const PS_KEYS = { psaltis: { mode: "plain" }, psaltis_v: { mode: "vowel" },
+    christos: { mode: "plain", multi: 1 }, christos_m: { mode: "plain", multi: 1 },   // (23-10-2026) η φωνή του Χρίστου
     psaltis_o: { mode: "plain", v: "o" }, psaltis_e: { mode: "plain", v: "e" }, psaltis_m: { mode: "plain", v: "a", hum: 1 } };   // (22-10-2026) ένα φωνήεν: «α», «ο», «ε», «μμμ»
   const VOWEL_HZ = { a: 115.866, o: 140.382, u: 140.382, e: 171.512, i: 225.575 };   // ποια ηχογράφηση έχει ποιο φωνήεν (μετρημένο)
   const psCache = new Map();   // ανά ηχογράφηση
@@ -216,8 +217,9 @@
     if (psCache.has(s.buf)) return psCache.get(s.buf);
     const x = s.buf.getChannelData(0), sr = s.buf.sampleRate, mk = psMarks(x, sr, s.hz);
     let lo = 0, hi = mk.marks.length - 1;
-    while (lo < hi && mk.marks[lo] < 0.18 * sr) lo++;
-    while (hi > lo && mk.marks[hi] > x.length - 0.18 * sr) hi--;
+    const cut = Math.min(0.18 * sr, 0.12 * x.length);   // (23-10-2026) και για σύντομες νότες
+    while (lo < hi && mk.marks[lo] < cut) lo++;
+    while (hi > lo && mk.marks[hi] > x.length - cut) hi--;
     let e = 0; for (let i = 0; i < x.length; i++) e += x[i] * x[i];
     const o = { hz: s.hz, sr, x, marks: mk.marks, P: mk.P, lo, hi, rms: Math.sqrt(e / x.length) || 0.25 };
     psCache.set(s.buf, o); return o;
@@ -226,10 +228,11 @@
     const arr = bufs[key]; if (!arr) return null;
     if (arr._ps) return arr._ps;
     const all = arr.map(psOne).sort((a, b) => a.hz - b.hz);
-    const near = hz => all.reduce((b, s) => Math.abs(s.hz - hz) < Math.abs(b.hz - hz) ? s : b, all[0]);
+    const near = hz => all.reduce((b, s) => Math.abs(Math.log(s.hz / hz)) < Math.abs(Math.log(b.hz / hz)) ? s : b, all[0]);
     const V = {}; for (const v in VOWEL_HZ) V[v] = near(VOWEL_HZ[v]);
     const ref = V.a.rms; for (const v in V) V[v].norm = ref / V[v].rms;
-    const out = { sr: all[0].sr, V, mode: PS_KEYS[key].mode, fixed: PS_KEYS[key].v || "a", hum: !!PS_KEYS[key].hum, minHz: Math.min(...all.map(s => s.hz)) };
+    if (PS_KEYS[key].multi) { const ref = all.reduce((a, s) => a + s.rms, 0) / all.length; all.forEach(s => s.norm = ref / s.rms); }
+    const out = { sr: all[0].sr, V, all, near, multi: !!PS_KEYS[key].multi, mode: PS_KEYS[key].mode, fixed: PS_KEYS[key].v || "a", hum: !!PS_KEYS[key].hum, minHz: Math.min(...all.map(s => s.hz)) };
     arr._ps = out; return out;
   }
   function psGrain(out, N, c, S, m, g) {
@@ -384,13 +387,13 @@
     function renderNote(n, endsSyl) {
       const P = n.P, { t, f, dur, opts, legato, from } = n;
       if (legato && tail) { try { tail.src.stop(0); } catch (e) { } try { tail.g.disconnect(); } catch (e) { } active.delete(tail); tail = null; }
-      const S = P.V[P.mode === "vowel" ? n.nv : P.fixed] || P.V.a;
+      const S = P.multi ? P.near(f) : (P.V[P.mode === "vowel" ? n.nv : P.fixed] || P.V.a);
       if (!legato) { st = { next: t, frac: 0.15 + Math.random() * 0.7, dir: 1, src: S, prev: null, xfA: 0, xfB: 0 }; }
-      else if (st.src !== S) { st.prev = st.src; st.src = S; st.xfA = t; st.xfB = t + 0.07; }
+      else if (st.src !== S) { st.prev = st.src; st.src = S; st.xfA = t; st.xfB = t + (P.multi ? 0.12 : 0.07); }
       const end = t + dur, up = f * Math.pow(2, 12 / 72), pet = !!opts.pet;
       const fOf = tt => {
         const x = tt - t;
-        let v = from === f ? f : f * Math.pow(from / f, Math.exp(-Math.max(0, x) / 0.03));
+        let v = from === f ? f : f * Math.pow(from / f, Math.exp(-Math.max(0, x) / (P.multi ? 0.065 : 0.03)));   // (23-10-2026) μαλακό γλίστρημα
         if (pet && x > 0.05 && x < 0.2) { const w = Math.sin(Math.PI * (x - 0.05) / 0.15); v *= Math.pow(up / f, w); }
         return v;
       };
