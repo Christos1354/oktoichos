@@ -212,7 +212,13 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
               if (u) mkGlyph(mkf, u, m, fsize, hs, rise, col, size, paths, chars);
               tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue;
             }
-            if (/MK\s*20|MK\s*Xronos|BZ\s*Xronos/i.test(fi.name)) { tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue; }
+            if (/MK\s*Xronos|BZ\s*Xronos/i.test(fi.name)) {   // (22-10-2026) το «χ» της αγωγής: το γοργό/αργό από πάνω του αλλάζει την ταχύτητα
+              // κάθε «χ» της MKXronos έχει μέσα του το σημάδι: k/K γοργό, s δίγοργο, : τρίγοργο, f/F αργό, d/D δίαργο
+              const XR = { 0x6b: 1, 0x4b: 1, 0x73: 2, 0x53: 2, 0x3a: 3, 0x66: -1, 0x46: -1, 0x64: -2, 0x44: -2 };
+              const xc = u ? (u.codePointAt(0) & 0xff) : 0;
+              if (u && u.trim()) paths.push({ x0: Math.min(p0[0], p1[0]), x1: Math.max(p0[0], p1[0]) + 0.1 * size, y0: p0[1] - 0.72 * size, y1: p0[1] + 0.05 * size, col, cls: { role: "tempo", g: XR[xc] != null ? XR[xc] : 0, dist: 0 }, mk: "xronos:" + xc.toString(16) });
+              tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue; }
+            if (/MK\s*20/i.test(fi.name)) { tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue; }
             if (u) chars.push({ c: u, x0: Math.min(p0[0], p1[0]), x1: Math.max(p0[0], p1[0]), y0: p0[1] - 0.78 * size, y1: p0[1] + 0.25 * size, font: fi.name, size, col });
             tm = mul(tm, [1, 0, 0, 1, adv, 0]);
           }
@@ -230,6 +236,10 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
 (function () {
   "use strict";
   const PROTOS = window.MR_PROTOS || [];   // {s, c, w, h, d[], r}
+  // (22-10-2026, v27) Ποια φθορά είναι κάθε σχέδιο (σύγκριση με τη γραμματοσειρά Neanes) → [γένος, φθόγγος]
+  const FTH_OF = { 27: ["soft", 4], 66: ["soft", 4], 86: ["soft", 4], 33: ["dia", 4], 93: ["hard", 4], 122: ["hard", 4], 124: ["hard", 4],
+    107: ["zwyf", 6], 176: ["zwyf", 6], 158: ["dia", 1], 246: ["dia", 1], 204: ["dia", 5], 292: ["dia", 3], 263: ["hard", 1] };
+  PROTOS.forEach((q, i) => { if (FTH_OF[i] && q.r === "fthora") q.fth = FTH_OF[i]; });
   const NAMES = ["Νη", "Πα", "Βου", "Γα", "Δι", "Κε", "Ζω"];
   const ISON_TXT = { "Ν": 0, "N": 0, "Π": 1, "Β": 2, "B": 2, "Γ": 3, "Δ": 4, "Κ": 5, "K": 5, "Ζ": 6, "Z": 6, "Μ": "M", "M": "M" };
   const PITCH = new Set(["ison", "oligon", "apo", "elafron", "petasti", "yporroi", "chamili", "kentimata", "fx"]);
@@ -257,19 +267,30 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
     if (!best || bd > UNKNOWN_T) return { role: "?", dist: bd };
     const r = best.r;
     if (r[0] === "m" && r.length === 2) return { role: "mletter", note: Number(r[1]), dist: bd };
-    return { role: r, dist: bd };
+    return best.fth ? { role: r, dist: bd, fth: best.fth } : { role: r, dist: bd };
   }
 
   // ---------- μέγεθος γραμμάτων (κλίμακα) ----------
-  function lyricSize(chars, H) {
-    const cnt = {};
+  // (22-10-2026) Μέγεθος των στίχων: μετράμε ΜΟΝΟ γράμματα που έχουν βυζαντινά σημάδια ακριβώς από πάνω τους
+  // (όχι υποσέλιδα, πίνακες, κείμενα). Αν δεν βρεθούν τέτοια, όπως πριν: το πιο συχνό μέγεθος.
+  function lyricSize(chars, H, paths) {
+    const ok = c => !(c.y1 < 0.063 * H || c.y0 > 0.935 * H || !c.c.trim() || /^[0-9._]+$/.test(c.c) || /^[\uE000-\uF8FF\u200B-\u200F\uFEFF]+$/.test(c.c) || /Byzantinografos|MKHeader/i.test(c.font));
+    const cnt = {}, cnt2 = {};
+    let ps = null;
+    if (paths && paths.length) ps = paths.filter(p => p.col !== "w" && (p.x1 - p.x0) < 80).map(p => [p.x0, p.x1, p.y1]);
     for (const c of chars) {
-      if (c.y1 < 0.063 * H || !c.c.trim() || /^[0-9._]+$/.test(c.c) || /^[\uE000-\uF8FF\u200B-\u200F\uFEFF]+$/.test(c.c) || /Byzantinografos|MKHeader/i.test(c.font)) continue;
+      if (!ok(c)) continue;
       const k = Math.round(c.size * 2) / 2; cnt[k] = (cnt[k] || 0) + 1;
+      if (ps) {
+        const sz = c.size, cx0 = c.x0 - 0.6 * sz, cx1 = c.x1 + 0.6 * sz, top = c.y0 - 1.7 * sz, bot = c.y0 + 0.35 * sz;
+        for (const q of ps) if (q[2] > top && q[2] < bot && q[1] > cx0 && q[0] < cx1) { cnt2[k] = (cnt2[k] || 0) + 1; break; }
+      }
     }
-    let best = REF_L, bn = 0;
-    for (const k in cnt) if (cnt[k] > bn) { bn = cnt[k]; best = Number(k); }
-    return best;
+    const pickMax = o => { let best = null, bn = 0; for (const k in o) if (o[k] > bn) { bn = o[k]; best = Number(k); } return [best, bn]; };
+    const [b2, n2] = pickMax(cnt2);
+    if (b2 !== null && n2 >= 8) return b2;
+    const [b1] = pickMax(cnt);
+    return b1 !== null ? b1 : REF_L;
   }
 
   // ---------- γράμματα ισοκρατήματος από εικόνες (έγγραφα Word) ----------
@@ -378,6 +399,21 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
       ev.push({ kind: "M", note: it.note, x: it.lead ? -1e9 : it.r.x0, r: it.r, lead: !!it.lead, ly: cyf(it.r) });
       used.add(it);
       for (const q of its) if (q.role === "msign" && xov(q.r, it.r) > 1 * s && q.r.y0 - it.r.y1 >= 0 && q.r.y0 - it.r.y1 < 12 * s) used.add(q);
+    }
+    // (22-10-2026) αγωγή: «χ» με γοργό/δίγοργο/τρίγοργο/αργό πάνω του · αυτά ΔΕΝ ανήκουν στην επόμενη νότα
+    const TROLE = { gorgon: 1, digorgon: 2, trigorgon: 3, argon: -1, diargon: -2 };
+    for (const it of its) {
+      if (it.role !== "tempo") continue;
+      const r = it.r, w = Math.max(W(r), 4 * s), h = Math.max(Hh(r), 6 * s);
+      let g = (it.r.cls && it.r.cls.g) || 0;
+      for (const q of its) {
+        if (used.has(q) || !(q.role in TROLE)) continue;
+        const cx = cxf(q.r);
+        if (it.r.mk) continue;   // MKXronos: το σημάδι είναι ήδη μέσα στο «χ»
+        if (cx > r.x0 - 0.15 * w && cx < r.x1 + 0.15 * w && q.r.y1 < r.y0 + 0.35 * h && q.r.y1 > r.y0 - 1.6 * h) { used.add(q); g = TROLE[q.role]; }
+      }
+      used.add(it);
+      ev.push({ kind: "T", g, x: r.x0, r });
     }
     const bases = its.filter(it => PITCH.has(it.role) && !used.has(it)).sort((a, b) => a.r.x0 - b.r.x0);
     let cols = [];
@@ -507,6 +543,8 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
   const IMG_MODES = { "219x99": ["Β΄", "soft"], "174x147": ["Πλ. Δ΄", "dia"], "217x144": ["Πλ. Α΄", "dia"], "94x189": ["Δ΄", "dia"] };
   const BASE_ST = { I: [0], O: [1], P: [1], K: [2], KM: [2], KA: [1, 1], U: [4], KB: [1, 1], CE: [-1, -1], PI: [0], PO: [2], A: [-1], E: [-2], Y: [-1, -1] };
   const eq = (a, b) => a && b && a.length === b.length && a.every((v, i) => v === b[i]);
+  // (22-10-2026) αγωγή από το «χ»: γοργό = πιο γρήγορα, δίγοργο = ακόμα πιο γρήγορα, αργό = πιο αργά · σκέτο «χ» = κανονικά
+  const TEMPO_F = { 0: 1, 1: 0.88, 2: 0.8, 3: 0.72, "-1": 1.12, "-2": 1.25 };   // (22-10-2026) ήπιες αλλαγές
 
   function codeFor(st, pet, running) {
     if (running) return "CE";
@@ -618,18 +656,22 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
   }
 
   // Κύρια συνάρτηση: από τις σελίδες (εξαγωγή MRX) σε δεδομένα για τη σελίδα που ψάλλει
-  function build(pagesX, opts) {
+  // (22-10-2026, v26) Ο «κατασκευαστής» δουλεύει σελίδα-σελίδα: έτσι διαβάζεται ΟΛΟ το βιβλίο χωρίς να γεμίζει η μνήμη.
+  //   B.head(P, pi) για κάθε σελίδα (επικεφαλίδες), μετά B.add(P, pi, pageNo) για κάθε σελίδα, και B.done().
+  function builder(opts) {
     opts = opts || {};
     const lines = [], pages = [], sect = [];
     let cur = null, notesSince = 0, segCols = [], curSec = null, secBase = null, start = null, nfail = 0, nchk = 0;
+    let prov = null;   // (22-10-2026) προσωρινή αρχή: {obj, cells}
+    let tBase = null;  // (22-10-2026) η πρώτη αγωγή του ύμνου
     let headers = []; const extraHeads = [];
-    pagesX.forEach((P, pi) => { headers = headers.concat(findHeaders(P, pi)); });
+    function head(P, pi) { const hs = findHeaders(P, pi); for (const h of hs) headers.push(h); }
     // συγχώνευση διαδοχικών επικεφαλίδων χωρίς μουσική ανάμεσα γίνεται παρακάτω (κενές ενότητες)
     const secOf = (pi, y) => { let k = -1, bp = -1, by = -1e9; headers.forEach((h, i) => { if ((h.page < pi || (h.page === pi && h.y <= y)) && (h.page > bp || (h.page === bp && h.y >= by))) { k = i; bp = h.page; by = h.y; } }); return k; };
-    pagesX.forEach((P, pi) => {
-      const L = P.L || MR.lyricSize(P.chars, P.H);
+    function add(P, pi, pageNo) {
+      const L = P.L || MR.lyricSize(P.chars, P.H, P.paths);
       const rows = MR.pageRows(P, L);
-      const PG = { pageNo: pi + 1, w: P.W, h: P.H, lines: [] };
+      const PG = { pageNo: pageNo || (pi + 1), w: P.W, h: P.H, lines: [] };
       for (const row of rows) {
         const evs = MR.buildColumns(row, L);
         if (!evs.some(e => e.kind === "N")) continue;
@@ -656,8 +698,8 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
           let hnote = h.note != null ? h.note : null;
           for (let j = sk - 1; hnote === null && j >= 0 && j >= sk - 2; j--) if (headers[j].note != null) hnote = headers[j].note;
           Lr.push({ sec: sect.length });
-          sect.push({ t: title || ("Ύμνος " + (sect.length + 1)), mode: mode ? mode[0] : "", sc: mode ? mode[1] : "dia", l0: lines.length, pg: pages.length, hk: sk });
-          cur = null; notesSince = 0; segCols = []; secBase = null;
+          sect.push({ t: title || ("Ύμνος " + (sect.length + 1)), mode: mode ? mode[0] : "", sc: mode ? mode[1] : "dia", l0: lines.length, pg: pages.length, hk: sk, lead: sk >= 0 && extraHeads.indexOf(headers[sk]) >= 0 });
+          cur = null; notesSince = 0; segCols = []; secBase = null; prov = null; tBase = null;
           if (hnote !== null) {   // φθόγγος αρχής από την επικεφαλίδα «Ἦχος … Πα»
             cur = hnote; secBase = hnote; Lr.push({ m: hnote, r: 1, is: hnote }); if (start === null) start = hnote;
             const S0 = sect[sect.length - 1]; if (!S0.mode) S0.mode = "βάση " + MR.NAMES[hnote];
@@ -665,6 +707,18 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
         }
         for (const e of evs) {
           if (e.kind === "B") { if (cur !== null) Lr.push({ br: 1 }); continue; }
+          if (e.kind === "T") { const f = TEMPO_F[e.g] || 1; if (tBase === null) tBase = f; Lr.push({ tp: f / tBase, tg: e.g }); continue; }   // (22-10-2026) αγωγή: διάρκεια × συντελεστή
+          if (e.kind === "M" && prov) {   // (22-10-2026) πρώτη μαρτυρία μετά από προσωρινή αρχή: διορθώνουμε όλο το κομμάτι
+            const d = e.note, ref = secBase !== null ? secBase : d;
+            let tgt = d + 7 * Math.round((ref - d) / 7);
+            const delta = tgt - cur;
+            prov.obj.m += delta; prov.obj.is += delta;
+            for (const c of prov.cells) { if (typeof c[5] === "number") c[5] += delta; }
+            if (start === prov.start) start += delta;
+            cur = tgt; if (secBase === null) secBase = tgt; prov = null;
+            Lr.push({ m: tgt }); notesSince = 0; segCols = [];
+            continue;
+          }
           if (e.kind === "M") {
             const d = e.note; let obj, m;
             if (cur === null || notesSince === 0) {
@@ -682,7 +736,12 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
             Lr.push(obj); cur = m; notesSince = 0; segCols = [];
             continue;
           }
-          if (cur === null) continue;
+          if (cur === null) {   // (22-10-2026) δεν ξέρουμε ακόμα τον φθόγγο: προσωρινή αρχή (Δι), διορθώνεται στην επόμενη μαρτυρία
+            const m0 = secBase !== null ? secBase : 4, obj = { m: m0, r: 1, is: m0 };
+            Lr.push(obj); cur = m0; prov = { obj, cells: [], start: null };
+            if (start === null) { start = m0; prov.start = m0; }
+            notesSince = 0; segCols = [];
+          }
           const [st, pet, u] = MR.colSteps(e);
           const code = codeFor(st, pet, !!e.running);
           const mr = e.mods.map(m => m.role);
@@ -692,10 +751,10 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
           let iso = null;
           if (e.ison !== null && e.ison !== undefined) iso = e.ison === "M" ? "M" : first - ((((first - e.ison) % 7) + 7) % 7);
           cur += st.reduce((a, b) => a + b, 0); notesSince++;
-          const accM = e.mods.find(m => m.role === "acc"), fthM = e.mods.find(m => m.role === "fth");
+          const accM = e.mods.find(m => m.role === "acc"), fthM = e.mods.find(m => m.role === "fth" || (m.role === "fthora" && m.r.cls && m.r.cls.fth));
           const arg = mr.includes("diargon") ? 2 : mr.includes("argon") ? 1 : 0;
-          const arr = [e.syl, code, k, g, accM ? accM.r.cls.v : 0, iso, 1, eq(BASE_ST[code], st) ? null : st, u ? 1 : 0, 0, null, fthM ? [fthM.r.cls.g, fthM.r.cls.n] : null, arg];
-          Lr.push(arr); segCols.push(arr);
+          const arr = [e.syl, code, k, g, accM ? accM.r.cls.v : 0, iso, 1, eq(BASE_ST[code], st) ? null : st, u ? 1 : 0, 0, null, fthM ? (fthM.r.cls.fth ? fthM.r.cls.fth.slice() : [fthM.r.cls.g, fthM.r.cls.n]) : null, arg];
+          Lr.push(arr); segCols.push(arr); if (prov) { prov.cells.push(arr); arr[8] = 1; }
           let r = { ...e.r };
           for (const m of e.mods) if (["gorgon", "digorgon", "trigorgon", "klasma", "kentima", "ypsili", "kentimata", "apli"].includes(m.role)) r = { x0: Math.min(r.x0, m.r.x0), y0: Math.min(r.y0, m.r.y0), x1: Math.max(r.x1, m.r.x1), y1: Math.max(r.y1, m.r.y1) };
           let y1 = row.top + 22 * (L / 20.28);
@@ -707,10 +766,15 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
         else if (Lr.length && Lr[0].sec !== undefined) { sect.pop(); curSec = null; }
       }
       if (PG.lines.length) pages.push(PG);
-    });
+    }
+    function done() {
     sect.forEach((s, i) => { s.l1 = i + 1 < sect.length ? sect[i + 1].l0 - 1 : lines.length - 1; delete s.hk; });
+    // (σειρά: πρώτα ο ήχος από τις μαρτυρίες για όσους έχουν επικεφαλίδα, μετά η «κληρονομιά» στους επόμενους)
     // (21-10-2026, v24) ήχος από τις μαρτυρίες, όπου η επικεφαλίδα δεν τον λέει
-    sect.forEach(S => {
+    sect.forEach((S, si) => {
+      // (22-10-2026, v27) ύμνος χωρίς δική του επικεφαλίδα «Ήχος» (αρχίζει μόνο με μαρτυρία): κρατά τον ήχο του προηγούμενου
+      const P = si > 0 ? sect[si - 1] : null;
+      if ((!S.mode || /^βάση/.test(S.mode)) && S.lead && P && P.mode && !/^βάση/.test(P.mode)) { S.mode = P.mode; S.sc = P.sc; S.guess = P.guess || 0; return; }
       if (S.mode && !/^βάση/.test(S.mode)) return;
       let base = null, fin = null, fth = null, nn = 0;
       for (let l = S.l0; l <= S.l1 && l < lines.length; l++) for (const c of lines[l]) {
@@ -723,7 +787,15 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
     });
     // διόρθωση: δείκτες σελίδας στις ενότητες
     return { lines, pages, sect, start: start === null ? 0 : start, nfail, nchk, scales: SCALES };
+    }
+    return { head, add, done };
+  }
+  function build(pagesX, opts) {
+    const B = builder(opts);
+    pagesX.forEach((P, pi) => B.head(P, pi));
+    pagesX.forEach((P, pi) => B.add(P, pi));
+    return B.done();
   }
 
-  window.MRB = { build, SCALES, modeFromText, findHeaders, inferMode };
+  window.MRB = { build, builder, SCALES, modeFromText, findHeaders, inferMode };
 })();

@@ -38,6 +38,8 @@
   .hb{position:absolute;border-radius:10px;cursor:pointer}
   .hb.now{background:rgba(142,92,196,.20);outline:4px solid rgba(142,92,196,.85)}
   .hb.mine:not(.now){box-shadow:inset 0 -5px 0 rgba(30,111,217,.55)}
+  .fixb{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);background:#fff;border:3px solid #1e6fd9;border-radius:10px;padding:0 4px;pointer-events:none;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .fixb svg{height:34px;width:auto;display:block}
   .hb.q:not(.now):not(.mine){box-shadow:inset 0 -4px 0 rgba(230,120,0,.9)}
   .hb.st{box-shadow:inset 7px 0 0 #2e9d57}
   .hb.en{box-shadow:inset -7px 0 0 #c62828}
@@ -121,19 +123,20 @@
 </div>
 <div class="wrap" id="mainWrap" style="display:none">
   <h1 class="ttl" id="docTitle">Ψάλλε βιβλίο PDF</h1>
-  <div id="pgNav" style="display:none;margin:6px 0;gap:8px;flex-wrap:wrap"><button type="button" id="pgPrevW" style="font-size:18px;padding:8px 14px;border-radius:12px;border:2px solid #ccb;background:#fbf6ec">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW" style="font-size:18px;padding:8px 14px;border-radius:12px;border:2px solid #ccb;background:#fbf6ec">Επόμενες σελίδες ▶</button></div>
+  <div id="pgNav" style="display:none;margin:6px 0;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="pgPrevW" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">Επόμενες σελίδες ▶</button></div>
   <p class="sb" id="bgSave" style="font-size:15px;opacity:.85"></p>
   <p class="sb" id="docSub">Διαλέγεις ύμνο και πατάς ▶ Ψάλλε, ή πατάς μια συλλαβή</p>
-  <div class="secbar"><label for="secSel">🎼 Ύμνος:</label> <select id="secSel"></select><label for="mdSel">Ήχος:</label> <select id="mdSel"><option value="">—</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select><label for="scSel">Κλίμακα:</label> <select id="scSel"><option value="dia">Διατονική</option><option value="hard">Σκληρή χρωματική (πλ. β΄)</option><option value="soft">Μαλακή χρωματική (β΄)</option><option value="g">Εναρμόνια (γ΄, Ζω ύφεση)</option><option value="vary">Βαρύς διατονικός</option></select></div>
+  <div class="secbar"><label for="secSel">🎼 Ύμνος:</label> <select id="secSel"></select><label for="mdSel">Ήχος:</label> <select id="mdSel"><option value="">—</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select><label for="scSel">Κλίμακα:</label> <select id="scSel"><option value="dia">Διατονική</option><option value="hard">Σκληρή χρωματική (πλ. β΄)</option><option value="soft">Μαλακή χρωματική (β΄)</option><option value="g">Εναρμόνια (γ΄, Ζω ύφεση)</option><option value="vary">Βαρύς διατονικός</option></select><span id="secWho" style="font-size:17px;color:#e2bd5e;width:100%;text-align:center"></span></div>
   <p class="taphint">👆 Πάτα μια συλλαβή: ψάλλει από εκεί. Ξαναπάτα στη σελίδα: σταματά ή συνεχίζει. Κράτα πατημένη μια συλλαβή για διόρθωση.</p>
   <div id="pages"></div>
+  <div id="pgNav2" style="display:none;margin:18px 0 8px;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="pgPrevW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">Επόμενες σελίδες ▶</button></div>
   <div class="msg" id="status"></div>
   <div class="tools">
     <button id="copyBtn">📋 Αντιγραφή διορθώσεων για τον Claude</button>
     <button id="resetBtn">↺ Επαναφορά</button>
   </div>
   <div class="msg" id="msg"></div>
-  <div class="ver">έκδοση 21-10-2026 · Οκτώηχος v24 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
+  <div class="ver">έκδοση 23-10-2026 · Οκτώηχος v28 · αναγνώστης βιβλίων PDF (χωρίς κόστος, μέσα στη συσκευή)</div>
 </div>
 
 <a class="homebtn backbtn" style="bottom:20px" id="btnBackLib" href="./index.html#lib" aria-label="Πίσω στη Βιβλιοθήκη"><span class="ar">‹</span><span class="tx">ΠΙΣΩ</span></a>
@@ -150,7 +153,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="psaltis">🎙 Ψάλτης</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
 </div>
 
@@ -177,8 +180,8 @@
 
 <script src="foni-xorodia.js?v=3"></script>
 <script src="foni-psaltis.js?v=2"></script>
-<script src="foni.js?v=6"></script>
-<script src="anagnostis-vivlion.js?v=3"></script>
+<script src="foni.js?v=7"></script>
+<script src="anagnostis-vivlion.js?v=4"></script>
 <script>
 function BOOT(D){
 const G={"ison": {"c": "", "w": 1.524, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.713, 0.125], "heteronConnecting": [1.7, -0.019], "heteron": [1.027, 0.207], "omalonConnecting": [1.471, 0.133], "omalon": [1.031, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraBottom": [0.789, 0.209], "fthoraTop": [0.788, 0.507], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "klasmaTop": [0.873, 0.487], "gorgonTop": [0.786, 0.505]}}, "oligon": {"c": "", "w": 1.515, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.686, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.667, 0.125], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "psifiston": [0.84, 0.113], "gorgonTop": [0.78, 0.5]}}, "apostrofos": {"c": "", "w": 0.703, "a": {"omalonConnecting": [1.044, 0.089], "yfenAbove": [0.47, 0.891], "yfenBelow": [0.509, -0.04], "koronis": [0.37, 0.891], "endofonon": [0.502, -0.126], "heteronConnecting": [0.879, -0.019], "measureNumber": [0.172, 0.783], "isonIndicator": [0.366, 0.939], "gorgonBottom": [0.348, -0.018], "apli": [0.5, 0.013], "antikenoma": [0.461, 0.101], "noteTop": [0.17, 0.643], "fthoraTop": [0.386, 0.642], "fthoraBottom": [0.34, 0.099], "gorgonTop": [0.4, 0.58], "diesis": [0.233, 0.1], "yfesis": [0.648, 0.557], "klasmaTop": [0.408, 0.567]}}, "petasti": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.769, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.691], "measureNumber": [0.172, 0.743], "isonIndicator": [0.664, 0.913], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.636], "fthoraTop": [0.656, 0.6], "diesis": [0.464, 0.147], "psifiston": [0.795, 0.14], "klasmaBottom": [0.8, 0.083]}}, "elafron": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.65, 0.901], "yfenBelow": [0.659, -0.04], "koronis": [0.56, 0.746], "endofonon": [0.632, -0.037], "measureNumber": [0.172, 0.613], "isonIndicator": [0.528, 0.939], "gorgonBottom": [0.487, -0.018], "heteronConnecting": [1.42, -0.019], "omalonConnecting": [1.241, 0.089], "apli": [0.588, -0.043], "antikenoma": [0.566, 0.07], "noteTop": [0.242, 0.703], "fthoraTop": [0.518, 0.66], "fthoraBottom": [0.609, 0.07], "gorgonTop": [0.627, 0.58], "diesis": [0.427, 0.02], "yfesis": [0.98, 0.536], "klasmaTop": [0.56, 0.62]}}, "yporroi": {"c": "", "w": 0.4, "a": {"diesisSecondary": [0.587, 0.887], "yfesisSecondary": [-0.019, -0.223], "yfesis": [0.308, 0.609], "barline": [0.286, 0.59], "yfenAbove": [0.217, 0.887], "yfenBelow": [0.159, -0.04], "koronis": [0.21, 0.881], "endofonon": [0.192, -0.146], "heteronConnecting": [0.583, -0.019], "measureNumber": [0.072, 0.483], "isonIndicator": [0.212, 0.913], "heteron": [0.316, -0.086], "apli": [0.161, 0.012], "antikenoma": [0.197, 0.1], "noteTop": [0.156, 0.675], "fthoraTop": [0.308, 0.609], "fthoraBottom": [0.148, 0.101], "diesis": [0.267, 0.06], "gorgonTop": [0.4, 0.527]}}, "oligonKentimaBelow": {"c": "", "w": 1.515, "a": {"apli": [0.763, -0.168], "gorgonBottom": [0.45, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.692, -0.051], "heteron": [1.027, -0.033], "omalon": [1.033, -0.067], "omalonConnecting": [1.473, -0.053], "antikenoma": [0.82, -0.055], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.42, 0.107], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.78, 0.5], "psifiston": [0.84, 0.113]}}, "klasmaAbove": {"c": "", "w": 0.0, "a": {"klasmaTop": [0.084, 0.604]}}, "gorgonAbove": {"c": "", "w": 0.0, "a": {"gorgonTop": [0.0, 0.8]}}, "diesis2": {"c": "", "w": 0.0, "a": {"diesis": [0.196, 0.612]}}, "diesis4": {"c": "", "w": 0.0, "a": {"diesis": [0.177, 0.682]}}, "diesis6": {"c": "", "w": 0.0, "a": {"diesis": [0.152, 0.652]}}, "diesis8": {"c": "", "w": 0.0, "a": {"diesis": [0.012, 0.553]}}, "yfesis2": {"c": "", "w": 0.0, "a": {"yfesis": [-0.213, 0.452]}}, "yfesis4": {"c": "", "w": 0.0, "a": {"yfesis": [-0.134, 0.429]}}, "yfesis6": {"c": "", "w": 0.0, "a": {"yfesis": [-0.153, 0.456]}}, "yfesis8": {"c": "", "w": 0.0, "a": {"yfesis": [-0.159, 0.44]}}, "isonIndicatorNi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorPa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorVou": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorGa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorDi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorKe": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorZo": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "martyriaNoteNi": {"c": "", "w": 0.731, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.417], "martyriaBottom": [0.487, -0.03], "fthoraTop": [0.517, 0.588]}}, "martyriaNotePa": {"c": "", "w": 0.737, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.448], "martyriaBottom": [0.52, -0.047], "fthoraTop": [0.517, 0.59]}}, "martyriaNoteVou": {"c": "", "w": 0.701, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.523], "martyriaBottom": [0.453, -0.04], "fthoraTop": [0.517, 0.651]}}, "martyriaNoteGa": {"c": "", "w": 0.692, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.529], "martyriaBottom": [0.493, -0.027], "fthoraTop": [0.515, 0.613]}}, "martyriaNoteDi": {"c": "", "w": 0.738, "a": {"barline": [0.517, 0.59], "agogi": [0.539, 0.548], "martyriaBottom": [0.533, -0.027], "fthoraTop": [0.54, 0.653]}}, "martyriaNoteKe": {"c": "", "w": 0.746, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.449], "fthoraTop": [0.517, 0.59], "martyriaBottom": [0.507, -0.027]}}, "martyriaNoteZo": {"c": "", "w": 0.783, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.541], "martyriaBottom": [0.527, -0.033], "fthoraTop": [0.517, 0.64]}}, "martyriaDeltaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaAlphaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.328]}}, "martyriaLegetosBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaNanaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.248]}}, "martyriaDeltaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.398]}}, "martyriaAlphaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.001, 0.427]}}, "modeWordEchos": {"c": "", "w": 1.588, "a": {}}, "modeFourth": {"c": "", "w": 0.98, "a": {}}, "modeDi": {"c": "", "w": 1.073, "a": {"fthoraTop": [0.634, 0.94], "modeTop": [0.617, 0.981]}}, "petastiIson": {"c": "", "w": 1.318, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.729, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.179, 0.915], "psifiston": [0.854, 0.14], "measureNumber": [0.172, 1.073], "isonIndicator": [0.714, 1.096], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.298, 1.04], "fthoraTop": [0.734, 0.846], "diesis": [0.464, 0.147], "klasmaBottom": [0.8, 0.083]}}, "petastiOligon": {"c": "", "w": 1.367, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.789, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.991], "psifiston": [0.86, 0.14], "measureNumber": [0.172, 0.953], "isonIndicator": [0.724, 0.913], "apli": [0.785, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.916], "fthoraTop": [0.734, 0.846], "klasmaBottom": [0.8, 0.083], "diesis": [0.464, 0.147]}}, "oligonKentimaMiddle": {"c": "", "w": 1.794, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.97, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.681, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.708, 0.459], "psifiston": [0.84, 0.113]}}, "oligonKentimataAbove": {"c": "", "w": 1.465, "a": {"fthoraTopSecondary": [0.24, 0.48], "yfenAbove": [0.93, 0.901], "yfenBelow": [0.929, -0.04], "endofonon": [0.772, -0.047], "heteronConnecting": [1.594, -0.019], "omalonConnecting": [1.59, 0.13], "measureNumber": [0.172, 0.753], "isonIndicator": [0.71, 1.126], "antikenoma": [0.82, 0.165], "noteTop": [0.262, 0.561], "fthoraBottom": [0.746, 0.194], "fthoraTop": [0.767, 0.791], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "gorgonTop": [0.842, 0.767]}}, "antikenoma": {"c": "", "w": 0.0, "a": {"antikenoma": [0.008, 0.113]}}, "oligonYpsiliRight": {"c": "", "w": 1.515, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 1.203], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 1.098], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.557, 0.489], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.598, 0.487], "klasmaBottom": [0.785, 0.16], "gorgonTop": [0.708, 0.5], "psifiston": [0.84, 0.113]}}, "oligonKentimataBelow": {"c": "", "w": 1.515, "a": {"diesisSecondary": [1.596, 0.897], "yfesisSecondary": [0.425, -0.145], "barline": [0.277, 0.59], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.686, 0.801], "endofonon": [0.772, -0.277], "heteron": [1.087, 0.227], "heteronConnecting": [1.684, -0.138], "apli": [0.803, -0.198], "measureNumber": [0.172, 0.753], "diesis": [0.71, 0.133], "isonIndicator": [0.71, 0.913], "omalonConnecting": [1.46, -0.04], "omalon": [1.04, -0.12], "antikenoma": [0.82, -0.085], "noteTop": [0.262, 0.561], "fthoraBottom": [0.384, 0.16], "fthoraTop": [0.743, 0.515], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.763, 0.505], "psifiston": [0.84, 0.113]}}};
@@ -222,7 +225,7 @@ let data,edits={};
 function fresh(){data=JSON.parse(JSON.stringify(ORIGINAL));}
 fresh();
 try{const s=localStorage.getItem(KEY);if(s)edits=JSON.parse(s)||{};}catch(e){}
-function applyEdits(){for(const id in edits){const [l,i]=id.split("-").map(Number);if(data[l]&&Array.isArray(data[l][i])){const e=edits[id];const s=data[l][i];s[1]=e[0];s[2]=e[1];s[3]=e[2];s[4]=e[3];s[5]=e[4];s[7]=e[5]===undefined?s[7]:e[5];if(e[6]!==undefined)s[9]=e[6];}}}
+function applyEdits(){for(const id in edits){const [l,i]=id.split("-").map(Number);if(data[l]&&Array.isArray(data[l][i])){const e=edits[id];const s=data[l][i];s[1]=e[0];s[2]=e[1];s[3]=e[2];s[4]=e[3];s[5]=e[4];s[7]=e[5]===undefined?s[7]:e[5];if(e[6]!==undefined)s[9]=e[6];if(e[7]!==undefined)s[12]=e[7];}}}
 applyEdits();
 function saveEdits(){try{localStorage.setItem(KEY,JSON.stringify(edits));}catch(e){}}
 
@@ -263,7 +266,7 @@ function compute(){
   flat=[];checks={};let cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1;
   data.forEach((line,l)=>line.forEach((s,i)=>{
     if(!Array.isArray(s)){
-      if(s.sec!==undefined){sc=SCALES[SECT[s.sec].sc];pend=0;return;}
+      if(s.sec!==undefined){sc=SCALES[SECT[s.sec].sc];pend=0;tf=1;return;}
       if(s.br){pend=0;const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,dur:0.5,idx:pv.idx,ison:pv.ison,sc});return;}
       if(s.tp)tf=s.tp; if(s.m===undefined)return;
       pend=0;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
@@ -287,27 +290,52 @@ function compute(){
     if(s[2])last.dur+=s[2];
     if(s[12]){const pv=flat[first-1];if(pv&&!pv.rest&&pv.dur>0.5)pv.dur-=0.5;last.dur+=(s[12]===1?0.5:1.5);}   // αργόν: ½ από τον προηγούμενο· διαργόν: και 1 χρόνος ακόμη
   }));
+  // (22-10-2026) κάθε ύμνος ψάλλεται στην ίδια περιοχή φωνής: η μεσαία νότα του κοντά στον Δι (η μαρτυρία λέει τον φθόγγο, όχι την οκτάβα)
+  if(SECT&&SECT.length){const secOfL=new Int32Array(data.length).fill(-1);SECT.forEach((S,k)=>{for(let l=S.l0;l<=S.l1&&l<data.length;l++)secOfL[l]=k;});
+    const by=new Map();flat.forEach(n=>{if(n.rest)return;const k=secOfL[n.l];if(!by.has(k))by.set(k,[]);by.get(k).push(n.idx);});
+    const sh=new Map();by.forEach((a,k)=>{a.sort((x,y)=>x-y);const md=a[a.length>>1];sh.set(k,7*Math.round((md-4)/7));});
+    flat.forEach(n=>{const d=sh.get(secOfL[n.l])||0;if(d){n.idx-=d;if(typeof n.ison==="number")n.ison-=d;}});}
 }
 // ---------- Εμφάνιση: η σελίδα όπως είναι + διαφανή κουτιά ----------
 const PAGES=D.pagesImg;
 const host=document.getElementById("pages");
-const pageEls=PAGES.map((p,n)=>{const d=document.createElement("div");d.className="pg";d.innerHTML=`<img src="${p.img}" alt="Σελίδα ${n+1}">`+(PAGES.length>1?`<span class="pgno">${n+1} / ${PAGES.length}</span>`:"");host.appendChild(d);return d;});
+// (22-10-2026, v26) Οι σελίδες «ζωντανεύουν» μόνο όταν πλησιάζεις: εικόνα και κουτιά συλλαβών.
+// Έτσι χωράει ΟΛΟ το βιβλίο (και 1000 σελίδες) χωρίς να βαραίνει το κινητό.
+const pageEls=PAGES.map((p,n)=>{const d=document.createElement("div");d.className="pg";d.dataset.pg=n;d.style.aspectRatio=p.w+" / "+p.h;
+  d.innerHTML=`<img alt="Σελίδα ${p.pageNo||n+1}">`+(PAGES.length>1?`<span class="pgno">σελ. ${p.pageNo||n+1}</span>`:"");
+  const im=d.querySelector("img");if(p.img)im.src=p.img;host.appendChild(d);return d;});
 const LINEPG=[],BOX=[];PAGES.forEach((p,n)=>p.lines.forEach(b=>{LINEPG.push(n);BOX.push(b);}));
-let cols={};let order=[];let selStart=null,selEnd=null;
+const LINES_OF=PAGES.map(()=>[]);LINEPG.forEach((pg,l)=>LINES_OF[pg].push(l));
+let cols={};let order=[];let posOf={};let selStart=null,selEnd=null;
+const live=new Set();   // σελίδες που έχουν τώρα κουτιά
+function pgImg(pg){return pageEls[pg].querySelector("img");}
+function loadImg(pg){const im=pgImg(pg);if(im.getAttribute("src"))return;const P=PAGES[pg];
+  if(P.img){im.src=P.img;return;}
+  if(D.imgFor&&!im.dataset.wait){im.dataset.wait="1";D.imgFor(P.pageNo).then(u=>{delete im.dataset.wait;if(u&&live.has(pg))im.src=u;}).catch(()=>{delete im.dataset.wait;});}}
+function mkBoxes(pg){const P=PAGES[pg],pe=pageEls[pg];
+  pe.querySelectorAll(".hb").forEach(e=>{delete cols[e.dataset.id];e.remove();});
+  for(const l of LINES_OF[pg]){let k=0;data[l].forEach((s,i)=>{if(!Array.isArray(s))return;const b=BOX[l][k++];if(!b)return;const id=l+"-"+i,pos=posOf[id];
+    const d=document.createElement("div");d.dataset.id=id;
+    d.className="hb"+(edits[id]?" mine":(s[8]?" q":""))+(pos===selStart?" st":"")+(pos===selEnd?" en":"")+((selStart!==null||selEnd!==null)&&pos>=(selStart??0)&&pos<=(selEnd??1e9)?" inrange":"")+(id===hlCurId?" now":"");
+    d.style.left=(b[0]/P.w*100)+"%";d.style.top=(b[1]/P.h*100)+"%";d.style.width=(b[2]/P.w*100)+"%";d.style.height=(b[3]/P.h*100)+"%";
+    d.title="«"+s[0]+"»";wireBox(d,l,i,pos);pe.appendChild(d);cols[id]=d;
+    if(edits[id]){try{const bd=document.createElement("div");bd.className="fixb";bd.innerHTML=neumeSVG(s);d.appendChild(bd);}catch(e){}}});}}
+function wake(pg){if(pg<0||pg>=PAGES.length)return;if(!live.has(pg)){live.add(pg);mkBoxes(pg);}loadImg(pg);}
+function sleepPg(pg){if(!live.has(pg))return;live.delete(pg);const pe=pageEls[pg];pe.querySelectorAll(".hb").forEach(e=>{delete cols[e.dataset.id];e.remove();});
+  if(!PAGES[pg].img){const im=pgImg(pg);im.removeAttribute("src");}}
+const pgOfId=id=>LINEPG[Number(String(id).split("-")[0])];
+if(PAGES.length>12&&window.IntersectionObserver){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const pg=Number(e.target.dataset.pg);if(e.isIntersecting)wake(pg);else sleepPg(pg);}),{rootMargin:"1600px 0px"});
+  pageEls.forEach(e=>io.observe(e));
+}else PAGES.forEach((p,pg)=>{live.add(pg);loadImg(pg);});
 function render(){
   compute();
-  host.querySelectorAll(".hb").forEach(e=>e.remove());cols={};order=[];
-  data.forEach((line,l)=>{let k=0;const P=PAGES[LINEPG[l]],pe=pageEls[LINEPG[l]];line.forEach((s,i)=>{
-    if(!Array.isArray(s))return;
-    const b=BOX[l][k++];if(!b)return;const id=l+"-"+i;
-    const d=document.createElement("div");order.push(id);const pos=order.length-1;
-    d.className="hb"+(edits[id]?" mine":(s[8]?" q":""))+(pos===selStart?" st":"")+(pos===selEnd?" en":"")+((selStart!==null||selEnd!==null)&&pos>=(selStart??0)&&pos<=(selEnd??1e9)?" inrange":"");
-    d.style.left=(b[0]/P.w*100)+"%";d.style.top=(b[1]/P.h*100)+"%";d.style.width=(b[2]/P.w*100)+"%";d.style.height=(b[3]/P.h*100)+"%";
-    d.title="«"+s[0]+"»";wireBox(d,l,i,pos);
-    pe.appendChild(d);cols[id]=d;
-  });});
-  const bad=Object.keys(checks).filter(k=>checks[k]===false).map(k=>Number(k.split("-")[0])+1);
-  document.getElementById("status").textContent=bad.length?"⚠ Η μελωδία δεν φτάνει στη μαρτυρία: "+[...new Set(bad.map(x=>(PAGES.length>1?"σελ. "+(LINEPG[x-1]+1)+", ":"")+"γραμμή "+(x-PAGES.slice(0,LINEPG[x-1]).reduce((a,p)=>a+p.lines.length,0))))].join(" · ")+" — κάπου πριν υπάρχει λάθος.":"";
+  order=[];posOf={};
+  data.forEach((line,l)=>{let k=0;line.forEach((s,i)=>{if(!Array.isArray(s))return;if(!BOX[l][k++])return;const id=l+"-"+i;posOf[id]=order.length;order.push(id);});});
+  live.forEach(pg=>mkBoxes(pg));
+  const bad=Object.keys(checks).filter(k=>checks[k]===false).map(k=>Number(k.split("-")[0]));
+  const where=[...new Set(bad.map(l=>{const P=PAGES[LINEPG[l]];return "σελ. "+(P.pageNo||LINEPG[l]+1)+", γραμμή "+(LINES_OF[LINEPG[l]].indexOf(l)+1);}))];
+  document.getElementById("status").textContent=where.length?"⚠ Η μελωδία δεν φτάνει στη μαρτυρία: "+where.slice(0,6).join(" · ")+(where.length>6?" · και άλλα "+(where.length-6):"")+" — κάπου πριν υπάρχει λάθος.":"";
 }
 
 // ---------- Τονικότητα: Δι από 49 έως 392 Hz (3 οκτάβες) ----------
@@ -338,7 +366,7 @@ const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
-  if((k.indexOf("xorodia")===0||k==="psaltis")&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
+  if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
   if(isChoir()){try{if(k!=="piano")await Foni.load(k);if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
@@ -377,11 +405,11 @@ const isonVol=()=>Number(document.getElementById("isonVol").value);
 function isonLevel(){return (isonV&&isonV.kind==="s"?0.5:0.11)*isonVol();}
 document.getElementById("isonVol").oninput=()=>{document.getElementById("isonVolLbl").textContent=Math.round(isonVol()*100)+"%";if(isonV&&ctx)isonV.out.gain.setTargetAtTime(isonLevel(),ctx.currentTime,0.08);if(choirLines&&choirLines.iso)choirLines.iso.setLevel(choirIsonLevel());};
 document.getElementById("isonVolLbl").textContent=Math.round(isonVol()*100)+"%";
-try{const v=localStorage.getItem('okt-voice2');if(v)document.getElementById('voiceSel').value=v;}catch(e){}
+try{let v=localStorage.getItem('okt-voice2');if(v==='psaltis_v'||v==='psaltis_o'||v==='psaltis_e')v='psaltis';if(v)document.getElementById('voiceSel').value=v;}catch(e){}
 if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel').value="xorodia_a";
 // (20-10-2026) Φωνή «Ψάλτης» από την ηχογράφηση: γίνεται η φωνή των σελίδων την πρώτη φορά, και ανεβαίνει ο τόνος στο ύψος της
 (function(){const vs=document.getElementById('voiceSel');try{if(!localStorage.getItem('okt-psaltis-v1')&&window.FONI_SETS&&FONI_SETS.psaltis){localStorage.setItem('okt-psaltis-v1','1');vs.value='psaltis';localStorage.setItem('okt-voice2','psaltis');}}catch(e){}
-  const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='psaltis'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+0.2));pe.dispatchEvent(new Event('input'));}}catch(e){}};
+  const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value.indexOf('psaltis')===0&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+0.2));pe.dispatchEvent(new Event('input'));}}catch(e){}};
   fit();vs.addEventListener('change',fit);})();
 
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
@@ -392,17 +420,23 @@ let looping=false;
 function isPlaying(){return !!voice||looping;}
 function setPlayBtn(){const b=document.getElementById("playBtn");if(!b)return;const on=isPlaying();b.textContent=on?"■ Σταμάτα":(resumeId?"▶ Συνέχεια":"▶ Ψάλλε");b.classList.toggle("on",on);}
 // (19-10-2026) Ο φωτισμός της συλλαβής ακολουθεί το «ρολόι» του ήχου (μαζί με την καθυστέρηση των ηχείων), όχι χρονόμετρα
-let HL=[],hlRaf=0,hlCur=null;
+let HL=[],hlRaf=0,hlCur=null,hlCurId=null;
 var resumeId=null;   // πού σταμάτησες: το επόμενο «Ψάλλε» συνεχίζει από εκεί
-function hlMark(t,cc){HL.push([t,cc]);if(!hlRaf)hlRaf=requestAnimationFrame(hlTick);}
+// (22-10-2026) η σελίδα μένει ήρεμη: κυλά μόνο όταν η συλλαβή βγει από τη ζώνη 22%–62% της οθόνης
+let userScrollUntil=0;
+["wheel","touchmove","keydown"].forEach(ev=>addEventListener(ev,()=>{userScrollUntil=Date.now()+5000;},{passive:true}));
+function followTo(cc){if(Date.now()<userScrollUntil)return;const r=cc.getBoundingClientRect(),H=innerHeight,top=H*0.22,bot=H*0.62;
+  if(r.top<top||r.bottom>bot){const y=scrollY+r.top-H*0.32;scrollTo({top:Math.max(0,y),behavior:"smooth"});}}
+function hlMark(t,id){HL.push([t,id]);if(!hlRaf)hlRaf=requestAnimationFrame(hlTick);}
 function hlTick(){hlRaf=0;if(!ctx||!HL.length)return;const lat=(ctx.outputLatency||0)+(ctx.baseLatency||0),now=ctx.currentTime-lat;let k=-1;
   for(let i=0;i<HL.length&&HL[i][0]<=now;i++)k=i;
-  if(k>=0){const cc=HL[k][1];HL=HL.slice(k+1);if(cc!==hlCur){Object.values(cols).forEach(x=>x.classList.remove("now"));cc.classList.add("now");cc.scrollIntoView({block:"center",behavior:"smooth"});hlCur=cc;}}
+  if(k>=0){const id=HL[k][1];HL=HL.slice(k+1);if(id!==hlCurId){const pg=pgOfId(id);wake(pg);wake(pg+1);const cc=cols[id];
+      if(hlCur)hlCur.classList.remove("now");hlCurId=id;hlCur=cc||null;if(window.__secSync)__secSync();
+      if(cc){cc.classList.add("now");followTo(cc);}else if(Date.now()>userScrollUntil)pageEls[pg].scrollIntoView({block:"start"});}}
   if(HL.length)hlRaf=requestAnimationFrame(hlTick);}
 function stopAll(){
-  HL=[];hlCur=null;if(hlRaf){cancelAnimationFrame(hlRaf);hlRaf=0;}
+  HL=[];if(hlCur)hlCur.classList.remove("now");hlCur=null;hlCurId=null;if(hlRaf){cancelAnimationFrame(hlRaf);hlRaf=0;}
   looping=false;timers.forEach(clearTimeout);timers=[];
-  Object.values(cols).forEach(c=>c.classList.remove("now"));
   if(!ctx)return;const t=ctx.currentTime;
   try{if(window.Foni)Foni.stopAll();}catch(e){}choirLines=null;
   [voice,isonV].forEach(v=>{if(!v||!v.out)return;v.out.gain.cancelScheduledValues(t);v.out.gain.setTargetAtTime(0,t,0.06);setTimeout(()=>{try{v.stop();}catch(e){}},500);});
@@ -416,22 +450,22 @@ function choirIsonLevel(){return 0.33*isonVol();}
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
-  const key=voiceSel(), isoKey=key==="psaltis"?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
+  const key=voiceSel(), isoKey=key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
   const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
   // (19-10-2026) Οι νότες ετοιμάζονται λίγο-λίγο (1,5″ μπροστά), όχι όλες μαζί: αλλιώς σε μεγάλες σελίδες
   // το κινητό/ο υπολογιστής «πνίγεται» από χιλιάδες ήχους και η φωνή κόβεται ή δεν ακούγεται.
-  let t=ctx.currentTime+0.25,isoT=null,isoF=0;const ev=[];
+  let t=ctx.currentTime+0.25,isoT=null,isoF=0,lastSk=null;const ev=[];
   const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const a=isoT,fq=isoF,d=tEnd-isoT;ev.push({t:a,run:()=>iso.note(a,fq,d,{soft:true,tail:0.35})});}isoT=null;};
   list.forEach((n,k)=>{
     const dur=n.sec?n.sec:beat*n.dur*(n.tf||1);
     if(n.rest){const tr=t;ev.push({t:tr,run:()=>mel.rest()});t+=dur;return;}
     const f=freq(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
-    ev.push({t:tn,run:()=>mel.note(tn,f,dur,{pet})});
+    const sk=n.l+"-"+n.i,cell=(data[n.l]&&data[n.l][n.i])||null,syl=(cell&&typeof cell[0]==="string")?cell[0]:"",newSyl=sk!==lastSk&&!!syl.trim();lastSk=sk;   // (22-10-2026) η συλλαβή, για τον «Ψάλτη με λόγια»
+    ev.push({t:tn,run:()=>mel.note(tn,f,dur,{pet,syl:newSyl?syl:"",newSyl})});
     if(iso){const fi=freq(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;}}
-    const cc=cols[n.l+"-"+n.i];
-    if(cc)hlMark(t,cc);
+    if(n.l>=0)hlMark(t,n.l+"-"+n.i);
     t+=dur;
   });
   flushIso(t);
@@ -461,8 +495,7 @@ function play(list,onEnd){
     if(isonV){const fi=freq(n.ison,0,n.sc);const ci=isonV.conv;
       if(k===0){isonV.params.forEach(p=>p.setValueAtTime(ci(fi),t));isonV.out.gain.setTargetAtTime(isonLevel(),t,0.15);}
       else isonV.params.forEach(p=>p.setTargetAtTime(ci(fi),t,0.1));}
-    const cc=cols[n.l+"-"+n.i];
-    if(cc)hlMark(t,cc);
+    if(n.l>=0)hlMark(t,n.l+"-"+n.i);
     t+=dur;
   });
   voice.out.gain.setTargetAtTime(0,t,0.12);
@@ -473,18 +506,24 @@ function play(list,onEnd){
 async function playSel(){
   ensureCtx();try{await loadVoice();}catch(e){}
   compute();
-  let a=selStart??0;const b=selEnd??1e9;
-  if(resumeId){const rp=order.indexOf(resumeId);if(rp>=a&&rp<=b)a=rp;}
+  let a=selStart??0;let b=selEnd??1e9;
+  if(resumeId){const rp=posOf[resumeId];if(rp!==undefined&&rp>=a&&rp<=b)a=rp;}
   resumeId=null;
-  let list=flat.filter(n=>{const p=order.indexOf(n.l+"-"+n.i);return p>=a&&p<=b;});
+  if(!order.length)return;
+  // (22-10-2026) ψάλλει ως το τέλος του ύμνου και μετά συνεχίζει μόνο του στον επόμενο (σε όλο το βιβλίο)
+  let cont=null;
+  if(selEnd===null){const L0=Number(order[Math.min(a,order.length-1)].split("-")[0]);const S=SECT.find(S=>L0>=S.l0&&L0<=S.l1);
+    if(S){let e=a;while(e+1<order.length&&Number(order[e+1].split("-")[0])<=S.l1)e++;if(e+1<order.length){cont=order[e+1];b=e;}}}
+  let list=flat.filter(n=>{const p=posOf[n.l+"-"+n.i];return p!==undefined&&p>=a&&p<=b;});
   if(!list.length)return;
   // (19-10-2026) παύση στο τέλος κάθε γραμμής: συνεχίζει με πάτημα στη σελίδα ή στο «▶ Συνέχεια»
   let nextId=null;const lp=document.getElementById("linePause");
   if(lp&&lp.checked){const L0=list[0].l;const cut=list.findIndex(n=>n.l!==L0);if(cut>0){nextId=list[cut].l+"-"+list[cut].i;list=list.slice(0,cut);}}
-  play(list,()=>{if(nextId){resumeId=nextId;setPlayBtn();return;}if(document.getElementById("loopOn").checked){looping=true;setPlayBtn();timers.push(setTimeout(()=>{looping=false;playSel();},700));}});
+  play(list,()=>{if(cont&&!nextId&&!document.getElementById("loopOn").checked){resumeId=cont;timers.push(setTimeout(()=>{if(!isPlaying()&&resumeId===cont)playSel();},250));return;}
+    if(nextId){resumeId=nextId;setPlayBtn();return;}if(document.getElementById("loopOn").checked){looping=true;setPlayBtn();timers.push(setTimeout(()=>{looping=false;playSel();},700));}});
 }
 let starting=false;
-document.getElementById("playBtn").onclick=async()=>{ if(starting)return; if(isPlaying()){ resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null); stopAll(); setPlayBtn(); return; }
+document.getElementById("playBtn").onclick=async()=>{ if(starting)return; if(isPlaying()){ resumeId=hlCurId; stopAll(); setPlayBtn(); return; }
   starting=true;const pb=document.getElementById("playBtn");pb.textContent="⏳ Ετοιμάζω…";
   try{await playSel();}catch(e){}finally{starting=false;setPlayBtn();} };
 // (19-10-2026) Η χορωδία ετοιμάζεται από πριν, για να ξεκινά αμέσως
@@ -498,7 +537,7 @@ document.getElementById("apBtn").onclick=()=>{   // (20-10-2026) το απήχη
   if(apAud&&!apAud.paused){apAud.pause();apAud=null;return;}
   if(isPlaying())stopAll();
   const ss=document.getElementById("secSel");let k=ss&&ss.value!==""?Number(ss.value):-1;
-  if(k<0){const cid=resumeId||(hlCur?Object.keys(cols).find(x=>cols[x]===hlCur):null);if(cid){const L=Number(cid.split("-")[0]);k=SECT.findIndex(S=>L>=S.l0&&L<=S.l1);}}   // (21-10-2026) ο ύμνος όπου βρίσκεσαι
+  if(k<0){const cid=resumeId||hlCurId;if(cid){const L=Number(cid.split("-")[0]);k=SECT.findIndex(S=>L>=S.l0&&L<=S.l1);}}   // (21-10-2026) ο ύμνος όπου βρίσκεσαι
   if(k<0){const gp=D.gp||0;k=0;SECT.forEach((S,q)=>{const pg=PAGES[LINEPG[S.l0]];if(pg&&pg.pageNo<=gp)k=q;});}
   const S=SECT[k]||SECT[0],md=(S&&S.mode)||"";
   const id={"Δ΄ Λέγετος":"dl","Α΄":"a","Β΄":"b","Γ΄":"g","Δ΄":"d","Πλ. Α΄":"pa","Πλ. Β΄":"pb","Βαρύς":"v","Πλ. Δ΄":"pd"}[md];
@@ -547,7 +586,7 @@ Object.keys(BASE).forEach(k=>oBase.appendChild(optBtn(svgGroup([[BASE[k].g,0,0]]
 function cell(){return data[cur.l][cur.i];}
 // (19-10-2026) Κουμπιά με τα ΙΔΙΑ σύμβολα που υπάρχουν στη σελίδα: κομμένα από την εικόνα της, με τα βήματά τους από κάτω
 const PKEYS={};
-const pgImgs=PAGES.map(p=>{const im=new Image();im.src=p.img;return im;});
+const pgImgs=new Proxy([],{get:(t,k)=>/^\d+$/.test(String(k))?pgImg(Number(k)):t[k]});
 function pageKeys(pg){if(PKEYS[pg])return PKEYS[pg];const seen={},out=[];
   ORIGINAL.forEach((line,l)=>{if(LINEPG[l]!==pg)return;let k=0;line.forEach((s,i)=>{if(!Array.isArray(s))return;const b=BOX[l][k++];if(!b)return;
     const key=keyOf(s);if(seen[key])return;seen[key]=1;out.push({code:s[1],st:s[7],k:s[2]||0,g:s[3]||0,a:s[12]||0,b});});});
@@ -576,7 +615,7 @@ function refresh(){const s=cell();
   [...oIso.children].forEach(b=>b.classList.toggle("sel",b.dataset.v===String(s[5])));}
 function changed(){const s=cell();const o=ORIGINAL[cur.l][cur.i];const id=cur.l+"-"+cur.i;
   const same=s[1]===o[1]&&s[2]===o[2]&&s[3]===o[3]&&s[4]===o[4]&&s[5]===o[5]&&JSON.stringify(s[7])===JSON.stringify(o[7])&&(s[9]||0)===(o[9]||0);
-  if(same)delete edits[id];else edits[id]=[s[1],s[2],s[3],s[4],s[5],s[7],s[9]||0];
+  if(same&&(s[12]||0)===(o[12]||0))delete edits[id];else edits[id]=[s[1],s[2],s[3],s[4],s[5],s[7],s[9]||0,s[12]||0];
   saveEdits();refresh();hear();}
 async function hear(){ensureCtx();try{await loadVoice();}catch(e){}compute();const id=[cur.l,cur.i];const ns=flat.filter(n=>n.l===id[0]&&n.i===id[1]);play(ns.map(n=>Object.assign({},n,{l:-1})));}
 document.getElementById("pHear").onclick=hear;
@@ -602,7 +641,7 @@ document.getElementById("copyBtn").onclick=async()=>{
     let a=null,b=null;
     order.forEach((id,p)=>{const l=Number(id.split("-")[0]);if(l>=S0.l0&&l<=S0.l1){if(a===null)a=p;b=p;}});
     selStart=a;selEnd=b;render();
-    const c=cols[order[a]];if(c)c.scrollIntoView({block:"center",behavior:"smooth"});
+    if(a!==null){wake(pgOfId(order[a]));const c=cols[order[a]];if(c)c.scrollIntoView({block:"center",behavior:"smooth"});}
   };
 })();
 // ---------- Κλίμακα του ύμνου (αλλάζει αν ο αναγνώστης έκανε λάθος) ----------
@@ -617,16 +656,30 @@ document.getElementById("copyBtn").onclick=async()=>{
   SECT.forEach((S,k)=>{if(savedM[k]){S.mode=savedM[k][0];S.sc=savedM[k][1];S.guess=0;}});
   const optTxt=()=>{[...sel.options].forEach(o=>{if(o.value==="")return;const S=SECT[Number(o.value)];o.textContent=(Number(o.value)+1)+". "+S.t+" · "+S.mode+(S.guess?" (;)":"");});};
   optTxt();
-  const sync=()=>{let k=sel.value;if(k===""&&SECT.length===1)k="0";sc.disabled=(k==="");md.disabled=(k==="");if(k!==""){const S=SECT[Number(k)];sc.value=S.sc;const v=S.mode+"|"+S.sc;md.value=[...md.options].some(o=>o.value===v)?v:([...md.options].find(o=>o.value.split("|")[0]===S.mode)||{value:""}).value;}};
-  md.onchange=()=>{let k=sel.value;if(k===""&&SECT.length===1)k="0";if(k===""||!md.value)return;const [m,c]=md.value.split("|");const S=SECT[Number(k)];S.mode=m;S.sc=c;S.guess=0;savedM[k]=[m,c];saved[k]=c;
-    try{localStorage.setItem(MK2,JSON.stringify(savedM));localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}sc.value=c;optTxt();stopAll();render();};
-  const old=sel.onchange; sel.onchange=()=>{old&&old();sync();};
-  sc.onchange=()=>{let k=sel.value;if(k===""&&SECT.length===1)k="0";if(k==="")return;SECT[Number(k)].sc=sc.value;saved[k]=sc.value;try{localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}stopAll();render();};
+  // (22-10-2026) ποιος ύμνος: ο επιλεγμένος, αλλιώς αυτός που ψάλλεις ή βλέπεις τώρα — ποτέ κλειδωμένα κουτιά
+  const secAt=()=>{if(sel.value!=="")return Number(sel.value);const id=hlCurId||resumeId;let L=null;
+    if(id)L=Number(String(id).split("-")[0]);else{const vp=window.__okt&&__okt.visiblePage?__okt.visiblePage():null;if(vp){const pg=PAGES.findIndex(P=>P.pageNo>=vp);if(pg>=0&&LINES_OF[pg].length)L=LINES_OF[pg][0];}}
+    if(L===null)return SECT.length?0:-1;const k=SECT.findIndex(S=>L>=S.l0&&L<=S.l1);return k<0?0:k;};
+  let lastK=null;
+  const sync=()=>{const k0=secAt();sc.disabled=false;md.disabled=false;if(k0<0)return;const k=String(k0);if(k===lastK)return;lastK=k;
+    const who=document.getElementById("secWho");if(who)who.textContent=SECT.length>1?"↑ για τον ύμνο «"+(SECT[k0].t||"").slice(0,40)+"»"+(SECT[k0].guess?" — ο ήχος βρέθηκε από τις μαρτυρίες, άλλαξέ τον αν θέλεις":""):"";
+    {const S=SECT[Number(k)];sc.value=S.sc;const v=S.mode+"|"+S.sc;md.value=[...md.options].some(o=>o.value===v)?v:([...md.options].find(o=>o.value.split("|")[0]===S.mode)||{value:""}).value;}};
+  md.onchange=()=>{const k=String(secAt());if(k==="-1"||!md.value)return;lastK=null;const [m,c]=md.value.split("|");const S=SECT[Number(k)];S.mode=m;S.sc=c;S.guess=0;savedM[k]=[m,c];saved[k]=c;
+    try{localStorage.setItem(MK2,JSON.stringify(savedM));localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}sc.value=c;optTxt();const wasP=isPlaying();if(wasP)resumeId=hlCurId;stopAll();render();if(wasP)playSel();};
+  const old=sel.onchange; sel.onchange=()=>{old&&old();lastK=null;sync();};
+  window.__secSync=sync;let sT=0;addEventListener("scroll",()=>{if(sT)return;sT=setTimeout(()=>{sT=0;if(!hlCurId)sync();},400);},{passive:true});
+  sc.onchange=()=>{const k=String(secAt());if(k==="-1")return;lastK=null;SECT[Number(k)].sc=sc.value;saved[k]=sc.value;try{localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}const wasP=isPlaying();if(wasP)resumeId=hlCurId;stopAll();render();if(wasP)playSel();};
   sync();
-  window.__okt={compute:()=>{compute();return flat;},data,SECT,order:()=>order,play:playSel,stop:stopAll,playChoir:(l,e)=>playChoir(l,e),setCtx:c=>{ctx=c;},getCtx:()=>ctx,playAt:(pn,fx,fy,noPlay)=>{let best=null,bd=1e18;
+  window.__okt={jumpTo:(pn)=>{let pg=PAGES.findIndex(P=>P.pageNo>=pn);if(pg<0)pg=PAGES.length-1;wake(pg);wake(pg+1);
+      const l=LINES_OF[pg][0];let id=null;if(l!==undefined){const i=data[l].findIndex(x=>Array.isArray(x));if(i>=0)id=l+"-"+i;}
+      selStart=null;selEnd=null;resumeId=id;setPlayBtn();setTimeout(()=>pageEls[pg].scrollIntoView({block:"start"}),60);return pg;},
+    pages:()=>PAGES.map(P=>P.pageNo),visiblePage:()=>{const y=Math.min(innerHeight*0.4,300);let lo=0,hi=PAGES.length-1;
+      while(lo<hi){const md=(lo+hi+1)>>1;if(pageEls[md].getBoundingClientRect().top<=y)lo=md;else hi=md-1;}
+      return PAGES[lo]?PAGES[lo].pageNo:null;},
+    compute:()=>{compute();return flat;},data,SECT,order:()=>order,play:playSel,stop:stopAll,playChoir:(l,e)=>playChoir(l,e),setCtx:c=>{ctx=c;},getCtx:()=>ctx,playAt:(pn,fx,fy,noPlay)=>{let best=null,bd=1e18;
     data.forEach((line,l)=>{const P=PAGES[LINEPG[l]];if(!P||P.pageNo!==pn)return;let k=0;line.forEach((s,i)=>{if(!Array.isArray(s))return;const b=BOX[l][k++];if(!b)return;
       const dx=(b[0]+b[2]/2)-fx*P.w,dy=(b[1]+b[3]/2)-fy*P.h,d=dx*dx+4*dy*dy;if(d<bd){bd=d;best=l+"-"+i;}});});
-    if(best){selStart=null;selEnd=null;resumeId=best;}const pb=document.getElementById("playBtn");if(noPlay){setPlayBtn();const cc=best&&cols[best];if(cc){cc.classList.add("now");setTimeout(()=>cc.scrollIntoView({block:"center",behavior:"smooth"}),300);}return;}pb.click();},freq:(a,b,c)=>freq(a,b,c)};
+    if(best){selStart=null;selEnd=null;resumeId=best;wake(pgOfId(best));}const pb=document.getElementById("playBtn");if(noPlay){setPlayBtn();if(best)wake(pgOfId(best));const cc=best&&cols[best];if(cc){cc.classList.add("now");setTimeout(()=>cc.scrollIntoView({block:"center",behavior:"smooth"}),300);}return;}pb.click();},freq:(a,b,c)=>freq(a,b,c)};
   if(D.goPage){
     let li=-1;for(let l=0;l<data.length;l++){const pno=D.pagesImg[LINEPG[l]].pageNo;if(pno>=D.goPage){li=l;break;}}
     if(li>=0){const k=SECT.findIndex(s=>li>=s.l0&&li<=s.l1);if(k>=0){sel.value=String(k);setTimeout(()=>sel.onchange(),50);}}
@@ -701,13 +754,67 @@ render();
   async function saveWholeBook(u8,key,n){   // στο παρασκήνιο, όταν δεν ψάλλει
     if(bgOn)return;bgOn=true;const st=$("bgSave");
     for(let p=1;p<=n;p++){
-      while(/Σταμάτα|Ετοιμάζω/.test(($("playBtn")||{}).textContent||""))await new Promise(r=>setTimeout(r,1500));
-      try{await pageData(u8,key,p,true);}catch(e){}
-      if(st)st.textContent="💾 Αποθηκεύω τη μουσική του βιβλίου στη συσκευή: "+p+" / "+n;
-      await new Promise(r=>setTimeout(r,60));}
+      // (22-10-2026) και όταν ψάλλει: σιγά-σιγά, για να μη διακόπτεται η φωνή
+      if(/Σταμάτα|Ετοιμάζω/.test(($("playBtn")||{}).textContent||""))await new Promise(r=>setTimeout(r,180));
+      try{await pageData(u8,key,p,false);}catch(e){}
+      if(st)st.textContent="📖 Ετοιμάζω όλο το βιβλίο για ψάλσιμο: σελίδα "+p+" από "+n+" (μία φορά μόνο)";
+      await new Promise(r=>setTimeout(r,20));}
     try{await idbPut(metaKey(key),{n,all:1});}catch(e){}
     try{await saveToc(key,n,document.getElementById("docTitle").textContent);}catch(e){}
-    if(st)st.textContent="✓ Όλο το βιβλίο είναι αποθηκευμένο στη συσκευή — ανοίγει αμέσως, σε κάθε σελίδα.";bgOn=false;}
+    let F=null;try{F=await buildFull(u8,key,n,(ph,p,N)=>{if(st)st.textContent="📖 Ενώνω τις σελίδες του βιβλίου: "+p+" / "+N;});}catch(e){console.error(e);}
+    bgOn=false;
+    if(!F){if(st)st.textContent="✓ Όλο το βιβλίο είναι αποθηκευμένο στη συσκευή.";return;}
+    // πέρασμα σε «όλο το βιβλίο», στη σελίδα που βλέπεις — αν δεν ψάλλει εκείνη τη στιγμή
+    const goFull=()=>{const u=new URL(location.href);const vp=(window.__okt&&__okt.visiblePage&&__okt.visiblePage())||Number(u.searchParams.get("page")||1);
+      if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",document.getElementById("docTitle").textContent||"");}
+      if(!u.searchParams.get("pdf"))return false;u.searchParams.set("page",String(vp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());return true;};
+    const playing=()=>/Σταμάτα|Ετοιμάζω/.test(($("playBtn")||{}).textContent||"")||document.getElementById("panel").style.display==="flex";
+    if(st){st.innerHTML="";const b=document.createElement("button");b.type="button";b.textContent="📖 Το βιβλίο είναι έτοιμο ολόκληρο — πάτα εδώ";
+      b.style.cssText="font-size:20px;padding:12px 18px;border-radius:14px;border:3px solid #2e9d57;background:#e3f5ea;color:#123;font-weight:800";b.onclick=goFull;st.appendChild(b);}
+    if(!playing())setTimeout(()=>{if(!playing())goFull();},1500);}
+  // (22-10-2026, v26) ΟΛΟ το βιβλίο: διαβάζει τις αποθηκευμένες σελίδες μία-μία και τις ενώνει (χωρίς να γεμίζει η μνήμη)
+  const FV="f1",fullKey=key=>"full:"+key+":"+RV+":"+FV;
+  const idle=()=>new Promise(r=>setTimeout(r,0));
+  function cleanTitles(D){D.sect.forEach(S=>{const t=String(S.t||"");const c=t.replace(/(\S+\s+){0,3}\d{4}\s*σ\.?\s*\d+[*#]*\s*[-·]?/g,"").replace(/\s+/g," ").trim();if(c.length>2)S.t=c;});}
+  async function buildFull(u8,key,n,prog){const B=MRB.builder();
+    for(let p=1;p<=n;p++){let c=null;try{c=await pageData(u8,key,p,false);}catch(e){}if(c&&c.X)B.head(c.X,p-1);if(prog&&p%10===0)prog(1,p,2*n);if(p%15===0)await idle();}
+    for(let p=1;p<=n;p++){let c=null;try{c=await idbGet(pgKey(key,p));}catch(e){}if(c&&c.X){try{B.add(c.X,p-1,p);}catch(e){console.error(e);}}if(prog&&p%10===0)prog(2,n+p,2*n);if(p%15===0)await idle();}
+    const D=B.done();cleanTitles(D);
+    try{await idbPut(fullKey(key),D);}catch(e){}
+    return D;}
+  function showHead(title){let h=$("bookHead");if(!h){h=document.createElement("div");h.id="bookHead";
+      h.style.cssText="position:fixed;left:0;right:0;top:0;z-index:31;background:#0e1838;color:#e2bd5e;font:700 17px Georgia,serif;text-align:center;padding:5px 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid #e2bd5e";
+      document.body.appendChild(h);}h.textContent="📖 "+(title||"Βιβλίο PDF");return h;}
+  function openFull(D,u8,key,n,title,goPage,auto){
+    D.pagesImg=D.pages.map(pg=>({img:null,w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
+    D.imgFor=p=>pageData(u8,key,p,true).then(c=>c.img);
+    D.key=key+":full";D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;D.full=1;
+    $("docTitle").textContent=D.title;
+    $("docSub").textContent="📖 Όλο το βιβλίο · "+n+" σελίδες · "+D.sect.length+" ύμνοι"+(D.nfail?" · ⚠ "+D.nfail+" σημεία θέλουν έλεγχο (πορτοκαλί)":"");
+    $("loader").style.display="none";$("mainWrap").style.display="";$("mainBar").style.display="";
+    $("btnBackLib").style.bottom="";$("btnHome").style.bottom="";
+    const st=$("bgSave");if(st)st.textContent="✓ Όλο το βιβλίο είναι έτοιμο: ψάλλει σε όποια σελίδα πας, και συνεχίζει μόνο του στον επόμενο ύμνο.";
+    BOOT(D);
+    // βελάκια: μία σελίδα πίσω/μπρος · και «πήγαινε στη σελίδα»
+    const ps=__okt.pages();
+    const step=d=>{const v=__okt.visiblePage()||ps[0];let i=ps.findIndex(x=>x>=v);if(i<0)i=ps.length-1;i=Math.max(0,Math.min(ps.length-1,i+d));__okt.jumpTo(ps[i]);};
+    [["pgPrevW",-1],["pgNextW",1],["pgPrevW2",-1],["pgNextW2",1]].forEach(([id,d])=>{const b=$(id);if(!b)return;b.disabled=false;b.textContent=d<0?"◀ Σελίδα":"Σελίδα ▶";b.onclick=()=>step(d);});
+    {const hd=showHead(D.title);const nv=$("pgNav");nv.style.display="flex";nv.style.cssText+=";position:fixed;left:0;right:0;top:"+hd.offsetHeight+"px;z-index:30;background:rgba(14,24,56,.96);border-bottom:2px solid #e2bd5e;padding:6px 8px;margin:0;align-items:center";
+      nv.querySelectorAll("button").forEach(b=>{b.style.fontSize="18px";b.style.padding="9px 12px";});
+      const n2=$("pgNav2");if(n2)n2.style.display="none";
+      document.querySelector("#mainWrap").style.paddingTop=(nv.offsetHeight+hd.offsetHeight+8)+"px";
+      // η σελίδα που βλέπεις, πάντα γραμμένη πάνω
+      const lab=document.createElement("b");lab.id="pgNow";lab.style.cssText="font-size:20px;color:#e2bd5e;min-width:5.5em;text-align:center";nv.insertBefore(lab,nv.children[1]||null);
+      let tk=0;const upd=()=>{tk=0;const v=__okt.visiblePage();lab.textContent=v?"σελ. "+v:"";};addEventListener("scroll",()=>{if(!tk)tk=requestAnimationFrame(upd);},{passive:true});setTimeout(upd,300);}
+    const nv=$("pgNav");if(nv&&!$("goPg")){const w=document.createElement("span");w.style.cssText="display:inline-flex;gap:6px;align-items:center;font-size:20px";
+      w.innerHTML='Πήγαινε <input id="goPg" type="number" min="1" max="'+n+'" style="width:90px;font-size:22px;padding:8px;border-radius:12px;border:2px solid #e2bd5e"> <button type="button" id="goPgB" style="font-size:20px;padding:10px 14px;border-radius:12px;border:3px solid #e2bd5e;background:#172a5e;color:#f6ecd4;font-weight:800">OK</button>';
+      nv.appendChild(w);const go=()=>{const v=Number($("goPg").value);if(v>=1)__okt.jumpTo(v);};$("goPgB").onclick=go;$("goPg").onkeydown=e=>{if(e.key==="Enter")go();};}
+    const q=new URLSearchParams(location.search);
+    if(q.get("fx")!==null&&__okt.playAt){setTimeout(()=>__okt.playAt(Number(q.get("page")||0),Number(q.get("fx")),Number(q.get("fy")),!auto),300);if(auto)return;}
+    else if(goPage>1)__okt.jumpTo(goPage);
+    if(auto)autoPlay();
+  }
+  let skipTried=false;
   async function run(buf,title,goPage,auto){
     try{
       $("ldFile").parentElement.style.display="none";
@@ -717,6 +824,9 @@ render();
       const n=meta&&meta.n?meta.n:(await getDoc(u8)).numPages;
       if(!meta){meta={n};try{await idbPut(metaKey(key),meta);}catch(e){}}
       libPages(n);
+      let FULL=null;try{FULL=await idbGet(fullKey(key));}catch(e){}
+      if(!FULL&&meta&&meta.all){$("ldMsg").textContent="📖 Ετοιμάζω όλο το βιβλίο για ψάλσιμο…";try{FULL=await buildFull(u8,key,n,(ph,p,N)=>{msg("📖 Ετοιμάζω όλο το βιβλίο για ψάλσιμο · "+Math.round(100*p/N)+"%");bar(p/N);});}catch(e){console.error(e);FULL=null;}}
+      if(FULL&&FULL.lines&&FULL.lines.length)return openFull(FULL,u8,key,n,title,goPage,auto);
       if(!goPage)goPage=1;
       // διαβάζει τη σελίδα που ζήτησες και τις γύρω της (από την αποθήκη, αν έχουν ήδη διαβαστεί)
       let first=1,last=n; const pnums=[];
@@ -731,26 +841,39 @@ render();
         const c=await pageData(u8,key,p,true);P.push(c.X);imgs.push(c.img);await new Promise(r=>setTimeout(r,0));}
       const D=MRB.build(P); D.pages.forEach(pg=>{pg.pageNo=pnums[pg.pageNo-1];});
       if(preHead&&D.sect.length&&preHead.mode){const S0=D.sect[0];if(!S0.mode||S0.guess||/^βάση/.test(S0.mode)){S0.mode=preHead.mode[0];S0.sc=preHead.mode[1];S0.guess=0;if(preHead.title&&/^Ύμνος/.test(S0.t))S0.t=preHead.title;}}
+      if(!D.lines.length&&last<n&&!skipTried){   // (22-10-2026) εξώφυλλο/περιεχόμενα/κείμενο: πάμε μόνοι μας στην πρώτη σελίδα με μουσική
+        skipTried=true;
+        for(let p=last+1;p<=Math.min(n,last+60);p++){msg("Ψάχνω την πρώτη σελίδα με μουσική… σελίδα "+p);
+          try{const X=(await pageData(u8,key,p,false)).X;const T=MRB.build([X]);if(T.lines.length)return run(buf,title,p,auto);}catch(e){}}
+      }
       if(!D.lines.length){
         const fonts=new Set();P.forEach(X=>(X.chars||[]).forEach(ch=>{const f=String(ch.font||"").replace(/^[A-Z]{6}\+/,"");if(f&&!/^g_d|Times|Arial|Calibri|Cambria|Tahoma|Didot|Genesis|Sylfaen/i.test(f))fonts.add(f);}));
-        msg("Σε αυτές τις σελίδες ("+pnums[0]+"–"+pnums[pnums.length-1]+") δεν βρήκα βυζαντινή σημειογραφία που να ξέρω."+(fonts.size?" Γραμματοσειρές του βιβλίου: "+[...fonts].slice(0,8).join(", ")+". Στείλε στον Claude μια σελίδα με αυτή τη γραμματοσειρά για να τη μάθει.":" Αν το βιβλίο είναι σκαναρισμένο (φωτογραφία), δεν διαβάζεται αυτόματα."));
+        const known=[...fonts].some(f=>/BZ\s*(Byzantina|Loipa|Fthores|Ison)|Byzantinografos|MKXronos|MK20|Mg/i.test(f));
+        msg("Σε αυτές τις σελίδες ("+pnums[0]+"–"+pnums[pnums.length-1]+") δεν βρήκα βυζαντινή σημειογραφία που να ξέρω."+(known?" Μάλλον είναι σελίδες με κείμενο (εξώφυλλο, περιεχόμενα, οδηγίες). Πάτα «Επόμενες σελίδες ▶».":fonts.size?" Γραμματοσειρές του βιβλίου: "+[...fonts].slice(0,8).join(", ")+". Στείλε στον Claude μια σελίδα με αυτή τη γραμματοσειρά για να τη μάθει.":" Αν το βιβλίο είναι σκαναρισμένο (φωτογραφία), δεν διαβάζεται αυτόματα."));
+        // (22-10-2026) βελάκια για να συνεχίσεις στις επόμενες/προηγούμενες σελίδες, αντί να κολλάει
+        if(n>pnums.length){const go2=pp=>{const u=new URL(location.href);if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",title||"");}u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
+          const w=document.createElement("div");w.style.cssText="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0";
+          const mk=(t,pp,dis)=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.disabled=dis;b.style.cssText="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800";b.onclick=()=>{b.textContent="⏳";go2(pp);};return b;};
+          w.appendChild(mk("◀ Προηγούμενες σελίδες",Math.max(1,first-4),first<=1));w.appendChild(mk("Επόμενες σελίδες ▶",Math.min(n,last+1),last>=n));
+          $("ldMsg").after(w);}
         $("ldFile").parentElement.style.display="";return;}
       D.pagesImg=D.pages.map(pg=>({img:imgs[pnums.indexOf(pg.pageNo)],w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
-      D.key=key;D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;
+      D.key=key+(first>1?":w"+first:"");D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;
       $("docTitle").textContent=D.title;
       $("docSub").textContent="Σελίδες "+pnums[0]+"–"+pnums[pnums.length-1]+" από "+n+" · "+D.sect.length+" ύμνοι"+(D.nfail?" · ⚠ "+D.nfail+" σημεία θέλουν έλεγχο (πορτοκαλί)":"");
       // κουμπιά για τις προηγούμενες / επόμενες σελίδες του βιβλίου
-      const nav=$("pgNav");if(nav){nav.style.display=n>12?"":"none";
-        const go=pp=>{const u=new URL(location.href);u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
-        $("pgPrevW").disabled=first<=1;$("pgNextW").disabled=last>=n;
+      const nav=$("pgNav");if(nav){nav.style.display=n>12?"flex":"none";const nav2=$("pgNav2");if(nav2)nav2.style.display=n>12?"flex":"none";
+        const go=pp=>{const u=new URL(location.href);if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",title||"");}u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
+        $("pgPrevW").disabled=first<=1;$("pgNextW").disabled=last>=n;$("pgPrevW2").disabled=first<=1;$("pgNextW2").disabled=last>=n;
         const hold=(b,d,lbl)=>{let t=null,iv=null,tg=0,moved=false;
           b.onclick=()=>{if(moved){moved=false;return;}go(d<0?Math.max(1,first-4):Math.min(n,last+1));};
           b.addEventListener("pointerdown",()=>{moved=false;tg=d<0?first:last;t=setTimeout(()=>{iv=setInterval(()=>{tg=Math.max(1,Math.min(n,tg+d*2));moved=true;b.textContent=(d<0?"◀ ":"")+"Σελίδα "+tg+(d>0?" ▶":"");},150);},450);});
           const up=()=>{clearTimeout(t);if(iv){clearInterval(iv);iv=null;}if(moved){b.textContent="⏳ Σελίδα "+tg;go(tg);}};
           b.addEventListener("pointerup",up);b.addEventListener("pointercancel",up);};
-        hold($("pgPrevW"),-1);hold($("pgNextW"),1);}
+        hold($("pgPrevW"),-1);hold($("pgNextW"),1);hold($("pgPrevW2"),-1);hold($("pgNextW2"),1);}
       $("loader").style.display="none";$("mainWrap").style.display="";$("mainBar").style.display="";
       $("btnBackLib").style.bottom="";$("btnHome").style.bottom="";
+      {const hd=showHead(D.title);document.querySelector("#mainWrap").style.paddingTop=(hd.offsetHeight+10)+"px";}
       BOOT(D);
       if(auto)autoPlay();
       else{const q=new URLSearchParams(location.search);if(q.get("fx")!==null&&window.__okt&&__okt.playAt)setTimeout(()=>__okt.playAt(Number(q.get("page")||0),Number(q.get("fx")),Number(q.get("fy")),true),300);}
