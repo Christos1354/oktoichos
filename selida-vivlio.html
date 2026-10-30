@@ -704,7 +704,17 @@ render();
   const bar=(f)=>{$("ldBarW").style.display="block";$("ldBar").style.width=Math.round(f*100)+"%";};
   function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("script"));document.head.appendChild(s);});}
   let pdfjsP=null;
-  function loadPdfJs(){if(!pdfjsP)pdfjsP=(async()=>{const base="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";await loadScript(base+"pdf.min.js");await loadScript(base+"pdf.worker.min.js");return window.pdfjsLib;})().catch(e=>{pdfjsP=null;throw e;});return pdfjsP;}
+  function loadPdfJs(){
+  // (30-10-2026) ο αναγνώστης PDF από τον ίδιο τον ιστότοπο, με δικό του «βοηθό» (worker): η σελίδα δεν παγώνει
+  if(!pdfjsP) pdfjsP=(async()=>{
+    try{ await loadScript("pdfjs/pdf.min.js?v=1"); if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc=new URL("pdfjs/pdf.worker.min.js?v=1",location.href).href; return window.pdfjsLib; } }catch(e){}
+    const base="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+    await loadScript(base+"pdf.min.js");
+    await loadScript(base+"pdf.worker.min.js");   // εφεδρικό: στο ίδιο νήμα
+    return window.pdfjsLib;
+  })().catch(e=>{ pdfjsP=null; throw e; });
+  return pdfjsP;
+}
   function idbGet(k){return new Promise(res=>{try{const r=indexedDB.open("okt-pdf",1);r.onupgradeneeded=()=>r.result.createObjectStore("files");
     r.onsuccess=()=>{try{const db=r.result;const t=db.transaction("files","readonly");const g=t.objectStore("files").get(k);g.onsuccess=()=>res(g.result||null);g.onerror=()=>res(null);}catch(e){res(null);}};r.onerror=()=>res(null);}catch(e){res(null);}});}
   function hash(u8){let h=2166136261;const step=Math.max(1,Math.floor(u8.length/4096));for(let i=0;i<u8.length;i+=step){h^=u8[i];h=Math.imul(h,16777619);}return (h>>>0).toString(36)+"-"+u8.length;}
@@ -830,10 +840,18 @@ render();
       msg("Ανοίγω το βιβλίο…");
       const u8=new Uint8Array(buf); const key=hash(u8);
       let meta=await idbGet(metaKey(key));
+      // (30-10-2026) Βιβλία της κοινής βιβλιοθήκης: η μουσική τους είναι ΗΔΗ διαβασμένη (αρχείο .json δίπλα στο PDF).
+      // Ανοίγουν αμέσως, σε κάθε συσκευή, χωρίς να ξαναδιαβάζονται σελίδα-σελίδα.
+      let PRE=null;
+      if(!meta&&libPath&&/^vivlia\/.+\.pdf$/i.test(libPath)){msg("Φέρνω το έτοιμο βιβλίο…");
+        try{const r=await fetch(libPath.replace(/\.pdf$/i,".json"));if(r.ok){const J=await r.json();
+          if(J&&J.n&&J.D&&J.D.lines&&J.D.lines.length){PRE=J;meta={n:J.n,all:1};
+            try{await idbPut(metaKey(key),meta);}catch(e){} try{await idbPut(fullKey(key),J.D);}catch(e){}
+            try{const T=JSON.parse(localStorage.getItem("okt-toc")||"{}");T[libPath]={n:J.n,v:2,full:true,title:title||"",items:J.toc||[]};localStorage.setItem("okt-toc",JSON.stringify(T));}catch(e){}}}}catch(e){PRE=null;}}
       const n=meta&&meta.n?meta.n:(await getDoc(u8)).numPages;
       if(!meta){meta={n};try{await idbPut(metaKey(key),meta);}catch(e){}}
       libPages(n);
-      let FULL=null;try{FULL=await idbGet(fullKey(key));}catch(e){}
+      let FULL=PRE?PRE.D:null;if(!FULL){try{FULL=await idbGet(fullKey(key));}catch(e){}}
       if(!FULL&&meta&&meta.all){$("ldMsg").textContent="📖 Ετοιμάζω όλο το βιβλίο για ψάλσιμο…";try{FULL=await buildFull(u8,key,n,(ph,p,N)=>{msg("📖 Ετοιμάζω όλο το βιβλίο για ψάλσιμο · "+Math.round(100*p/N)+"%");bar(p/N);});}catch(e){console.error(e);FULL=null;}}
       if(FULL&&FULL.lines&&FULL.lines.length)return openFull(FULL,u8,key,n,title,goPage,auto);
       if(!goPage)goPage=1;

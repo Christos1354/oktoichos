@@ -1,8 +1,8 @@
-// Οκτώηχος: λειτουργία χωρίς διαδίκτυο · έκδοση v29 (23-10-2026)
+// Οκτώηχος: λειτουργία χωρίς διαδίκτυο · έκδοση v30 (30-10-2026: κοινή βιβλιοθήκη, αναγνώστης PDF στον ιστότοπο)
 // (22-10-2026) Σελίδες ΚΑΙ αρχεία .js: πρώτα από το διαδίκτυο (για να έρχεται πάντα η νέα έκδοση),
 // αλλιώς από την αποθήκη. Έτσι σε κάθε ενημέρωση ανεβαίνουν ΜΟΝΟ τα αρχεία που άλλαξαν.
-const CACHE = "oktoichos-v29";
-const CORE = ["./", "./index.html", "./selida-simeron.html", "./selida-megali-paraskevi.html", "./selida-allilouia.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png"];
+const CACHE = "oktoichos-v30";
+const CORE = ["./", "./index.html", "./selida-simeron.html", "./selida-megali-paraskevi.html", "./selida-allilouia.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png", "./pdfjs/pdf.min.js?v=1", "./pdfjs/pdf.worker.min.js?v=1"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

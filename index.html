@@ -2042,12 +2042,29 @@ let artifactCap=null, canPublish=true, saving=Promise.resolve(), saveTimer=null,
 let statusMsg="";
 function setStatus(t){ statusMsg=t; const el=$("libStatus"); if(el) el.textContent=t; }
 
+function mergeShared(R){
+  lib.books=lib.books||[]; lib.hymns=lib.hymns||[]; const hid=lib.hidden||[]; let ch=false;
+  (R.books||[]).forEach(rb=>{
+    if(hid.includes(rb.pdf)) return;
+    let b=lib.books.find(x=>x.pdf===rb.pdf);
+    if(!b){ b=lib.books.find(x=>x.local&&x.size&&x.size===rb.size);   // το ίδιο αρχείο που είχες ανοίξει σε αυτή τη συσκευή
+      if(b){ b.pdf=rb.pdf; b.local=false; b.title=rb.title; b.shared=1; ch=true; } }
+    if(!b){ lib.books.push(Object.assign({marks:[]},rb)); ch=true; return; }
+    if(rb.toc&&!b.toc){ b.toc=rb.toc; ch=true; }
+    if(rb.pages&&!b.pages){ b.pages=rb.pages; ch=true; }
+    if(!b.shared){ b.shared=1; ch=true; }
+  });
+  (R.hymns||[]).forEach(h=>{ if(h&&h.id&&!lib.hymns.find(x=>x.id===h.id)){ lib.hymns.push(h); ch=true; } });
+  if(!lib.apech) lib.apech={};
+  if(ch) store.set("okt-lib",lib);
+}
 async function loadRemote(){
   try{
     const r=await fetch("library.json",{cache:"no-store"});
     if(r.ok){ const remote=await r.json();
-      if(remote&&Array.isArray(remote.hymns)&&(remote.savedAt||0)>=(lib.savedAt||0)){ lib=remote; if(!lib.apech) lib.apech={}; dropOldApech(); store.set("okt-lib",lib); }
-      else if((lib.savedAt||0)>(remote.savedAt||0)) dirty=true;
+      // (30-10-2026) Κοινή βιβλιοθήκη: τα βιβλία του ιστότοπου (φάκελος vivlia) μπαίνουν σε ΚΑΘΕ συσκευή,
+      // χωρίς να σβήνεται ό,τι έχεις ήδη (ψαλμοί, σελιδοδείκτες, δικά σου διαστήματα)
+      if(remote&&Array.isArray(remote.hymns)) mergeShared(remote);
     }
   }catch(e){}
   try{ if(window.claude&&window.claude.use){ artifactCap=await window.claude.use("artifact"); } }catch(e){ artifactCap=null; }
@@ -2115,10 +2132,12 @@ async function getPdfBlob(path){
 let pdfjsP=null;
 function loadScript(src){ return new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=res; sc.onerror=()=>rej(new Error("script")); document.head.appendChild(sc); }); }
 function loadPdfJs(){
+  // (30-10-2026) ο αναγνώστης PDF από τον ίδιο τον ιστότοπο, με δικό του «βοηθό» (worker): η σελίδα δεν παγώνει
   if(!pdfjsP) pdfjsP=(async()=>{
+    try{ await loadScript("pdfjs/pdf.min.js?v=1"); if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc=new URL("pdfjs/pdf.worker.min.js?v=1",location.href).href; return window.pdfjsLib; } }catch(e){}
     const base="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
     await loadScript(base+"pdf.min.js");
-    await loadScript(base+"pdf.worker.min.js");   // τρέχει στο ίδιο νήμα, χωρίς ξεχωριστό worker
+    await loadScript(base+"pdf.worker.min.js");   // εφεδρικό: στο ίδιο νήμα
     return window.pdfjsLib;
   })().catch(e=>{ pdfjsP=null; throw e; });
   return pdfjsP;
@@ -2639,6 +2658,7 @@ function withDel(btn,onDel,label){
   w.append(btn,d); return w;
 }
 function deleteBook(bk){
+  if(bk.shared){ lib.hidden=lib.hidden||[]; if(!lib.hidden.includes(bk.pdf)) lib.hidden.push(bk.pdf); }   // (30-10-2026) κοινό βιβλίο: δεν ξαναμπαίνει σε αυτή τη συσκευή
   if(!bk.local) pendingFiles[bk.pdf]=null; idb.del(bk.pdf); delete pdfCache[bk.pdf]; delete pdfDocs[bk.pdf];
   idb.keys().then(keys=>keys.filter(k=>typeof k==="string"&&k.startsWith("ocr:"+bk.pdf+":")).forEach(k=>idb.del(k)));
   lib.books=(lib.books||[]).filter(b=>b!==bk); scheduleSave(800); setStatus("Το βιβλίο σβήστηκε.");
@@ -2659,7 +2679,7 @@ let showAllBooks=false;
 function recentIds(){ try{ return JSON.parse(localStorage.getItem("okt-recent")||"[]")||[]; }catch(e){ return []; } }
 function markRecent(id){ try{ const r=recentIds().filter(x=>x!==id); r.unshift(id); localStorage.setItem("okt-recent",JSON.stringify(r.slice(0,10))); }catch(e){} }
 function tocAll(){ try{ return JSON.parse(localStorage.getItem("okt-toc")||"{}")||{}; }catch(e){ return {}; } }
-function tocOf(bk){ const T=tocAll(); return T[bk.pdf]||null; }
+function tocOf(bk){ const T=tocAll(); return T[bk.pdf]||(bk.toc?{n:bk.pages,v:2,full:true,title:bk.title,items:bk.toc}:null); }
 const fold=t=>String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ς/g,"σ").replace(/\s+/g," ").trim();
 function wireFind(mine,books){
   const q=$("libQ"), res=$("libRes"); if(!q) return;
