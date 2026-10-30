@@ -911,9 +911,37 @@ render();
 
   $("ldFile").onchange=async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const t=f.name.replace(/\.pdf$/i,"");try{await addToLibrary(f,t);}catch(_){}run(await f.arrayBuffer(),t,0,true);};
   const q=new URLSearchParams(location.search);const path=q.get("pdf");
-  if(path){libPath=path;(async()=>{msg("Φέρνω το βιβλίο…");let b=await idbGet(path);
-    if(!b){try{const r=await fetch(path);if(r.ok)b=await r.blob();}catch(e){}}
-    if(!b){msg("Δεν βρήκα το βιβλίο σε αυτή τη συσκευή. Άνοιξέ το από εδώ:");return;}
+  // (30-10-2026 β) Λήψη βιβλίου με μπάρα προόδου, έλεγχο ότι ήρθε αληθινό PDF και όριο αναμονής:
+  // δεν μένει ποτέ κολλημένο στο «Φέρνω το βιβλίο…»
+  async function getBook(url){
+    const ctl=("AbortController" in window)?new AbortController():null;let idle=null;
+    const kick=()=>{clearTimeout(idle);idle=setTimeout(()=>{try{ctl&&ctl.abort();}catch(e){}},30000);};
+    try{kick();const r=await fetch(url,ctl?{signal:ctl.signal}:{});
+      if(!r.ok)return {err:"δεν υπάρχει στον ιστότοπο ("+r.status+")"};
+      const tot=Number(r.headers.get("content-length"))||0;let parts=[],got=0;
+      if(r.body&&r.body.getReader){const rd=r.body.getReader();
+        for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;kick();
+          const mb=(got/1048576).toFixed(1);if(tot){bar(got/tot);msg("📥 Φέρνω το βιβλίο… "+Math.round(100*got/tot)+"% ("+mb+" από "+(tot/1048576).toFixed(1)+" MB)");}else msg("📥 Φέρνω το βιβλίο… "+mb+" MB");}}
+      else{parts=[new Uint8Array(await r.arrayBuffer())];}
+      clearTimeout(idle);const b=new Blob(parts,{type:"application/pdf"});
+      const head=new Uint8Array(await b.slice(0,5).arrayBuffer());
+      if(String.fromCharCode.apply(null,head).indexOf("%PDF")!==0)return {err:"ο ιστότοπος δεν έδωσε το βιβλίο (ίσως δεν έχει ανέβει ακόμη)"};
+      return {b};
+    }catch(e){clearTimeout(idle);return {err:(e&&e.name==="AbortError")?"η σύνδεση σταμάτησε για 30 δευτερόλεπτα":"δεν υπάρχει σύνδεση στο διαδίκτυο"};}
+  }
+  // παλιά εγγραφή χωρίς αρχείο σε αυτή τη συσκευή: ψάχνω το ίδιο βιβλίο στην κοινή βιβλιοθήκη (με τον τίτλο)
+  async function sharedPathFor(title){try{const r=await fetch("library.json",{cache:"no-store"});if(!r.ok)return null;const L=await r.json();
+    const f=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+    const bk=(L.books||[]).find(x=>x&&x.pdf&&f(x.title)===f(title));return bk?bk.pdf:null;}catch(e){return null;}}
+  function failBox(t){msg("⚠ Δεν μπόρεσα να φέρω το βιβλίο: "+t+".");const w=$("ldBarW");if(w)w.style.display="none";
+    let a=document.getElementById("ldRetry");if(!a){a=document.createElement("button");a.id="ldRetry";a.textContent="🔄 Δοκίμασε ξανά";
+      a.style.cssText="display:block;margin:16px auto;font-size:24px;padding:14px 26px;border-radius:16px;border:3px solid #e2bd5e;background:#2a4a9e;color:#fff";
+      a.onclick=()=>location.reload();$("ldMsg").after(a);}}
+  if(path){libPath=path;(async()=>{msg("📥 Φέρνω το βιβλίο…");let b=await idbGet(path);
+    if(!b){let R=await getBook(path);
+      if(!R.b&&!/^vivlia\//.test(path)){const sp=await sharedPathFor(q.get("t")||"");if(sp){libPath=sp;R=await getBook(sp);}}
+      if(!R.b){failBox(R.err);return;}
+      b=R.b;try{await idbPut(libPath,b);}catch(e){}}
     run(await b.arrayBuffer(),q.get("t")||"",Number(q.get("page")||0),q.get("auto")==="1");})();}
   else msg("Διάλεξε ένα βιβλίο PDF:");
 })();
