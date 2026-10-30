@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -114,6 +114,7 @@
 
   // Μια «γραμμή» φωνής (μελωδία ή ίσον): κάθε νότα δένει με την προηγούμενη
   function line(key, level) {
+    if (key === "christos_par") return parLine(level);
     if (PS_KEYS[key]) return psLine(key, level);
     let lastEnd = -1, lastHz = 0, lastS = null;
     const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
@@ -449,6 +450,47 @@
     };
     allLines.add(self);
     return self;
+  }
+
+  // ================= (30-10-2026) «Χρίστος · παραλλαγή»: ψάλλει με τα ονόματα των φθόγγων =================
+  // Δείγματα: foni-christos-par.js. Για κάθε νότα: το δείγμα με το ίδιο όνομα (opts.nm) και το πλησιέστερο ύψος,
+  // κουρδισμένο ακριβώς· το σύμφωνο ακούγεται λίγο πριν, ώστε το φωνήεν να πέφτει στον χρόνο. Μακριές νότες: συνεχές κράτημα.
+  let parC = null;
+  function parSamples() {
+    const S = window.FONI_SETS && window.FONI_SETS.christos_par; if (!S || !window.FONI_ADPCM) return null;
+    if (parC && parC.ctx === ctx) return parC.list;
+    parC = { ctx, list: S.notes.map(n => ({ n: n.n, hz: n.hz, va: n.va, ls: n.ls / n.sr, le: n.le / n.sr, buf: window.FONI_ADPCM(ctx, n) })) };
+    return parC.list;
+  }
+  function parLine(level) {
+    const K = 1.2, lg = ctx.createGain(); lg.gain.value = level * K; lg.connect(bus);
+    let last = null;
+    return {
+      level: level,
+      note(t, f, dur, opts) {
+        const L = parSamples(); if (!L) return; opts = opts || {};
+        const nm = opts.nm || "Ni"; let s = null, bd = 1e9;
+        for (const x of L) if (x.n === nm) { const d = Math.abs(Math.log(f / x.hz)); if (d < bd) { bd = d; s = x; } }
+        if (!s) s = L[0];
+        const rate = f / s.hz;
+        const same = last && Math.abs(t - last.end) < 0.03 && last.nm === nm && !opts.newSyl;   // ίδιος φθόγγος, δεμένος: χωρίς νέο σύμφωνο
+        const pre = same ? 0 : Math.min(s.va, 0.09) / rate, now = ctx.currentTime;
+        const st = Math.max(now, t - pre), off = same ? s.va + 0.05 : Math.max(0, (st - (t - pre)) * rate);
+        const src = ctx.createBufferSource(); src.buffer = s.buf; src.loop = true; src.loopStart = s.ls; src.loopEnd = s.le;
+        src.playbackRate.setValueAtTime(rate, st);
+        if (opts.pet) { const up = rate * Math.pow(2, 12 / 72); src.playbackRate.setTargetAtTime(up, t + 0.06, 0.018); src.playbackRate.setTargetAtTime(rate, t + 0.15, 0.025); }
+        const g = ctx.createGain(), fin = same ? 0.03 : 0.012, tail = opts.tail != null ? opts.tail : 0.08, end = t + dur;
+        g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(1, st + fin);
+        g.gain.setValueAtTime(1, Math.max(st + fin, end)); g.gain.linearRampToValueAtTime(0, end + tail);
+        src.connect(g); g.connect(lg); src.start(st, off); src.stop(end + tail + 0.05);
+        const rec = { src, g }; active.add(rec);
+        src.onended = () => { active.delete(rec); try { src.disconnect(); g.disconnect(); } catch (e) { } };
+        last = { nm, end };
+      },
+      rest() { last = null; },
+      cancel() { },
+      setLevel(v) { this.level = v; lg.gain.setTargetAtTime(v * K, ctx.currentTime, 0.08); }
+    };
   }
 
   function stopAll(fade) {
