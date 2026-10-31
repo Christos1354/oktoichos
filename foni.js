@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής (v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -70,6 +70,7 @@
   }
 
   function load(key) {
+    if (key === "christos_v") return lySet() ? Promise.resolve(true) : Promise.reject(new Error("no set"));   // (31-10-2026) τα δείγματα ανοίγουν όταν χρειαστούν
     if (bufs[key]) return Promise.resolve(bufs[key]);
     if (loading[key]) return loading[key];
     alias(); const S = window.FONI_SETS && window.FONI_SETS[key];
@@ -115,6 +116,7 @@
   // Μια «γραμμή» φωνής (μελωδία ή ίσον): κάθε νότα δένει με την προηγούμενη
   function line(key, level) {
     if (key === "christos_par") return parLine(level);
+    if (key === "christos_v") return lyLine(level);   // (31-10-2026)
     if (PS_KEYS[key]) return psLine(key, level);
     let lastEnd = -1, lastHz = 0, lastS = null;
     const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
@@ -493,6 +495,143 @@
     };
   }
 
+  // ================= (31-10-2026) «Χρίστος με λόγια»: η φωνή του Χρίστου λέει τα λόγια του ύμνου =================
+  // Δείγματα: foni-christos-logia.js (συλλαβές σε 4 ύψη). Κάθε νέα συλλαβή: το σύμφωνο ακούγεται λίγο πριν,
+  // ώστε το φωνήεν να πέφτει ακριβώς στον χρόνο. Μελίσματα: το ίδιο φωνήεν συνεχίζει και αλλάζει μόνο ύψος.
+  // Στο τέλος της συλλαβής μπαίνει το «ς» ή το «ν», αν υπάρχει.
+  const LY_C = [["μπ", "b"], ["ντ", "d"], ["γκ", "g"], ["γγ", "g"], ["τσ", "ts"], ["τζ", "ts"], ["π", "p"], ["τ", "t"], ["κ", "k"], ["φ", "f"], ["θ", "th"], ["χ", "x"], ["β", "v"], ["δ", "dh"], ["γ", "gh"], ["σ", "s"], ["ς", "s"], ["ζ", "z"], ["μ", "m"], ["ν", "n"], ["λ", "l"], ["ρ", "r"], ["ξ", "ks"], ["ψ", "ps"]];
+  const LY_V = [["ου", "u"], ["αι", "e"], ["ει", "i"], ["οι", "i"], ["υι", "i"], ["αυ", "a"], ["ευ", "e"], ["α", "a"], ["ε", "e"], ["η", "i"], ["ι", "i"], ["υ", "i"], ["ο", "o"], ["ω", "o"]];
+  const LY_FRIC = { s: 1, f: 1, th: 1, x: 1, z: 1, v: 1, dh: 1, gh: 1, ks: 1, ps: 1, ts: 1 };
+  function lyParse(syl) {
+    const x = String(syl || "").normalize("NFC").toLowerCase().replace(/[ϊΐϋΰ]/g, "|ι").normalize("NFD").replace(/[̀-ͯͅ]/g, "").replace(/[^α-ως|]/g, "");
+    const T = []; let i = 0;
+    while (i < x.length) {
+      if (x[i] === "|") { i++; continue; }
+      let hit = null;
+      for (const [g, c] of LY_V) if (x.startsWith(g, i)) { hit = { v: c, n: g.length }; break; }
+      if (!hit) for (const [g, c] of LY_C) if (x.startsWith(g, i)) { hit = { c, n: g.length }; break; }
+      if (hit) T.push(hit); i += hit ? hit.n : 1;
+    }
+    const vi = T.findIndex(t => t.v); if (vi < 0) return null;
+    const on = T.slice(0, vi).map(t => t.c), after = T.slice(vi + 1).filter(t => t.c).map(t => t.c);
+    const lc = after.length ? after[after.length - 1] : null;
+    return { main: on.length ? on[on.length - 1] : null, extra: on.slice(-3, -1), v: T[vi].v, coda: lc === "s" || lc === "ks" || lc === "ps" ? "s" : (lc === "n" ? "n" : null) };
+  }
+  function lySet() { const S = window.FONI_SETS && window.FONI_SETS.christos_v; return S && S.logia ? S.logia : null; }
+  function lyBuf(n) { if (!n._b || n._b.ctx !== ctx) n._b = { ctx, b: window.FONI_ADPCM(ctx, n) }; return n._b.b; }
+  function lyPick(arr, f) { let s = arr[0], bd = 1e9; for (const x of arr) { const d = Math.abs(Math.log(f / x.hz)); if (d < bd) { bd = d; s = x; } } return s; }
+  function lyLine(level) {
+    const K = 1.15, lg = ctx.createGain(); lg.gain.value = level * K; lg.connect(bus);
+    let cur = null, timer = null, dead = false;
+    // ένας ήχος από δείγμα: αρχίζει στο st (από το σημείο off), με επίθεση fin
+    function play(n, f, st, off, fin, loop, gain) {
+      const now = ctx.currentTime, rate = f > 0 && n.hz ? f / n.hz : 1;
+      if (st < now) { off += (now - st) * rate; st = now; }
+      const s = ctx.createBufferSource(); s.buffer = lyBuf(n);
+      if (loop) { s.loop = true; s.loopStart = n.ls / n.sr; s.loopEnd = n.le / n.sr; if (off > s.loopEnd) off = s.loopStart; }
+      s.playbackRate.setValueAtTime(rate, st);
+      const g = ctx.createGain(), G = gain == null ? 1 : gain; g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(G, st + fin);
+      s.connect(g); g.connect(lg); s.start(st, Math.max(0, off));
+      const rec = { src: s, g, n, st, fin, G, done: false }; active.add(rec);
+      s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); } catch (e) { } };
+      return rec;
+    }
+    function release(rec, t, rel) {
+      if (!rec || rec.done) return; rec.done = true;
+      const now = ctx.currentTime; t = Math.max(t, now, rec.st + rec.fin);
+      try { rec.g.gain.cancelScheduledValues(t); rec.g.gain.setValueAtTime(rec.G, t); rec.g.gain.linearRampToValueAtTime(0, t + rel); rec.src.stop(t + rel + 0.03); } catch (e) { }
+    }
+    function oneShot(n, f, st, len) {   // κομμάτι χωρίς επανάληψη (σύμφωνα, καταλήξεις)
+      const r = play(n, f, st, 0, 0.008, false); try { r.g.gain.setValueAtTime(r.G, Math.max(st + 0.01, st + len - 0.025)); r.g.gain.linearRampToValueAtTime(0, st + len); r.src.stop(st + len + 0.03); } catch (e) { } r.done = true; return r;
+    }
+    function piece(n, f, st, a, b) {   // κομμάτι [a,b] δευτερολέπτων του δείγματος, να αρχίζει στο st
+      const now = ctx.currentTime, rate = f > 0 && n.hz ? f / n.hz : 1; let off = a, s0 = st;
+      if (s0 < now) { off += (now - s0) * rate; s0 = now; } if (off >= b) return;
+      const s = ctx.createBufferSource(); s.buffer = lyBuf(n); s.playbackRate.value = rate;
+      const g = ctx.createGain(), d = (b - off) / rate; g.gain.setValueAtTime(0, s0); g.gain.linearRampToValueAtTime(1, s0 + 0.006); g.gain.setValueAtTime(1, s0 + Math.max(0.007, d - 0.012)); g.gain.linearRampToValueAtTime(0, s0 + d);
+      s.connect(g); g.connect(lg); s.start(s0, off); s.stop(s0 + d + 0.02);
+      const rec = { src: s, g }; active.add(rec); s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); } catch (e) { } };
+    }
+    // τέλος συλλαβής στο B: πρώτα το «ς»/«ν» (αν υπάρχει), μετά σβήνει το φωνήεν
+    function finish(c, B, coda) {
+      if (!c || c.closed) return; c.closed = true;
+      const S = lySet(); let vEnd = B;
+      if (coda && c.coda && S) {
+        const arr = S["-" + c.coda + "_" + c.v];
+        if (arr) {
+          const cn = c.coda === "s" ? arr[0] : lyPick(arr, c.f), cd = Math.min(cn.len / cn.sr, c.coda === "s" ? 0.14 : 0.12);
+          const cs = Math.max(c.vowelAt + 0.07, B - cd);
+          oneShot(cn, c.coda === "s" ? 0 : c.f, cs, Math.max(0.05, B - cs + (c.coda === "s" ? 0.02 : 0)));
+          vEnd = cs + 0.025;
+        }
+      }
+      release(c.rec, vEnd, 0.045);
+    }
+    function arm() {   // αν δεν έρθει άλλη νότα (τέλος ύμνου), κλείνει τη συλλαβή στην ώρα της
+      clearTimeout(timer); const c = cur; if (!c) return;
+      timer = setTimeout(() => { if (cur === c && !dead) { finish(c, c.lastEnd, true); cur = null; } }, Math.max(0, (c.lastEnd - ctx.currentTime - 0.4) * 1000));
+    }
+    const self = {
+      level: level,
+      note(t, f, dur, opts) {
+        const S = lySet(); if (!S || dead) return; opts = opts || {};
+        const end = t + dur, legato = cur && !opts.detached && Math.abs(t - cur.lastEnd) < 0.03;
+        let P = opts.newSyl && opts.syl ? lyParse(opts.syl) : null;
+        // συλλαβή χωρίς σύμφωνο με το ίδιο φωνήεν, δεμένη: συνεχίζει το ίδιο φωνήεν με ένα μικρό «άρθρωμα»
+        if (P && legato && !P.main && !P.extra.length && P.v === cur.v) {
+          const g = cur.rec.g.gain, a = Math.max(t - 0.03, ctx.currentTime);
+          try { g.setValueAtTime(cur.rec.G, a); g.linearRampToValueAtTime(cur.rec.G * 0.55, a + 0.035); g.linearRampToValueAtTime(cur.rec.G, a + 0.1); } catch (e) { }
+          cur.coda = P.coda; P = null;
+        }
+        if (P) {
+          // ---- νέα συλλαβή ----
+          const key = P.main ? P.main + "_" + P.v : P.v, arr = S[key] || S[P.v] || S.a, n = lyPick(arr, f), rate = f / n.hz;
+          const vowelOnly = !P.main;
+          let preT = vowelOnly ? Math.min(0.03, n.va) : Math.min(n.va, 0.25);
+          const off0 = n.va - preT, st = t - preT / rate;
+          // σύμφωνα που προηγούνται (π.χ. «κ» στο «κρα», «σ» στο «στη»)
+          let xs = st; const ex = [];
+          for (let k = P.extra.length - 1; k >= 0; k--) {
+            const c = P.extra[k], a2 = S[c + "_" + P.v] || S[c + "_a"]; if (!a2) continue;
+            const m = lyPick(a2, f), cap = LY_FRIC[c] ? 0.11 : 0.07, len = Math.min(cap, m.va);
+            xs -= len / (f / m.hz); ex.unshift([m, xs, m.va - len, m.va]);
+          }
+          const B = ex.length ? ex[0][1] : st;
+          if (cur) {
+            if (legato || cur.lastEnd > B - 0.15) finish(cur, Math.max(cur.vowelAt + 0.05, B + (vowelOnly ? 0.04 : 0.015)), true);
+            else finish(cur, cur.lastEnd, true);
+          }
+          ex.forEach(([m, s0, a, b]) => piece(m, f, s0, a, b));
+          const rec = play(n, f, st, off0, vowelOnly ? (legato ? 0.05 : 0.04) : 0.012, true);
+          if (opts.pet) { const up = rate * Math.pow(2, 12 / 72); rec.src.playbackRate.setTargetAtTime(up, t + 0.06, 0.018); rec.src.playbackRate.setTargetAtTime(rate, t + 0.15, 0.025); }
+          cur = { key, v: P.v, coda: P.coda, n, rec, f, vowelAt: t, lastEnd: end, closed: false };
+        } else if (cur && legato) {
+          // ---- μέλισμα: ίδια συλλαβή, νέο ύψος ----
+          const arr = S[cur.key] || S.a, n = lyPick(arr, f);
+          if (n === cur.n) {
+            const r = f / n.hz, p = cur.rec.src.playbackRate;
+            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); if (opts.pet) { const up = r * Math.pow(2, 12 / 72); p.setTargetAtTime(up, t + 0.06, 0.018); p.setTargetAtTime(r, t + 0.15, 0.025); } } catch (e) { }
+          } else {   // άλλο ύψος δείγματος: μαλακό πέρασμα στο ίδιο φωνήεν
+            const rec = play(n, f, t - 0.025, n.ls / n.sr, 0.05, true);
+            release(cur.rec, t - 0.025, 0.05); cur.rec = rec; cur.n = n;
+          }
+          cur.f = f; cur.lastEnd = end;
+        } else {
+          // ---- νότα χωρίς λόγια μετά από παύση: μόνο το φωνήεν ----
+          const v = cur ? cur.v : "a"; if (cur) { finish(cur, Math.min(cur.lastEnd, t), true); }
+          const n = lyPick(S[v] || S.a, f), rec = play(n, f, t - Math.min(0.03, n.va), Math.max(0, n.va - 0.03), 0.04, true);
+          cur = { key: v, v, coda: null, n, rec, f, vowelAt: t, lastEnd: end, closed: false };
+        }
+        arm();
+      },
+      rest() { clearTimeout(timer); if (cur) finish(cur, cur.lastEnd, true); cur = null; },
+      cancel() { dead = true; clearTimeout(timer); cur = null; },
+      setLevel(v) { this.level = v; lg.gain.setTargetAtTime(v * K, ctx.currentTime, 0.08); }
+    };
+    allLines.add(self);
+    return self;
+  }
+
   function stopAll(fade) {
     allLines.forEach(L => { try { L.cancel(); } catch (e) { } }); allLines.clear();
     if (!ctx) return;
@@ -503,5 +642,5 @@
     active.clear();
   }
 
-  window.Foni = { setup, load, has, line, piano, stopAll, setReverb, _ps: { psMarks, psPrep, psRender, vowelOf, parseSyl, plan }, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
+  window.Foni = { _ly: lyParse, setup, load, has, line, piano, stopAll, setReverb, _ps: { psMarks, psPrep, psRender, vowelOf, parseSyl, plan }, input: () => bus, sets: () => Object.keys(window.FONI_SETS || {}) };
 })();

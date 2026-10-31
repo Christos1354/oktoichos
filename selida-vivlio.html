@@ -153,7 +153,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
 </div>
 
@@ -182,7 +182,7 @@
 <script src="foni-psaltis.js?v=2"></script>
 <script src="foni-christos.js?v=1"></script>
 <script src="foni-christos-par.js?v=2"></script>
-<script src="foni.js?v=8"></script>
+<script src="foni.js?v=9"></script>
 <script src="anagnostis-vivlion.js?v=5"></script>
 <script>
 function BOOT(D){
@@ -368,9 +368,14 @@ function ensureCtx(){try{if(navigator.audioSession&&navigator.audioSession.type!
 const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
-async function loadVoice(){const k=voiceSel();if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
+async function loadVoice(){const k=voiceSel();
+  // (31-10-2026) «Χρίστος με λόγια»: τα δείγματα (3 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
+  if(k==="christos_v"&&!(window.FONI_SETS&&FONI_SETS.christos_v)){const m=document.getElementById("msg");if(m)m.textContent="⏳ Φέρνω τη φωνή «Χρίστος με λόγια»…";
+    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=1";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
+    if(m)m.textContent="";
+    if(!(window.FONI_SETS&&FONI_SETS.christos_v)){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η φωνή «με λόγια» δεν κατέβηκε (δες τη σύνδεση) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
   if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0||k.indexOf("christos")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
-  if(isChoir()){try{if(k!=="piano")await Foni.load(k);if(k==="christos_par"&&Foni.has("christos"))await Foni.load("christos");if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
+  if(isChoir()){try{if(k!=="piano")await Foni.load(k);if((k==="christos_par"||k==="christos_v")&&Foni.has("christos"))await Foni.load("christos");if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
   const bin=atob(V.b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
@@ -415,6 +420,11 @@ if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel'
   // (23-10-2026) η φωνή του Χρίστου γίνεται η φωνή των βιβλίων (μία φορά), με τον Δι κοντά στα 120 Hz
   try{if(!localStorage.getItem('okt-christos-v1')&&window.FONI_SETS&&FONI_SETS.christos){localStorage.setItem('okt-christos-v1','1');vs.value='christos';localStorage.setItem('okt-voice2','christos');}}catch(e){}
   try{if(!localStorage.getItem('okt-par-v1')&&window.FONI_SETS&&FONI_SETS.christos_par){localStorage.setItem('okt-par-v1','1');vs.value='christos_par';localStorage.setItem('okt-voice2','christos_par');}}catch(e){}
+  // (31-10-2026) «Χρίστος με λόγια» γίνεται η φωνή των βιβλίων (μία φορά). Η επιλογή φυλάγεται χωριστά,
+  // ώστε οι άλλες σελίδες (που δεν έχουν αυτή τη φωνή) να συνεχίζουν με τη «Χρίστος · παραλλαγή».
+  try{if(!localStorage.getItem('okt-logia-v1')){localStorage.setItem('okt-logia-v1','1');localStorage.setItem('okt-voice-logia','1');}
+    if(localStorage.getItem('okt-voice-logia')==='1')vs.value='christos_v';}catch(e){}
+  vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-logia',vs.value==='christos_v'?'1':'0');if(vs.value==='christos_v')localStorage.setItem('okt-voice2','christos_par');}catch(e){}});
   const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='christos_par'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Number(pe.defaultValue)+0.12);pe.dispatchEvent(new Event('input'));return;}const v=vs.value,up=v.indexOf('christos')===0?0.06:(v.indexOf('psaltis')===0?0.12:0);
     if(up&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+up));pe.dispatchEvent(new Event('input'));}}catch(e){}};
   fit();vs.addEventListener('change',fit);})();
@@ -916,6 +926,10 @@ render();
   async function getBook(url){
     const ctl=("AbortController" in window)?new AbortController():null;let idle=null;
     const kick=()=>{clearTimeout(idle);idle=setTimeout(()=>{try{ctl&&ctl.abort();}catch(e){}},30000);};
+    // (31-10-2026) μεγάλο βιβλίο της κοινής βιβλιοθήκης: έρχεται σε κομμάτια (.p1, .p2 …)
+    let np=0;try{const L=JSON.parse(localStorage.getItem("okt-lib"))||{};const e=(L.books||[]).find(x=>x&&x.pdf===url&&x.parts);if(e)np=e.parts;}catch(e){}
+    if(np){try{const out=[];for(let i=1;i<=np;i++){kick();msg("📥 Φέρνω το βιβλίο… κομμάτι "+i+" από "+np);bar((i-1)/np);const r=await fetch(url+".p"+i,ctl?{signal:ctl.signal}:{});if(!r.ok){clearTimeout(idle);return {err:"λείπει ένα κομμάτι του βιβλίου ("+i+")"};}out.push(await r.blob());}
+      clearTimeout(idle);bar(1);return {b:new Blob(out,{type:"application/pdf"})};}catch(e){clearTimeout(idle);return {err:(e&&e.name==="AbortError")?"η σύνδεση σταμάτησε για 30 δευτερόλεπτα":"δεν υπάρχει σύνδεση στο διαδίκτυο"};}}
     try{kick();const r=await fetch(url,ctl?{signal:ctl.signal}:{});
       if(!r.ok)return {err:"δεν υπάρχει στον ιστότοπο ("+r.status+")"};
       const tot=Number(r.headers.get("content-length"))||0;let parts=[],got=0;
