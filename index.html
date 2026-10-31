@@ -1678,7 +1678,8 @@ function showTab(t){
 }
 $("tabScales").onclick=()=>showTab("scales");
 $("tabChroai").onclick=()=>{ if(tab==="scales") navPush(); showTab("chroai"); };
-$("tabLib").onclick=()=>{ if(tab==="scales") navPush(); showTab("lib"); };
+// (31-10-2026) «Βιβλιοθήκη»: δείχνει ΠΑΝΤΑ τη λίστα με τα βιβλία, ακόμη κι αν είσαι μέσα σε βιβλίο ή ψαλμό (χωρίς «Επαναφορά»)
+$("tabLib").onclick=()=>{ navPush(); try{ if(dirty) saveNow(); }catch(e){} stopAll(false); libView="list"; openId=null; editing=false; sel=-1; showTab("lib"); window.scrollTo(0,0); };
 
 /* ============ ΚΛΙΜΑΚΕΣ ============ */
 MODES.forEach(md=>{
@@ -3732,19 +3733,20 @@ try{ landscapeMQ.addEventListener("change",onLandscape); }catch(e){ try{ landsca
     showTab(sn.tab);
     if(sn.tab==="scales"){ try{ renderTuner(); }catch(e){} }
     window.scrollTo(0,0);
-    last=snap(); lastSig=JSON.stringify(last); restoring=false;
+    last=snap(); lastSig=JSON.stringify(Object.assign({},last,{pg:0})); restoring=false;
   }
   btn.onclick=()=>{
     if(!$("sheet").hidden){ closeSheet(); show(); return; }
     const sn=stack.pop(); saveStack();
     if(sn) restore(sn);
-    else if(tab!=="scales"||editing){ goHome(); last=snap(); lastSig=JSON.stringify(last); }
+    else if(tab!=="scales"||editing){ goHome(); last=snap(); lastSig=JSON.stringify(Object.assign({},last,{pg:0})); }
     show();
   };
   setInterval(()=>{
     let cur; try{ cur=snap(); }catch(e){ return; }
-    const sig=JSON.stringify(cur);
+    const sig=JSON.stringify(Object.assign({},cur,{pg:0}));   // (31-10-2026) το γύρισμα σελίδας δεν μετρά ως βήμα
     if(last===null){ last=cur; lastSig=sig; show(); return; }
+    if(sig===lastSig){ last=cur; show(); return; }   // ίδια οθόνη, άλλη σελίδα: κρατάμε μόνο τη σελίδα
     if(sig!==lastSig&&!restoring){ stack.push(last); if(stack.length>40) stack.shift(); saveStack(); last=cur; lastSig=sig; }
     show();
   },250);

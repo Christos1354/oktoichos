@@ -420,9 +420,9 @@ if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel'
   // (23-10-2026) η φωνή του Χρίστου γίνεται η φωνή των βιβλίων (μία φορά), με τον Δι κοντά στα 120 Hz
   try{if(!localStorage.getItem('okt-christos-v1')&&window.FONI_SETS&&FONI_SETS.christos){localStorage.setItem('okt-christos-v1','1');vs.value='christos';localStorage.setItem('okt-voice2','christos');}}catch(e){}
   try{if(!localStorage.getItem('okt-par-v1')&&window.FONI_SETS&&FONI_SETS.christos_par){localStorage.setItem('okt-par-v1','1');vs.value='christos_par';localStorage.setItem('okt-voice2','christos_par');}}catch(e){}
-  // (31-10-2026) «Χρίστος με λόγια» γίνεται η φωνή των βιβλίων (μία φορά). Η επιλογή φυλάγεται χωριστά,
+  // (31-10-2026) «Χρίστος με λόγια»: διαλέγεται μόνο αν το θέλεις (κύρια φωνή μένει η «παραλλαγή»). Η επιλογή φυλάγεται χωριστά,
   // ώστε οι άλλες σελίδες (που δεν έχουν αυτή τη φωνή) να συνεχίζουν με τη «Χρίστος · παραλλαγή».
-  try{if(!localStorage.getItem('okt-logia-v1')){localStorage.setItem('okt-logia-v1','1');localStorage.setItem('okt-voice-logia','1');}
+  try{if(!localStorage.getItem('okt-logia-v2')){localStorage.setItem('okt-logia-v1','1');localStorage.setItem('okt-logia-v2','1');localStorage.setItem('okt-voice-logia','0');vs.value='christos_par';}   // (31-10-2026 β) ο Χρίστος προτιμά τη «παραλλαγή»
     if(localStorage.getItem('okt-voice-logia')==='1')vs.value='christos_v';}catch(e){}
   vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-logia',vs.value==='christos_v'?'1':'0');if(vs.value==='christos_v')localStorage.setItem('okt-voice2','christos_par');}catch(e){}});
   const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='christos_par'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Number(pe.defaultValue)+0.12);pe.dispatchEvent(new Event('input'));return;}const v=vs.value,up=v.indexOf('christos')===0?0.06:(v.indexOf('psaltis')===0?0.12:0);
@@ -464,6 +464,10 @@ function stopAll(){
 let choirLines=null;
 const isChoir=()=>!!window.Foni&&(voiceSel()==="piano"||Foni.has(voiceSel()));
 function choirIsonLevel(){return 0.33*isonVol();}
+// (31-10-2026) Ασφαλές ύψος νότας: αν ένα βιβλίο δώσει άγνωστη κλίμακα ή νότα (π.χ. μαρτυρία που δεν διαβάστηκε),
+// η νότα δεν «χάνεται» σιωπηλά: παίρνει την κλίμακα του ήχου (διατονική) και μένει μέσα στα ακουστά όρια.
+function safeF(idx,acc,sc){let f=freq(idx,acc,sc);if(!isFinite(f)||f<=0)f=freq(Number.isFinite(idx)?idx:4,isFinite(acc)?acc:0,null);if(!isFinite(f)||f<=0)f=diHz();
+  while(f<40)f*=2;while(f>1600)f/=2;return f;}
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
@@ -476,14 +480,14 @@ function playChoir(list,onEnd){
   let t=ctx.currentTime+0.25,isoT=null,isoF=0,isoN=null;try{window.__metSync&&__metSync(t-ctx.currentTime);}catch(e){}
   let __m0,lastSk=null;const ev=[];
   // (29-10-2026) το ίσον σε κομμάτια ως 1,5″ (δεμένα μεταξύ τους): ακολουθεί ομαλά την Τονικότητα την ώρα που ψάλλει
-  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:()=>iso.note(aa,freq(N.idx,0,N.sc),d,o)});a+=d;first=false;}}isoT=null;};
+  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:()=>iso.note(aa,safeF(N.idx,0,N.sc),d,o)});a+=d;first=false;}}isoT=null;};
   list.forEach((n,k)=>{
     const dur=n.sec?n.sec:beat*n.dur*(n.tf||1);
     if(n.rest){const tr=t;ev.push({t:tr,run:()=>mel.rest()});t+=dur;return;}
-    const f=freq(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
+    const f=safeF(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
     const sk=n.l+"-"+n.i,cell=(data[n.l]&&data[n.l][n.i])||null,syl=(cell&&typeof cell[0]==="string")?cell[0]:"",newSyl=sk!==lastSk&&!!syl.trim();lastSk=sk;   // (22-10-2026) η συλλαβή, για τον «Ψάλτη με λόγια»
-    ev.push({t:tn,run:()=>mel.note(tn,freq(n.idx,n.acc,n.sc),dur,{nm:["Ni","Pa","Vou","Ga","Di","Ke","Zo"][((n.idx%7)+7)%7],pet,syl:newSyl?syl:"",newSyl})});
-    if(iso){const fi=freq(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;isoN={idx:n.ison,sc:n.sc};}}
+    ev.push({t:tn,run:()=>mel.note(tn,safeF(n.idx,n.acc,n.sc),dur,{nm:["Ni","Pa","Vou","Ga","Di","Ke","Zo"][((n.idx%7)+7)%7],pet,syl:newSyl?syl:"",newSyl})});
+    if(iso){const fi=safeF(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;isoN={idx:n.ison,sc:n.sc};}}
     if(n.l>=0)hlMark(t,n.l+"-"+n.i);
     t+=dur;
   });
@@ -725,10 +729,14 @@ render();
   })().catch(e=>{ pdfjsP=null; throw e; });
   return pdfjsP;
 }
-  function idbGet(k){return new Promise(res=>{try{const r=indexedDB.open("okt-pdf",1);r.onupgradeneeded=()=>r.result.createObjectStore("files");
+  // (31-10-2026) Στο iPhone (Safari) η αποθήκη της συσκευής μερικές φορές δεν απαντά ποτέ: όριο χρόνου, για να μην κολλάει η σελίδα
+  function idbT(p,ms){return Promise.race([p,new Promise(r=>setTimeout(()=>r(null),ms))]);}
+  function idbGet(k){return idbT(idbGet0(k),5000);}
+  function idbPut(k,v){return idbT(idbPut0(k,v),8000);}
+  function idbGet0(k){return new Promise(res=>{try{const r=indexedDB.open("okt-pdf",1);r.onblocked=()=>res(null);r.onupgradeneeded=()=>r.result.createObjectStore("files");
     r.onsuccess=()=>{try{const db=r.result;const t=db.transaction("files","readonly");const g=t.objectStore("files").get(k);g.onsuccess=()=>res(g.result||null);g.onerror=()=>res(null);}catch(e){res(null);}};r.onerror=()=>res(null);}catch(e){res(null);}});}
   function hash(u8){let h=2166136261;const step=Math.max(1,Math.floor(u8.length/4096));for(let i=0;i<u8.length;i+=step){h^=u8[i];h=Math.imul(h,16777619);}return (h>>>0).toString(36)+"-"+u8.length;}
-  function idbPut(k,v){return new Promise(res=>{try{const r=indexedDB.open("okt-pdf",1);r.onupgradeneeded=()=>r.result.createObjectStore("files");
+  function idbPut0(k,v){return new Promise(res=>{try{const r=indexedDB.open("okt-pdf",1);r.onblocked=()=>res(null);r.onupgradeneeded=()=>r.result.createObjectStore("files");
     r.onsuccess=()=>{try{const t=r.result.transaction("files","readwrite");t.objectStore("files").put(v,k);t.oncomplete=()=>res(true);t.onerror=()=>res(false);}catch(e){res(false);}};r.onerror=()=>res(false);}catch(e){res(false);}});}
   // (19-10-2026) Το βιβλίο που ανοίγεις εδώ μπαίνει και στη Βιβλιοθήκη (σε αυτή τη συσκευή)
   let libId=null, libPath=null;
@@ -951,7 +959,7 @@ render();
     let a=document.getElementById("ldRetry");if(!a){a=document.createElement("button");a.id="ldRetry";a.textContent="🔄 Δοκίμασε ξανά";
       a.style.cssText="display:block;margin:16px auto;font-size:24px;padding:14px 26px;border-radius:16px;border:3px solid #e2bd5e;background:#2a4a9e;color:#fff";
       a.onclick=()=>location.reload();$("ldMsg").after(a);}}
-  if(path){libPath=path;(async()=>{msg("📥 Φέρνω το βιβλίο…");let b=await idbGet(path);
+  if(path){libPath=path;(async()=>{msg("📥 Ψάχνω το βιβλίο στη συσκευή…");let b=await idbGet(path);if(!b)msg("📥 Φέρνω το βιβλίο από τον ιστότοπο…");
     if(!b){let R=await getBook(path);
       if(!R.b&&!/^vivlia\//.test(path)){const sp=await sharedPathFor(q.get("t")||"");if(sp){libPath=sp;R=await getBook(sp);}}
       if(!R.b){failBox(R.err);return;}

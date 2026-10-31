@@ -574,7 +574,7 @@
     const self = {
       level: level,
       note(t, f, dur, opts) {
-        const S = lySet(); if (!S || dead) return; opts = opts || {};
+        const S = lySet(); if (!S || dead || !isFinite(f) || f <= 0 || !isFinite(t) || !isFinite(dur)) return; opts = opts || {};
         const end = t + dur, legato = cur && !opts.detached && Math.abs(t - cur.lastEnd) < 0.03;
         let P = opts.newSyl && opts.syl ? lyParse(opts.syl) : null;
         // συλλαβή χωρίς σύμφωνο με το ίδιο φωνήεν, δεμένη: συνεχίζει το ίδιο φωνήεν με ένα μικρό «άρθρωμα»
