@@ -2052,6 +2052,7 @@ function mergeShared(R){
       if(b){ const old=b.pdf; b.pdf=rb.pdf; b.local=false; b.title=rb.title; b.shared=1; if(rb.parts) b.parts=rb.parts; if(rb.size) b.size=rb.size; ch=true;
         if(old&&old!==rb.pdf){ idb.get(old).then(x=>{ if(x) idb.put(rb.pdf,x); }); try{ const T=tocAll(); if(T[old]&&!T[rb.pdf]){ T[rb.pdf]=T[old]; localStorage.setItem("okt-toc",JSON.stringify(T)); } }catch(e){} } } }
     if(b&&rb.parts&&!b.parts){ b.parts=rb.parts; ch=true; }
+    if(b&&rb.mv&&b.mv!==rb.mv){ b.mv=rb.mv; ch=true; }   // (31-10-2026) νεότερη έκδοση της έτοιμης μουσικής
     if(!b){ lib.books.push(Object.assign({marks:[]},rb)); ch=true; return; }
     if(rb.toc&&!b.toc){ b.toc=rb.toc; ch=true; }
     if(rb.pages&&!b.pages){ b.pages=rb.pages; ch=true; }
