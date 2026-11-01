@@ -1,17 +1,17 @@
 {
-  "name": "Οκτώηχος",
-  "short_name": "Οκτώηχος",
-  "description": "Φθόγγοι, απηχήματα, ισοκρατήματα, χρόες και ψαλμοί των ήχων της βυζαντινής μουσικής.",
+  "name": "7 ημέρες με τους Σοφούς",
+  "short_name": "Σοφοί",
+  "description": "34 σοφοί, ένα λόγιο σε απλά λόγια και μία άσκηση την ημέρα. Christos S Magides.",
   "lang": "el",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#0e1838",
-  "theme_color": "#0e1838",
+  "orientation": "portrait",
+  "background_color": "#060c1a",
+  "theme_color": "#0b1530",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {"src": "sofoi-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "sofoi-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "sofoi-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ]
 }
