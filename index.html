@@ -2204,9 +2204,14 @@ async function shareBooks(){
 }
 async function getPdfBlob(path){
   if(pdfCache[path]) return pdfCache[path];
+  // (2-11-2026) Ελέγχω ότι είναι ΑΛΗΘΙΝΟ PDF: αν ο ιστότοπος είχε δώσει τη σελίδα της εφαρμογής αντί για το βιβλίο
+  // (πριν ανέβει), η συσκευή το είχε κρατήσει χαλασμένο και η σελίδα δεν άνοιγε ποτέ. Τώρα το πετάει και το ξαναφέρνει.
+  const isPdf=async x=>{ try{ if(!x||!x.size) return false; const h=new Uint8Array(await x.slice(0,1024).arrayBuffer()); return String.fromCharCode.apply(null,h).indexOf("%PDF")>=0; }catch(e){ return false; } };
   let b=await idb.get(path);
+  if(b&&!(await isPdf(b))){ try{ await idb.del(path); }catch(e){} b=null; }
   if(!b){ const e=(lib.books||[]).find(x=>x&&x.pdf===path&&x.parts); if(e){ try{ b=await partsBlob(path,e.parts); }catch(_){} } }   // (31-10-2026) μεγάλο βιβλίο σε κομμάτια
-  if(!b){ try{ const r=await fetch(path); if(r.ok) b=await r.blob(); }catch(e){} }
+  if(!b){ try{ const r=await fetch(path,{cache:"reload"}); if(r.ok) b=await r.blob(); }catch(e){} }
+  if(b&&!(await isPdf(b))) b=null;
   if(b){ pdfCache[path]=b; idb.put(path,b); }
   return b||null;
 }
@@ -2952,7 +2957,7 @@ function renderLib(){
     const hy={id:newId(),title:"Νέος ψαλμός",mode:current.id,start:0,tempo:72,cells:[]};
     lib.hymns.push(hy); scheduleSave(); libView="hymn"; openId=hy.id; editing=true; sel=-1; renderLib(); window.scrollTo(0,0);
   };
-  try{ const n=localOnlyBooks().length; $("shareInfo").textContent=n?("Σε αυτή τη συσκευή υπάρχουν "+n+" βιβλία που δεν τα έχουν οι άλλες συσκευές (π.χ. το iPhone και το Safari)."):"Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη ✓"; if(!n) $("btnShareBooks").style.display="none"; }catch(e){}
+  try{ const shT=new Set((lib.books||[]).filter(b=>b&&(b.shared||/^vivlia\//.test(b.pdf||""))).map(b=>fold(b.title))); const n=localOnlyBooks().filter(b=>!shT.has(fold(b.title))).length; /* (2-11-2026) δεν μετρά όσα υπάρχουν ήδη στην κοινή */ $("shareInfo").textContent=n?("Σε αυτή τη συσκευή υπάρχουν "+n+" βιβλία που δεν τα έχουν οι άλλες συσκευές (π.χ. το iPhone και το Safari)."):"Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη ✓"; if(!n) $("btnShareBooks").style.display="none"; }catch(e){}
   $("btnShareBooks").onclick=()=>shareBooks();
   $("btnCopy").onclick=()=>{
     const txt=JSON.stringify({hymns:lib.hymns,apech:lib.apech,tuning:lib.tuning||null});
