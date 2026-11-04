@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v37 · Christos S Magides · 4-11-2026 · σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -32,7 +33,7 @@
   .mcol{display:flex;flex-direction:column;align-items:center;padding:0 4px;border-radius:8px}
   .mcol.bad{background:#ffe1dc;outline:3px dashed var(--red)}
   #pages{display:flex;flex-direction:column;gap:18px}
-  .pg{position:relative;max-width:1206px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.12);overflow:hidden}
+  .pg{position:relative;width:100%;box-sizing:border-box;max-width:1206px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.12);overflow:hidden}
   .pg img{width:100%;display:block}
   .pgno{position:absolute;right:8px;top:6px;background:rgba(14,24,56,.75);color:#e2bd5e;font-weight:bold;border-radius:10px;padding:2px 10px;font-size:16px}
   .hb{position:absolute;border-radius:10px;cursor:pointer}
@@ -144,7 +145,7 @@
 <div class="bar" id="mainBar" style="display:none">
   <button class="play" id="playBtn">▶ Ψάλλε</button>
   <button class="oct" id="apBtn">🎵 Απήχημα</button>
-  <label>Ταχύτητα <input type="range" id="tempo" min="50" max="180" step="1" value="70"> <b id="tempoLbl" style="display:inline-block;min-width:2.2em;text-align:right">70</b> χτύποι/λεπτό</label>
+  <label>Ταχύτητα <input type="range" id="tempo" min="30" max="240" step="1" value="70"> <input type="number" id="tempoNum" min="30" max="240" step="1" inputmode="numeric" value="70" style="width:4.2em;font-size:20px;font-weight:700;text-align:center;padding:4px;border-radius:10px" aria-label="Χτύποι το λεπτό"><b id="tempoLbl" hidden>70</b> χτύποι/λεπτό</label>
   <button class="oct" id="octDown">▼ Οκτάβα</button>
   <label>Τονικότητα <input type="range" id="pitch" min="0" max="1" step="0.0005" value="0.2"><span id="pitchLbl"></span></label>
   <button class="oct" id="octUp">▲ Οκτάβα</button>
@@ -153,8 +154,9 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
+  <small style="opacity:.7">v37 · 4-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -182,7 +184,7 @@
 <script src="foni-psaltis.js?v=2"></script>
 <script src="foni-christos.js?v=1"></script>
 <script src="foni-christos-par.js?v=2"></script>
-<script src="foni.js?v=9"></script>
+<script src="foni.js?v=10"></script>
 <script src="anagnostis-vivlion.js?v=6"></script>
 <script>
 function BOOT(D){
@@ -369,13 +371,18 @@ const voiceSel=()=>document.getElementById("voiceSel").value;
 let VOICE_F0=87.5;
 function choirFail(){document.getElementById("voiceSel").value="apech";try{const m=document.getElementById("msg");if(m)m.textContent="⚠ Η χορωδία δεν φόρτωσε σε αυτή τη συσκευή — ψάλλει η φωνή του απηχήματος.";}catch(e){}}
 async function loadVoice(){const k=voiceSel();
+  // (4-11-2026) «Χρίστος · νέα φωνή»: τα δείγματα (0,7 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
+  if(k==="christos_s"&&!window.FONI_SYL){const m=document.getElementById("msg");if(m)m.textContent="⏳ Φέρνω τη νέα φωνή του Χρίστου…";
+    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-syl.js?v=1";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
+    if(m)m.textContent="";
+    if(!window.FONI_SYL){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η νέα φωνή δεν κατέβηκε (δες ότι υπάρχει το αρχείο foni-christos-syl.js δίπλα στη σελίδα) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}
   // (31-10-2026) «Χρίστος με λόγια»: τα δείγματα (3 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
   if(k==="christos_v"&&!(window.FONI_SETS&&FONI_SETS.christos_v)){const m=document.getElementById("msg");if(m)m.textContent="⏳ Φέρνω τη φωνή «Χρίστος με λόγια»…";
     try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=1";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
     if(m)m.textContent="";
     if(!(window.FONI_SETS&&FONI_SETS.christos_v)){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η φωνή «με λόγια» δεν κατέβηκε (δες τη σύνδεση) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
   if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0||k.indexOf("christos")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
-  if(isChoir()){try{if(k!=="piano")await Foni.load(k);if((k==="christos_par"||k==="christos_v")&&Foni.has("christos"))await Foni.load("christos");if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
+  if(isChoir()){try{if(k!=="piano")await Foni.load(k);if((k==="christos_par"||k==="christos_v"||k==="christos_s")&&Foni.has("christos"))await Foni.load("christos");if(Foni.has("xorodia_ou"))await Foni.load("xorodia_ou");}catch(e){choirFail();return loadVoice();}return;}
   if(k==="synth")return;if(voiceBuf&&voiceKey===k)return;ensureCtx();
   const V=VOICES[k];VOICE_F0=V.f0;voiceKey=k;voiceBuf=null;
   const bin=atob(V.b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
@@ -423,16 +430,22 @@ if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel'
   // (31-10-2026) «Χρίστος με λόγια»: διαλέγεται μόνο αν το θέλεις (κύρια φωνή μένει η «παραλλαγή»). Η επιλογή φυλάγεται χωριστά,
   // ώστε οι άλλες σελίδες (που δεν έχουν αυτή τη φωνή) να συνεχίζουν με τη «Χρίστος · παραλλαγή».
   try{if(!localStorage.getItem('okt-logia-v2')){localStorage.setItem('okt-logia-v1','1');localStorage.setItem('okt-logia-v2','1');localStorage.setItem('okt-voice-logia','0');vs.value='christos_par';}   // (31-10-2026 β) ο Χρίστος προτιμά τη «παραλλαγή»
-    if(localStorage.getItem('okt-voice-logia')==='1')vs.value='christos_v';}catch(e){}
+    if(localStorage.getItem('okt-voice-logia')==='1')vs.value='christos_v';
+    if(localStorage.getItem('okt-voice-syl')==='1')vs.value='christos_s';}catch(e){}
   vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-logia',vs.value==='christos_v'?'1':'0');if(vs.value==='christos_v')localStorage.setItem('okt-voice2','christos_par');}catch(e){}});
   const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='christos_par'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Number(pe.defaultValue)+0.12);pe.dispatchEvent(new Event('input'));return;}const v=vs.value,up=v.indexOf('christos')===0?0.06:(v.indexOf('psaltis')===0?0.12:0);
     if(up&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+up));pe.dispatchEvent(new Event('input'));}}catch(e){}};
   fit();vs.addEventListener('change',fit);})();
 
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
-(function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();})();
+(function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();
+  // (4-11-2026) γράφεις τον αριθμό που θέλεις (π.χ. 82 ή 95)
+  const n=document.getElementById("tempoNum");if(n){const sync=()=>{n.value=t.value;};sync();t.addEventListener("input",sync);
+    const set=()=>{let v=Math.round(Number(n.value));if(!(v>=30))v=Number(t.value)||70;v=Math.min(240,v);t.value=String(v);n.value=String(v);t.dispatchEvent(new Event("input"));};
+    n.addEventListener("change",set);n.addEventListener("keydown",e=>{if(e.key==="Enter"){set();n.blur();}});}
+})();
 document.getElementById('revAmt').oninput=e=>{try{localStorage.setItem('okt-rev',e.target.value);}catch(_){} if(window.Foni&&ctx){Foni.setup(ctx);Foni.setReverb(Number(e.target.value));}};
-document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value);}catch(_){} if(isPlaying()){resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null);stopAll();playSel();}};
+document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value==='christos_s'?'christos_par':e.target.value);localStorage.setItem('okt-voice-syl',e.target.value==='christos_s'?'1':'0');}catch(_){} if(isPlaying()){resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null);stopAll();playSel();}};
 let looping=false;
 function isPlaying(){return !!voice||looping;}
 function setPlayBtn(){const b=document.getElementById("playBtn");if(!b)return;const on=isPlaying();b.textContent=on?"■ Σταμάτα":(resumeId?"▶ Συνέχεια":"▶ Ψάλλε");b.classList.toggle("on",on);}
@@ -477,26 +490,30 @@ function playChoir(list,onEnd){
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
   // (19-10-2026) Οι νότες ετοιμάζονται λίγο-λίγο (1,5″ μπροστά), όχι όλες μαζί: αλλιώς σε μεγάλες σελίδες
   // το κινητό/ο υπολογιστής «πνίγεται» από χιλιάδες ήχους και η φωνή κόβεται ή δεν ακούγεται.
-  let t=ctx.currentTime+0.25,isoT=null,isoF=0,isoN=null;try{window.__metSync&&__metSync(t-ctx.currentTime);}catch(e){}
+  let t=ctx.currentTime+0.6,isoT=null,isoF=0,isoN=null;try{window.__metSync&&__metSync(t-ctx.currentTime);}catch(e){}
   let __m0,lastSk=null;const ev=[];
   // (29-10-2026) το ίσον σε κομμάτια ως 1,5″ (δεμένα μεταξύ τους): ακολουθεί ομαλά την Τονικότητα την ώρα που ψάλλει
-  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:()=>iso.note(aa,safeF(N.idx,0,N.sc),d,o)});a+=d;first=false;}}isoT=null;};
+  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:dt=>iso.note(aa+dt,safeF(N.idx,0,N.sc),d,o)});a+=d;first=false;}}isoT=null;};
   list.forEach((n,k)=>{
     const dur=n.sec?n.sec:beat*n.dur*(n.tf||1);
     if(n.rest){const tr=t;ev.push({t:tr,run:()=>mel.rest()});t+=dur;return;}
     const f=safeF(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
     const sk=n.l+"-"+n.i,cell=(data[n.l]&&data[n.l][n.i])||null,syl=(cell&&typeof cell[0]==="string")?cell[0]:"",newSyl=sk!==lastSk&&!!syl.trim();lastSk=sk;   // (22-10-2026) η συλλαβή, για τον «Ψάλτη με λόγια»
-    ev.push({t:tn,run:()=>mel.note(tn,safeF(n.idx,n.acc,n.sc),dur,{nm:["Ni","Pa","Vou","Ga","Di","Ke","Zo"][((n.idx%7)+7)%7],pet,syl:newSyl?syl:"",newSyl})});
+    ev.push({t:tn,run:dt=>mel.note(tn+dt,safeF(n.idx,n.acc,n.sc),dur,{nm:["Ni","Pa","Vou","Ga","Di","Ke","Zo"][((n.idx%7)+7)%7],pet,syl:newSyl?syl:"",newSyl})});
     if(iso){const fi=safeF(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;isoN={idx:n.ison,sc:n.sc};}}
-    if(n.l>=0)hlMark(t,n.l+"-"+n.i);
+    if(n.l>=0){const th=t,hid=n.l+"-"+n.i;ev.push({t:th,run:dt=>hlMark(th+dt,hid)});}
     t+=dur;
   });
   flushIso(t);
   ev.forEach((e,i)=>e.i=i);ev.sort((a,b)=>a.t-b.t||a.i-b.i);
-  const tok=choirLines;let ei=0;
-  const pump=()=>{if(choirLines!==tok)return;const lim=ctx.currentTime+1.5;while(ei<ev.length&&ev[ei].t<lim){try{ev[ei].run();}catch(e){}ei++;}if(ei<ev.length)timers.push(setTimeout(pump,250));};
+  const tok=choirLines;let ei=0,slip=0;const tEnd=t;
+  // (4-11-2026 β) καμία νότα δεν χάνεται: οι νότες ετοιμάζονται 2,5″ μπροστά, και αν ο υπολογιστής/κινητό αργήσει,
+  // όλο το υπόλοιπο μετατίθεται λίγο αργότερα (αντί να κοπεί ή να πηδηχτεί νότα)
+  const pump=()=>{if(choirLines!==tok)return;const now=ctx.currentTime,lim=now+2.5;
+    while(ei<ev.length&&ev[ei].t+slip<lim){const e=ev[ei];if(e.t+slip<ctx.currentTime+0.08)slip=ctx.currentTime+0.15-e.t;try{e.run(slip);}catch(er){}ei++;}
+    if(ei<ev.length)timers.push(setTimeout(pump,200));
+    else timers.push(setTimeout(()=>{if(choirLines!==tok)return;stopAll();if(onEnd)onEnd();},Math.max(0,(tEnd+slip-ctx.currentTime+1.2)*1000)));};
   pump();
-  timers.push(setTimeout(()=>{stopAll();if(onEnd)onEnd();},(t-ctx.currentTime+1.2)*1000));
 }
 function play(list,onEnd){
   if(isChoir())return playChoir(list,onEnd);
