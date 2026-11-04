@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v37 · Christos S Magides · 4-11-2026 · σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v37 · Christos S Magides · 4-11-2026 · σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -154,7 +154,7 @@
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
   <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
-  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
+  <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
   <small style="opacity:.7">v37 · 4-11-2026</small>
 </div>
@@ -184,6 +184,7 @@
 <script src="foni-psaltis.js?v=2"></script>
 <script src="foni-christos.js?v=1"></script>
 <script src="foni-christos-par.js?v=2"></script>
+<script src="foni-christos-mm.js?v=1"></script>
 <script src="foni.js?v=10"></script>
 <script src="anagnostis-vivlion.js?v=6"></script>
 <script>
@@ -431,11 +432,17 @@ if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel'
   // ώστε οι άλλες σελίδες (που δεν έχουν αυτή τη φωνή) να συνεχίζουν με τη «Χρίστος · παραλλαγή».
   try{if(!localStorage.getItem('okt-logia-v2')){localStorage.setItem('okt-logia-v1','1');localStorage.setItem('okt-logia-v2','1');localStorage.setItem('okt-voice-logia','0');vs.value='christos_par';}   // (31-10-2026 β) ο Χρίστος προτιμά τη «παραλλαγή»
     if(localStorage.getItem('okt-voice-logia')==='1')vs.value='christos_v';
-    if(localStorage.getItem('okt-voice-syl')==='1')vs.value='christos_s';}catch(e){}
+    if(localStorage.getItem('okt-voice-syl')==='1')vs.value='christos_s';
+    // (4-11-2026, v37) κύρια φωνή: «Χρίστος «μμμ» καθαρή» (αν δεν διάλεξες άλλη)
+    if(localStorage.getItem('okt-voice-mm')!=='0'&&window.FONI_SETS&&FONI_SETS.christos_mm)vs.value='christos_mm';}catch(e){}
   vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-logia',vs.value==='christos_v'?'1':'0');if(vs.value==='christos_v')localStorage.setItem('okt-voice2','christos_par');}catch(e){}});
   const fit=()=>{try{const pe=document.getElementById('pitch');if(vs.value==='christos_par'&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Number(pe.defaultValue)+0.12);pe.dispatchEvent(new Event('input'));return;}const v=vs.value,up=v.indexOf('christos')===0?0.06:(v.indexOf('psaltis')===0?0.12:0);
     if(up&&pe&&Math.abs(Number(pe.value)-Number(pe.defaultValue))<1e-6){pe.value=String(Math.min(Number(pe.max)||1,Number(pe.defaultValue)+up));pe.dispatchEvent(new Event('input'));}}catch(e){}};
-  fit();vs.addEventListener('change',fit);})();
+  // (4-11-2026, v37) η «μμμ» καθαρή ψάλλει στη δική σου οκτάβα (Δι 195 Hz): εκεί ακούγεται φυσική
+  const MMV=String(Math.log(195.3/49)/Math.log(1568/49));
+  const fitMM=()=>{try{const pe=document.getElementById('pitch');if(!pe)return;if(vs.value==='christos_mm'){pe.value=MMV;pe.dispatchEvent(new Event('input'));}else if(Math.abs(Number(pe.value)-Number(MMV))<0.002){pe.value=pe.defaultValue;fit();pe.dispatchEvent(new Event('input'));}}catch(e){}};
+  fitMM();vs.addEventListener('change',fitMM);fit();vs.addEventListener('change',fit);
+  vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-mm',vs.value==='christos_mm'?'1':'0');}catch(e){}});})();
 
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
 (function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();
@@ -484,7 +491,7 @@ function safeF(idx,acc,sc){let f=freq(idx,acc,sc);if(!isFinite(f)||f<=0)f=freq(N
 function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
-  const key=voiceSel(), isoKey=key.indexOf("christos")===0?"christos":key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
+  const key=voiceSel(), isoKey=key==="christos_mm"?"christos_mm":key.indexOf("christos")===0?"christos":key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
   const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
