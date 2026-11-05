@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής (v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -128,7 +128,9 @@
         const legato = !opts.detached && lastEnd > 0 && t - lastEnd < 0.03;
         // (20-10-2026) σε γρήγορες νότες (γοργά, τρίγοργα) μένει στο ίδιο δείγμα: δεν αλλάζει χροιά «σαν άλλο όργανο»
         let s = pick(key, f);
-        if (legato && lastS && Math.abs(12 * Math.log2(f / lastS.hz)) < 4.5) s = lastS;
+        // (5-11-2026) οι «καθαρές» φωνές του Χρίστου παίρνουν πάντα το πλησιέστερο δείγμα: σταθερό χρώμα, χωρίς παραμόρφωση
+        const clean = key === "christos_aa" || key === "christos_mm";
+        if (legato && lastS && Math.abs(12 * Math.log2(f / lastS.hz)) < (clean ? 1.2 : 4.5)) s = lastS;
         const rate = f / s.hz;
         const from = legato && lastHz ? (lastHz / s.hz) : rate;
         const L = s.buf.duration;
@@ -145,7 +147,10 @@
           const last = te >= end - 1e-6;
           segment(s, first ? from : rate, rate, ts, te, off, first ? fadeIn : 0.3, last ? tail : 0.3, 1, first ? opts : null, lg);
           if (last) break;
-          ts = te; off = 0.35 + Math.random() * 0.2; first = false; // συνέχεια με διασταύρωση (για μεγάλες νότες και ίσον)
+          // (5-11-2026) «α» καθαρή: η συνέχεια πέφτει στην ίδια φάση του κυματισμού (0,2″), ώστε η φωνή να μένει σταθερή στις μακριές νότες
+          if (key === "christos_aa") { const pe = off + (te - ts) * rate; off = 0.3 + (((pe - 0.3) % 0.2) + 0.2) % 0.2; }
+          else off = 0.35 + Math.random() * 0.2;
+          ts = te; first = false; // συνέχεια με διασταύρωση (για μεγάλες νότες και ίσον)
         }
         lastEnd = end; lastHz = f; lastS = s;
       },
