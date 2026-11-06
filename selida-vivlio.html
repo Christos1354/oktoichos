@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v38 · Christos S Magides · 5-11-2026 · φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v39 · Christos S Magides · 5-11-2026 · θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -157,7 +157,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v38 · 5-11-2026</small>
+  <small style="opacity:.7">v39 · 5-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -745,7 +745,12 @@ document.getElementById("copyBtn").onclick=async()=>{
     pages:()=>PAGES.map(P=>P.pageNo),visiblePage:()=>{const y=Math.min(innerHeight*0.4,300);let lo=0,hi=PAGES.length-1;
       while(lo<hi){const md=(lo+hi+1)>>1;if(pageEls[md].getBoundingClientRect().top<=y)lo=md;else hi=md-1;}
       return PAGES[lo]?PAGES[lo].pageNo:null;},
-    compute:()=>{compute();return flat;},data,SECT,order:()=>order,play:playSel,stop:stopAll,playChoir:(l,e)=>playChoir(l,e),setCtx:c=>{ctx=c;},getCtx:()=>ctx,playAt:(pn,fx,fy,noPlay)=>{let best=null,bd=1e18;
+    compute:()=>{compute();return flat;},data,SECT,order:()=>order,play:playSel,stop:stopAll,playChoir:(l,e)=>playChoir(l,e),setCtx:c=>{ctx=c;},getCtx:()=>ctx,pos:()=>{   // (5-11-2026, v39) πού βρίσκεσαι: η συλλαβή που ψάλλει/σταμάτησε, αλλιώς η σελίδα που βλέπεις
+      const id=hlCurId||resumeId;if(id){const l=Number(String(id).split("-")[0]),i=Number(String(id).split("-")[1]);const P=PAGES[LINEPG[l]];
+        if(P&&data[l]){let k=0;for(let j=0;j<i;j++)if(Array.isArray(data[l][j]))k++;const b=BOX[l][k];if(b)return {page:P.pageNo,fx:(b[0]+b[2]/2)/P.w,fy:(b[1]+b[3]/2)/P.h};}}
+      const y=Math.min(innerHeight*0.4,300);let lo=0,hi=PAGES.length-1;while(lo<hi){const md=(lo+hi+1)>>1;if(pageEls[md].getBoundingClientRect().top<=y)lo=md;else hi=md-1;}
+      return PAGES[lo]?{page:PAGES[lo].pageNo}:null;},
+    playAt:(pn,fx,fy,noPlay)=>{let best=null,bd=1e18;
     data.forEach((line,l)=>{const P=PAGES[LINEPG[l]];if(!P||P.pageNo!==pn)return;let k=0;line.forEach((s,i)=>{if(!Array.isArray(s))return;const b=BOX[l][k++];if(!b)return;
       const dx=(b[0]+b[2]/2)-fx*P.w,dy=(b[1]+b[3]/2)-fy*P.h,d=dx*dx+4*dy*dy;if(d<bd){bd=d;best=l+"-"+i;}});});
     if(best){selStart=null;selEnd=null;resumeId=best;wake(pgOfId(best));}const pb=document.getElementById("playBtn");if(noPlay){setPlayBtn();if(best)wake(pgOfId(best));const cc=best&&cols[best];if(cc){cc.classList.add("now");setTimeout(()=>cc.scrollIntoView({block:"center",behavior:"smooth"}),300);}return;}pb.click();},freq:(a,b,c)=>freq(a,b,c)};
@@ -811,8 +816,10 @@ render();
   const RV="r5";   // άλλαξε ο αναγνώστης (20-10-2026): ξαναδιαβάζει μία φορά
   const pgKey=(key,p)=>"pg:"+key+":"+p+":"+RV, metaKey=key=>"meta:"+key+":"+RV;
   let docP=null;
-  function getDoc(u8){if(!docP)docP=(async()=>{const lib=await loadPdfJs();return lib.getDocument({data:u8.slice(0)}).promise;})().catch(e=>{docP=null;throw e;});return docP;}
-  async function renderImg(page){const v0=page.getViewport({scale:1});const sc=1100/v0.width;const vp=page.getViewport({scale:sc});
+  // (5-11-2026, v39) λιγότερη μνήμη στο κινητό: όταν το βιβλίο είναι ήδη διαβασμένο ολόκληρο, το PDF δίνεται στον αναγνώστη χωρίς δεύτερο αντίγραφο
+  let lowMem=false;const PHONE=Math.min(screen.width||9999,screen.height||9999)<700;
+  function getDoc(u8){if(!docP)docP=(async()=>{const lib=await loadPdfJs();return lib.getDocument({data:lowMem?u8:u8.slice(0)}).promise;})().catch(e=>{docP=null;throw e;});return docP;}
+  async function renderImg(page){const v0=page.getViewport({scale:1});const sc=(PHONE?850:1100)/v0.width;   /* (5-11-2026) στο κινητό μικρότερη εικόνα σελίδας: λιγότερη μνήμη */const vp=page.getViewport({scale:sc});
     const c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);
     const cx=c.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,c.width,c.height);
     await page.render({canvasContext:cx,viewport:vp}).promise;const u=c.toDataURL("image/jpeg",0.75);c.width=1;c.height=1;return u;}
@@ -869,6 +876,7 @@ render();
       h.style.cssText="position:fixed;left:0;right:0;top:0;z-index:31;background:#0e1838;color:#e2bd5e;font:700 17px Georgia,serif;text-align:center;padding:5px 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid #e2bd5e";
       document.body.appendChild(h);}h.textContent="📖 "+(title||"Βιβλίο PDF");return h;}
   function openFull(D,u8,key,n,title,goPage,auto){
+    lowMem=true;
     D.pagesImg=D.pages.map(pg=>({img:null,w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
     D.imgFor=p=>pageData(u8,key,p,true).then(c=>c.img);
     D.key=key+":full";D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;D.full=1;
@@ -1021,7 +1029,16 @@ render();
 </script>
 <script>
 // (19-10-2026) ΠΙΣΩ: ένα βήμα πίσω (εκεί απ' όπου ήρθες), όχι στην αρχή
-document.querySelectorAll("a.backbtn").forEach(a=>a.addEventListener("click",e=>{try{if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin){e.preventDefault();history.back();}}catch(_){}}));
+// (5-11-2026, v39) θυμάται το βιβλίο και το σημείο: για το «ΜΠΡΟΣΤΑ» της αρχικής και για το επόμενο άνοιγμα της εφαρμογής
+(function(){const q=new URLSearchParams(location.search);
+  window.__oktCur=()=>{try{if(!q.get("pdf"))return null;const O=window.__okt;const p=O&&O.pos&&O.pos();if(!p||!p.page)return null;
+    const u=new URL(location.href);u.searchParams.set("page",String(p.page));
+    if(p.fx!=null){u.searchParams.set("fx",p.fx.toFixed(4));u.searchParams.set("fy",p.fy.toFixed(4));}else{u.searchParams.delete("fx");u.searchParams.delete("fy");}
+    u.searchParams.set("auto","0");return "selida-vivlio.html"+u.search;}catch(e){return null;}};
+  const save=()=>{const c=window.__oktCur();if(c)try{localStorage.setItem("okt-last",JSON.stringify({u:c,t:(document.getElementById("docTitle")||{}).textContent||"",at:Date.now()}));}catch(e){}};
+  setInterval(save,3000);addEventListener("pagehide",save);document.addEventListener("visibilitychange",()=>{if(document.hidden)save();});
+  window.__oktSave=save;})();
+document.querySelectorAll("a.backbtn").forEach(a=>a.addEventListener("click",e=>{try{const c=window.__oktCur&&__oktCur();if(c)sessionStorage.setItem("okt-fwd",c);if(window.__oktSave)__oktSave();}catch(_){}try{if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin){e.preventDefault();history.back();}}catch(_){}}));
 // (20-10-2026) ΑΡΧΗ: κατευθείαν στην αρχική σελίδα (ξεχνά πού ήσουν)
 document.querySelectorAll("a.homebtn:not(.backbtn)").forEach(a=>a.addEventListener("click",()=>{try{sessionStorage.removeItem("okt-ui");sessionStorage.removeItem("okt-navstack");}catch(_){}}));
 </script>
