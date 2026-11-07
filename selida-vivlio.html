@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v39 · Christos S Magides · 5-11-2026 · θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v41 · Christos S Magides · 7-11-2026 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -157,7 +157,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v39 · 5-11-2026</small>
+  <small style="opacity:.7">v41 · 7-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -185,9 +185,9 @@
 <script src="foni-psaltis.js?v=2"></script>
 <script src="foni-christos.js?v=1"></script>
 <script src="foni-christos-par.js?v=2"></script>
-<script src="foni-christos-aa.js?v=1"></script>
+<script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
-<script src="foni.js?v=11"></script>
+<script src="foni.js?v=12"></script>
 <script src="anagnostis-vivlion.js?v=6"></script>
 <script>
 function BOOT(D){
@@ -271,25 +271,31 @@ let flat=[]; // νότες για αναπαραγωγή
 let checks={};
 const MART_PAUSE=1.5;   // (21-10-2026) δευτερόλεπτα παύσης στη μαρτυρία του τέλους της γραμμής
 function compute(){
-  flat=[];checks={};let cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1;
+  flat=[];checks={};let cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1,isc=sc,hk=SECT[0].sc;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
   data.forEach((line,l)=>line.forEach((s,i)=>{
     if(!Array.isArray(s)){
-      if(s.sec!==undefined){sc=SCALES[SECT[s.sec].sc];pend=0;tf=1;return;}
+      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;return;}
       if(s.br){pend=0;const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,dur:0.5,idx:pv.idx,ison:pv.ison,sc});return;}
       if(s.tp)tf=s.tp; if(s.m===undefined)return;
       pend=0;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
-      if(!s.r)checks[l+"-"+i]=(cur===s.m);
+      if(!s.r)checks[l+"-"+i]=(typeof s.m==="number"?(((cur-s.m)%7)+7)%7===0:cur===s.m);
       if(!s.r&&line.slice(i+1).every(x=>!Array.isArray(x))){const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,sec:MART_PAUSE,dur:1,idx:pv.idx,ison:pv.ison,sc});}   // (21-10-2026) μαρτυρία στο τέλος γραμμής: παύση
-      cur=s.m; if(s.is!==undefined)ison=s.is; return;}
-    if(s[5]!==null&&s[5]!==undefined)ison=s[5];
+      // (7-11-2026, v40) η μαρτυρία λέει τον φθόγγο, όχι την οκτάβα: μένουμε στην πιο κοντινή οκτάβα (αλλιώς η μελωδία «πηδά» οκτάβα)
+      cur=(typeof s.m==="number"&&Number.isFinite(cur))?s.m+7*Math.round((cur-s.m)/7):s.m; if(s.is!==undefined){ison=s.is;isc=sc;} return;}
+    if(s[5]!==null&&s[5]!==undefined){ison=s[5];isc=sc;}
     const B=BASE[s[1]];const idxs=[];const steps=(s[10]!==null&&s[10]!==undefined)?[s[10]-cur]:(s[7]||B.st);
     const first=flat.length;
-    steps.forEach((st,k)=>{cur+=st;idxs.push(cur);
+    // (7-11-2026, v41) η φθορά ισχύει ΚΑΙ για τη νότα πάνω στην οποία είναι γραμμένη· και όταν ονομάζει την ίδια τη νότα
+    // (π.χ. διατονικός Νη΄ πάνω στον Νη΄), η νότα παίρνει το σωστό ύψος του νέου γένους — όχι το ύψος του προηγούμενου (αλλιώς παραφωνία)
+    let nsc=null;
+    if(s[11]){const f=s[11],G=SCALES[f[0]],fc=cur+steps.reduce((a,b)=>a+b,0),r0=((fc%7)+7)%7;
+      nsc=(G&&(f[1]===r0||G.length===4))?G:fthScale(sc,f,fc);}
+    steps.forEach((st,k)=>{cur+=st;idxs.push(cur);if(nsc&&k===steps.length-1)sc=nsc;
       let d=(B.half&&steps.length>1)?0.5:1;
       if(pend>0){d=pd;pend--;}
-      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),tf,sc});});
+      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),isoM:ison==="M",tf,sc,isc:(ison==="M"?sc:isc)});});
     s._notes=idxs;
-    if(s[11])sc=fthScale(sc,s[11],cur);
+    // (v41) η φθορά εφαρμόστηκε ήδη πιο πάνω (nsc)
     if(s[9]){const f0=flat[first];f0.dur=0.5;f0.pet=1;}
     const last=flat[flat.length-1];
     const g=Number(s[3])||0;
@@ -303,6 +309,8 @@ function compute(){
     const by=new Map();flat.forEach(n=>{if(n.rest)return;const k=secOfL[n.l];if(!by.has(k))by.set(k,[]);by.get(k).push(n.idx);});
     const sh=new Map();by.forEach((a,k)=>{a.sort((x,y)=>x-y);const md=a[a.length>>1];sh.set(k,7*Math.round((md-4)/7));});
     flat.forEach(n=>{const d=sh.get(secOfL[n.l])||0;if(d){n.idx-=d;if(typeof n.ison==="number")n.ison-=d;}});}
+  // (7-11-2026, v40) το ίσον στη φυσική του θέση, κάτω από τη μελωδία: από τον χαμηλό Ζω ως τον Κε (όχι «πέντε οκτάβες κάτω» και τυχαία πάνω)
+  flat.forEach(n=>{if(typeof n.ison==="number"&&!n.isoM&&Number.isFinite(n.ison)){let r=((n.ison%7)+7)%7;if(r===6)r=-1;n.ison=r;}});
 }
 // ---------- Εμφάνιση: η σελίδα όπως είναι + διαφανή κουτιά ----------
 const PAGES=D.pagesImg;
@@ -529,7 +537,7 @@ function playChoir(list,onEnd){
     const sk=n.l+"-"+n.i,cell=(data[n.l]&&data[n.l][n.i])||null,syl=(cell&&typeof cell[0]==="string")?cell[0]:"",newSyl=sk!==lastSk&&!!syl.trim();lastSk=sk;   // (22-10-2026) η συλλαβή, για τον «Ψάλτη με λόγια»
     const nj=brOn?brNext(k):-1,brk=nj>=0&&brStart.has(nj),pdur=brk?dur-Math.min(0.14,dur*0.3):dur,det=brOn&&brStart.has(k);
     ev.push({t:tn,run:dt=>mel.note(tn+dt,safeF(n.idx,n.acc,n.sc),pdur,{detached:det,tail:brk?0.07:undefined,nm:["Ni","Pa","Vou","Ga","Di","Ke","Zo"][((n.idx%7)+7)%7],pet,syl:newSyl?syl:"",newSyl})});
-    if(iso){const fi=safeF(n.ison,0,n.sc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;isoN={idx:n.ison,sc:n.sc};}}
+    if(iso){const isc=n.isc||n.sc,fi=safeF(n.ison,0,isc);if(isoT===null||Math.abs(fi-isoF)>0.5){flushIso(t);isoT=t;isoF=fi;isoN={idx:n.ison,sc:isc};}}   // (7-11-2026, v40) το ίσον δεν αλλάζει ύψος στις φθορές της μελωδίας
     if(n.l>=0){const th=t,hid=n.l+"-"+n.i;ev.push({t:th,run:dt=>hlMark(th+dt,hid)});}
     t+=dur;
   });
