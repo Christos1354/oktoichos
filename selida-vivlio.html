@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v42 · Christos S Magides · 8-11-2026 · νέα φωνή «α ζωντανή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v42 · Christos S Magides · 8-11-2026 · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -526,7 +526,7 @@ function playChoir(list,onEnd){
   stopAll();ensureCtx();Foni.setup(ctx);
   const beat=(60/Number(document.getElementById("tempo").value));
   const isoMul=Number((document.getElementById("isoOct")||{}).value||1)||1;
-  const key=voiceSel(), isoKey=key==="christos_az"?"christos_aa":key==="christos_aa"?(isoMul<1?"christos":"christos_aa"):key==="christos_mm"?"christos_mm":key.indexOf("christos")===0?"christos":key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
+  const key=voiceSel(), isoKey=(key==="christos_az"||key==="christos_aa")?"christos_aa":key==="christos_mm"?"christos_mm":key.indexOf("christos")===0?"christos":key.indexOf("psaltis")===0?"psaltis":(Foni.has("xorodia_ou")?"xorodia_ou":key);
   const mel=key==="piano"?Foni.piano(0.5):Foni.line(key,0.62);
   const iso=document.getElementById("isonOn").checked?Foni.line(isoKey,choirIsonLevel()):null;
   choirLines={mel,iso};voice={choir:1};setPlayBtn();
