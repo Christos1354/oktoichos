@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v42 · Christos S Magides · 8-11-2026 · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v42 · Christos S Magides · 8-11-2026 · εύρεση μέσα στο βιβλίο, ✂ αλλαγή ήχου από συλλαβή, αυτόματη χρονική αγωγή · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -149,7 +149,9 @@
   <div id="pgNav" style="display:none;margin:6px 0;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="pgPrevW" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">Επόμενες σελίδες ▶</button></div>
   <p class="sb" id="bgSave" style="font-size:15px;opacity:.85"></p>
   <p class="sb" id="docSub">Διαλέγεις ύμνο και πατάς ▶ Ψάλλε, ή πατάς μια συλλαβή</p>
-  <div class="secbar"><label for="secSel">🎼 Ύμνος:</label> <select id="secSel"></select><label for="mdSel">Ήχος:</label> <select id="mdSel"><option value="">—</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select><label for="scSel">Κλίμακα:</label> <select id="scSel"><option value="dia">Διατονική</option><option value="hard">Σκληρή χρωματική (πλ. β΄)</option><option value="soft">Μαλακή χρωματική (β΄)</option><option value="g">Εναρμόνια (γ΄, Ζω ύφεση)</option><option value="vary">Βαρύς (εναρμόνιος, όπως ο Γ΄)</option></select><span id="secWho" style="font-size:17px;color:#e2bd5e;width:100%;text-align:center"></span></div>
+  <div class="secbar"><label for="secSel">🎼 Ύμνος:</label> <select id="secSel"></select><label for="mdSel">Ήχος:</label> <select id="mdSel"><option value="">—</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select><label for="scSel">Κλίμακα:</label> <select id="scSel"><option value="dia">Διατονική</option><option value="hard">Σκληρή χρωματική (πλ. β΄)</option><option value="soft">Μαλακή χρωματική (β΄)</option><option value="g">Εναρμόνια (γ΄, Ζω ύφεση)</option><option value="vary">Βαρύς (εναρμόνιος, όπως ο Γ΄)</option></select><span id="secWho" style="font-size:17px;color:#e2bd5e;width:100%;text-align:center"></span>
+    <label for="cutSel" style="width:100%;text-align:center">✂ Αλλαγή ήχου από τη συλλαβή που πάτησες:</label> <select id="cutSel"><option value="">— διάλεξε νέο ήχο —</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select> <button type="button" id="cutUndo" class="oct">↩ Αναίρεση αλλαγών ήχου</button></div>
+  <div class="bksearch" style="margin:8px 0"><input id="bkQ" type="search" autocomplete="off" placeholder="🔍 Εύρεση σε αυτό το βιβλίο: λέξη ή στίχος…" style="width:100%;font-size:21px;padding:12px 14px;border-radius:14px;border:3px solid #e2bd5e;background:#fffaf0;color:#0e1838"><div id="bkRes"></div></div>
   <p class="taphint">👆 Πάτα μια συλλαβή: ψάλλει από εκεί. Ξαναπάτα στη σελίδα: σταματά ή συνεχίζει. Κράτα πατημένη μια συλλαβή για διόρθωση.</p>
   <div id="pages"></div>
   <div id="pgNav2" style="display:none;margin:18px 0 8px;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="pgPrevW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">Επόμενες σελίδες ▶</button></div>
@@ -167,7 +169,7 @@
 <div class="bar" id="mainBar" style="display:none">
   <button class="play" id="playBtn">▶ Ψάλλε</button>
   <button class="oct" id="apBtn">🎵 Απήχημα</button>
-  <label>Ταχύτητα <input type="range" id="tempo" min="30" max="240" step="1" value="70"> <input type="number" id="tempoNum" min="30" max="240" step="1" inputmode="numeric" value="70" style="width:4.2em;font-size:20px;font-weight:700;text-align:center;padding:4px;border-radius:10px" aria-label="Χτύποι το λεπτό"><b id="tempoLbl" hidden>70</b> χτύποι/λεπτό</label>
+  <label>Ταχύτητα <input type="range" id="tempo" min="30" max="240" step="1" value="70"> <input type="number" id="tempoNum" min="30" max="240" step="1" inputmode="numeric" value="70" style="width:4.2em;font-size:20px;font-weight:700;text-align:center;padding:4px;border-radius:10px" aria-label="Χτύποι το λεπτό"><b id="tempoLbl" hidden>70</b> χτύποι/λεπτό</label> <label style="white-space:nowrap"><input type="checkbox" id="agAuto" checked style="width:22px;height:22px;vertical-align:middle"> Αυτόματη αγωγή</label> <b id="agLbl" style="color:#e2bd5e"></b>
   <button class="oct" id="octDown">▼ Οκτάβα</button>
   <label>Τονικότητα <input type="range" id="pitch" min="0" max="1" step="0.0005" value="0.2"><span id="pitchLbl"></span></label>
   <button class="oct" id="octUp">▲ Οκτάβα</button>
@@ -212,6 +214,64 @@
 <script src="foni.js?v=13"></script>
 <script src="anagnostis-vivlion.js?v=6"></script>
 <script>
+/* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
+   Βρίσκει ΜΟΝΟ από την αρχή λέξης/συλλαβής, όχι από τη μέση. */
+function evFold(t){
+  let x=String(t||"").normalize("NFD").replace(/[̀-ͯͅ]/g,"").toLowerCase()
+    .replace(/µ/g,"μ").replace(/ς/g,"σ").replace(/ϲ/g,"σ");
+  x=x.replace(/ου/g,"u").replace(/([αε])υ/g,"$1β").replace(/(ει|οι|υι)/g,"ι").replace(/αι/g,"ε")
+     .replace(/[ηυ]/g,"ι").replace(/ω/g,"ο").replace(/γ[γκ]/g,"g");
+  x=x.replace(/[^a-zα-ω\s]/g,"");
+  return x.replace(/(.)\1+/g,"$1");
+}
+// συλλαβές → ένα κείμενο όπου το ΚΕΦΑΛΑΙΟ γράμμα σημαίνει «εδώ αρχίζει συλλαβή»
+function evCode(syls){
+  let o="";
+  for(const sy of syls){ const f=evFold(sy).replace(/\s+/g,""); if(!f) continue;
+    let first=true;
+    for(const ch of f){
+      if(o&&o[o.length-1].toLowerCase()===ch){ if(first){ o=o.slice(0,-1)+o[o.length-1].toUpperCase(); first=false; } continue; }
+      o+=first?ch.toUpperCase():ch; first=false;
+    }
+  }
+  return o;
+}
+// ευρετήριο ενός βιβλίου από την έτοιμη μουσική του
+function evIndex(D){
+  const P=[], S=(D.sect||[]).map(s=>[s.t||"",s.mode||""]);
+  let li=0;
+  (D.pages||[]).forEach(pg=>{
+    const syls=[]; let sec=-1;
+    for(let k=0;k<(pg.lines||[]).length;k++,li++){
+      if(sec<0&&D.sect) for(let i=0;i<D.sect.length;i++) if(D.sect[i].l0<=li&&li<=D.sect[i].l1){ sec=i; break; }
+      const L=(D.lines||[])[li]; if(!Array.isArray(L)) continue;
+      L.forEach(n=>{ if(Array.isArray(n)&&typeof n[0]==="string") syls.push(n[0]); });
+    }
+    const c=evCode(syls); if(c) P.push([pg.pageNo,c,sec]);
+  });
+  return {v:1,p:P,s:S};
+}
+// βρίσκει τη φράση q σε κωδικοποιημένο κείμενο, μόνο σε αρχή συλλαβής
+function evQ(q){ return evFold(q).replace(/\s+/g,"").replace(/(.)\1+/g,"$1"); }
+function evHit(code,qq){
+  const low=code.toLowerCase(); let i=low.indexOf(qq);
+  while(i>=0){ const c=code[i]; if(c!==c.toLowerCase()) return true; i=low.indexOf(qq,i+1); }
+  return false;
+}
+// για τίτλους: κάθε λέξη της εύρεσης να είναι αρχή κάποιας λέξης του τίτλου
+function evTitleHit(title,qwords){
+  const tw=evFold(title).split(/\s+/).filter(Boolean);
+  return qwords.every(w=>tw.some(t=>t.startsWith(w)));
+}
+
+/* (8-11-2026) ΑΥΤΟΜΑΤΗ ΧΡΟΝΙΚΗ ΑΓΩΓΗ: όταν το βιβλίο έχει σημάδι αγωγής («χ» με αργό/γοργό κ.λπ.),
+   η ταχύτητα αλλάζει μόνη της με τις αναλογίες του Neanes (αργή 80 · μέτρια 100 · γοργή 168 · γοργότερη 208).
+   Η «μέτρια» είναι η δική σου ταχύτητα από τη μπάρα, ώστε όλα να μένουν στον ρυθμό που σου αρέσει. */
+const AG_B={"-2":56,"-1":80,"0":100,"1":168,"2":208,"3":250}, AG_N={"-2":"Αργότερη","-1":"Αργή","0":"Μέτρια","1":"Γοργή","2":"Γοργότερη","3":"Πολύ γοργή"};
+let lastTg=null;
+function agAuto(){const c=document.getElementById("agAuto");return !!(c&&c.checked);}
+function nBeat(n,beat){if(agAuto()&&n.tg!=null&&AG_B[n.tg])return beat*100/AG_B[n.tg];return beat*(n.tf||1);}
+function showAg(g){const l=document.getElementById("agLbl");if(!l)return;const v=Math.round(Number(document.getElementById("tempo").value)*AG_B[g]/100);l.textContent="⏱ "+(AG_N[g]||"")+" · "+v+" χτύποι/λ.";}
 function BOOT(D){
 const G={"ison": {"c": "", "w": 1.524, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.713, 0.125], "heteronConnecting": [1.7, -0.019], "heteron": [1.027, 0.207], "omalonConnecting": [1.471, 0.133], "omalon": [1.031, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraBottom": [0.789, 0.209], "fthoraTop": [0.788, 0.507], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "klasmaTop": [0.873, 0.487], "gorgonTop": [0.786, 0.505]}}, "oligon": {"c": "", "w": 1.515, "a": {"yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.686, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "gorgonBottom": [0.667, 0.125], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "apli": [0.803, 0.052], "antikenoma": [0.82, 0.165], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "psifiston": [0.84, 0.113], "gorgonTop": [0.78, 0.5]}}, "apostrofos": {"c": "", "w": 0.703, "a": {"omalonConnecting": [1.044, 0.089], "yfenAbove": [0.47, 0.891], "yfenBelow": [0.509, -0.04], "koronis": [0.37, 0.891], "endofonon": [0.502, -0.126], "heteronConnecting": [0.879, -0.019], "measureNumber": [0.172, 0.783], "isonIndicator": [0.366, 0.939], "gorgonBottom": [0.348, -0.018], "apli": [0.5, 0.013], "antikenoma": [0.461, 0.101], "noteTop": [0.17, 0.643], "fthoraTop": [0.386, 0.642], "fthoraBottom": [0.34, 0.099], "gorgonTop": [0.4, 0.58], "diesis": [0.233, 0.1], "yfesis": [0.648, 0.557], "klasmaTop": [0.408, 0.567]}}, "petasti": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.769, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.691], "measureNumber": [0.172, 0.743], "isonIndicator": [0.664, 0.913], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.636], "fthoraTop": [0.656, 0.6], "diesis": [0.464, 0.147], "psifiston": [0.795, 0.14], "klasmaBottom": [0.8, 0.083]}}, "elafron": {"c": "", "w": 1.243, "a": {"yfenAbove": [0.65, 0.901], "yfenBelow": [0.659, -0.04], "koronis": [0.56, 0.746], "endofonon": [0.632, -0.037], "measureNumber": [0.172, 0.613], "isonIndicator": [0.528, 0.939], "gorgonBottom": [0.487, -0.018], "heteronConnecting": [1.42, -0.019], "omalonConnecting": [1.241, 0.089], "apli": [0.588, -0.043], "antikenoma": [0.566, 0.07], "noteTop": [0.242, 0.703], "fthoraTop": [0.518, 0.66], "fthoraBottom": [0.609, 0.07], "gorgonTop": [0.627, 0.58], "diesis": [0.427, 0.02], "yfesis": [0.98, 0.536], "klasmaTop": [0.56, 0.62]}}, "yporroi": {"c": "", "w": 0.4, "a": {"diesisSecondary": [0.587, 0.887], "yfesisSecondary": [-0.019, -0.223], "yfesis": [0.308, 0.609], "barline": [0.286, 0.59], "yfenAbove": [0.217, 0.887], "yfenBelow": [0.159, -0.04], "koronis": [0.21, 0.881], "endofonon": [0.192, -0.146], "heteronConnecting": [0.583, -0.019], "measureNumber": [0.072, 0.483], "isonIndicator": [0.212, 0.913], "heteron": [0.316, -0.086], "apli": [0.161, 0.012], "antikenoma": [0.197, 0.1], "noteTop": [0.156, 0.675], "fthoraTop": [0.308, 0.609], "fthoraBottom": [0.148, 0.101], "diesis": [0.267, 0.06], "gorgonTop": [0.4, 0.527]}}, "oligonKentimaBelow": {"c": "", "w": 1.515, "a": {"apli": [0.763, -0.168], "gorgonBottom": [0.45, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.692, -0.051], "heteron": [1.027, -0.033], "omalon": [1.033, -0.067], "omalonConnecting": [1.473, -0.053], "antikenoma": [0.82, -0.055], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.42, 0.107], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.78, 0.5], "psifiston": [0.84, 0.113]}}, "klasmaAbove": {"c": "", "w": 0.0, "a": {"klasmaTop": [0.084, 0.604]}}, "gorgonAbove": {"c": "", "w": 0.0, "a": {"gorgonTop": [0.0, 0.8]}}, "diesis2": {"c": "", "w": 0.0, "a": {"diesis": [0.196, 0.612]}}, "diesis4": {"c": "", "w": 0.0, "a": {"diesis": [0.177, 0.682]}}, "diesis6": {"c": "", "w": 0.0, "a": {"diesis": [0.152, 0.652]}}, "diesis8": {"c": "", "w": 0.0, "a": {"diesis": [0.012, 0.553]}}, "yfesis2": {"c": "", "w": 0.0, "a": {"yfesis": [-0.213, 0.452]}}, "yfesis4": {"c": "", "w": 0.0, "a": {"yfesis": [-0.134, 0.429]}}, "yfesis6": {"c": "", "w": 0.0, "a": {"yfesis": [-0.153, 0.456]}}, "yfesis8": {"c": "", "w": 0.0, "a": {"yfesis": [-0.159, 0.44]}}, "isonIndicatorNi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorPa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorVou": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorGa": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorDi": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorKe": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "isonIndicatorZo": {"c": "", "w": 0.0, "a": {"isonIndicator": [0.0, 0.996]}}, "martyriaNoteNi": {"c": "", "w": 0.731, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.417], "martyriaBottom": [0.487, -0.03], "fthoraTop": [0.517, 0.588]}}, "martyriaNotePa": {"c": "", "w": 0.737, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.448], "martyriaBottom": [0.52, -0.047], "fthoraTop": [0.517, 0.59]}}, "martyriaNoteVou": {"c": "", "w": 0.701, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.523], "martyriaBottom": [0.453, -0.04], "fthoraTop": [0.517, 0.651]}}, "martyriaNoteGa": {"c": "", "w": 0.692, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.529], "martyriaBottom": [0.493, -0.027], "fthoraTop": [0.515, 0.613]}}, "martyriaNoteDi": {"c": "", "w": 0.738, "a": {"barline": [0.517, 0.59], "agogi": [0.539, 0.548], "martyriaBottom": [0.533, -0.027], "fthoraTop": [0.54, 0.653]}}, "martyriaNoteKe": {"c": "", "w": 0.746, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.449], "fthoraTop": [0.517, 0.59], "martyriaBottom": [0.507, -0.027]}}, "martyriaNoteZo": {"c": "", "w": 0.783, "a": {"barline": [0.517, 0.59], "agogi": [0.517, 0.541], "martyriaBottom": [0.527, -0.033], "fthoraTop": [0.517, 0.64]}}, "martyriaDeltaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaAlphaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.328]}}, "martyriaLegetosBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.298]}}, "martyriaNanaBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.248]}}, "martyriaDeltaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.002, 0.398]}}, "martyriaAlphaDottedBelow": {"c": "", "w": 0.0, "a": {"martyriaBottom": [0.001, 0.427]}}, "modeWordEchos": {"c": "", "w": 1.588, "a": {}}, "modeFourth": {"c": "", "w": 0.98, "a": {}}, "modeDi": {"c": "", "w": 1.073, "a": {"fthoraTop": [0.634, 0.94], "modeTop": [0.617, 0.981]}}, "petastiIson": {"c": "", "w": 1.318, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.729, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.179, 0.915], "psifiston": [0.854, 0.14], "measureNumber": [0.172, 1.073], "isonIndicator": [0.714, 1.096], "apli": [0.765, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.298, 1.04], "fthoraTop": [0.734, 0.846], "diesis": [0.464, 0.147], "klasmaBottom": [0.8, 0.083]}}, "petastiOligon": {"c": "", "w": 1.367, "a": {"yfenAbove": [0.792, 1.049], "yfenBelow": [0.789, -0.04], "koronis": [0.73, 1.046], "endofonon": [0.772, -0.127], "heteronConnecting": [1.316, -0.019], "yfesis": [1.113, 0.991], "psifiston": [0.86, 0.14], "measureNumber": [0.172, 0.953], "isonIndicator": [0.724, 0.913], "apli": [0.785, -0.026], "antikenoma": [0.713, 0.062], "fthoraBottom": [0.352, 0.162], "noteTop": [0.214, 0.916], "fthoraTop": [0.734, 0.846], "klasmaBottom": [0.8, 0.083], "diesis": [0.464, 0.147]}}, "oligonKentimaMiddle": {"c": "", "w": 1.794, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 0.913], "heteronConnecting": [1.97, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.681, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.788, 0.507], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.708, 0.459], "psifiston": [0.84, 0.113]}}, "oligonKentimataAbove": {"c": "", "w": 1.465, "a": {"fthoraTopSecondary": [0.24, 0.48], "yfenAbove": [0.93, 0.901], "yfenBelow": [0.929, -0.04], "endofonon": [0.772, -0.047], "heteronConnecting": [1.594, -0.019], "omalonConnecting": [1.59, 0.13], "measureNumber": [0.172, 0.753], "isonIndicator": [0.71, 1.126], "antikenoma": [0.82, 0.165], "noteTop": [0.262, 0.561], "fthoraBottom": [0.746, 0.194], "fthoraTop": [0.767, 0.791], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "psifiston": [0.84, 0.113], "gorgonTop": [0.842, 0.767]}}, "antikenoma": {"c": "", "w": 0.0, "a": {"antikenoma": [0.008, 0.113]}}, "oligonYpsiliRight": {"c": "", "w": 1.515, "a": {"gorgonBottom": [0.667, 0.125], "yfenAbove": [0.93, 1.203], "yfenBelow": [0.929, -0.04], "koronis": [0.783, 0.801], "endofonon": [0.802, -0.062], "measureNumber": [0.172, 0.753], "isonIndicator": [0.792, 1.098], "heteronConnecting": [1.692, -0.019], "heteron": [1.087, 0.227], "omalon": [1.031, 0.133], "omalonConnecting": [1.471, 0.133], "antikenoma": [0.82, 0.165], "apli": [0.803, 0.052], "noteTop": [0.314, 0.676], "fthoraTop": [0.557, 0.489], "fthoraBottom": [0.789, 0.209], "diesis": [0.4, 0.133], "yfesis": [1.316, 0.619], "klasmaTop": [0.598, 0.487], "klasmaBottom": [0.785, 0.16], "gorgonTop": [0.708, 0.5], "psifiston": [0.84, 0.113]}}, "oligonKentimataBelow": {"c": "", "w": 1.515, "a": {"diesisSecondary": [1.596, 0.897], "yfesisSecondary": [0.425, -0.145], "barline": [0.277, 0.59], "yfenAbove": [0.93, 0.641], "yfenBelow": [0.929, -0.2], "koronis": [0.686, 0.801], "endofonon": [0.772, -0.277], "heteron": [1.087, 0.227], "heteronConnecting": [1.684, -0.138], "apli": [0.803, -0.198], "measureNumber": [0.172, 0.753], "diesis": [0.71, 0.133], "isonIndicator": [0.71, 0.913], "omalonConnecting": [1.46, -0.04], "omalon": [1.04, -0.12], "antikenoma": [0.82, -0.085], "noteTop": [0.262, 0.561], "fthoraBottom": [0.384, 0.16], "fthoraTop": [0.743, 0.515], "yfesis": [1.316, 0.619], "klasmaTop": [0.793, 0.487], "gorgonTop": [0.763, 0.505], "psifiston": [0.84, 0.113]}}};
 const FS=54; // μέγεθος χαρακτήρων
@@ -246,6 +306,18 @@ const ACC={0:null,2:"diesis2",4:"diesis4",6:"diesis6",8:"diesis8","-2":"yfesis2"
 // Μαρτυρία: {m: δείκτης φθόγγου}  (Νη=0 ... Δι=4 ... Ζω=6)
 function S(s,n,o){o=o||{};return [s,n,o.k||0,o.g||0,o.a||0,(o.i===undefined?null:o.i),o.ok?1:0,o.st||null,o.q?1:0,o.ak?1:0,(o.to===undefined?null:o.to)];}
 const C={ok:1};
+// (8-11-2026) LO: πόσες γραμμές του βιβλίου είναι πριν από αυτό το κομμάτι σελίδων (στο κινητό). Όλες οι δικές σου
+// διορθώσεις και αλλαγές ήχου φυλάγονται με τη ΘΕΣΗ ΤΟΥΣ ΣΤΟ ΒΙΒΛΙΟ, για να βρίσκουν πάντα το σωστό σημείο.
+const LO=D.lo||0, CUTK="okt-cuts-"+D.key;
+(function(){   // «✂ ο ήχος αλλάζει από εδώ»: χωρίζει τον ύμνο σε εκείνη τη γραμμή, με τον ήχο που διάλεξες
+  let cuts=[];try{cuts=JSON.parse(localStorage.getItem(CUTK)||"[]")||[];}catch(e){}
+  if(!cuts.length)return; D=Object.assign({},D,{sect:D.sect.map(x=>Object.assign({},x)),lines:JSON.parse(JSON.stringify(D.lines))});   // αντίγραφο: το αποθηκευμένο βιβλίο μένει ανέγγιχτο
+  cuts.slice().sort((a,b)=>a[0]-b[0]).forEach(([abs,mode,sc])=>{const l=abs-LO;if(l<=0||l>=D.lines.length)return;
+    const k=D.sect.findIndex(x=>x.l0<l&&l<=x.l1);if(k<0)return;
+    const nx=Object.assign({},D.sect[k],{l0:l,l1:D.sect[k].l1,mode,sc,guess:0,t:(D.sect[k].t||"Ύμνος")+" · ✂"});D.sect[k].l1=l-1;D.sect.splice(k+1,0,nx);
+    D.lines.forEach(L=>{if(Array.isArray(L))L.forEach(it=>{if(it&&!Array.isArray(it)&&typeof it==="object"&&it.sec!==undefined&&it.sec>k)it.sec++;});});
+    if(Array.isArray(D.lines[l]))D.lines[l].unshift({sec:k+1});});
+})();
 const ORIGINAL=D.lines;
 const START=D.start;
 const SCALES=Object.assign({},D.scales,{soft:[0,8,22,30],vary:[0,12,24,30,42,54,60]});   // (29-10-2026) Β΄ και Βαρύς κατά Παναγιωτόπουλο, και στα αποθηκευμένα βιβλία
@@ -254,10 +326,11 @@ const KEY="melodos-edits-"+D.key;
 let data,edits={};
 function fresh(){data=JSON.parse(JSON.stringify(ORIGINAL));}
 fresh();
-try{const s=localStorage.getItem(KEY);if(s)edits=JSON.parse(s)||{};}catch(e){}
+try{const s=localStorage.getItem(KEY);if(s){const all=JSON.parse(s)||{};for(const id in all){const [L,i]=id.split("-").map(Number);const l=L-LO;if(l>=0&&l<ORIGINAL.length)edits[l+"-"+i]=all[id];}}}catch(e){}
 function applyEdits(){for(const id in edits){const [l,i]=id.split("-").map(Number);if(data[l]&&Array.isArray(data[l][i])){const e=edits[id];const s=data[l][i];s[1]=e[0];s[2]=e[1];s[3]=e[2];s[4]=e[3];s[5]=e[4];s[7]=e[5]===undefined?s[7]:e[5];if(e[6]!==undefined)s[9]=e[6];if(e[7]!==undefined)s[12]=e[7];}}}
 applyEdits();
-function saveEdits(){try{localStorage.setItem(KEY,JSON.stringify(edits));}catch(e){}}
+function saveEdits(){try{const all=JSON.parse(localStorage.getItem(KEY)||"{}")||{};for(const id in all){const L=Number(id.split("-")[0])-LO;if(L>=0&&L<ORIGINAL.length)delete all[id];}
+  for(const id in edits){const [l,i]=id.split("-").map(Number);all[(l+LO)+"-"+i]=edits[id];}localStorage.setItem(KEY,JSON.stringify(all));}catch(e){}}
 
 // ---------- Σχεδίαση χαρακτήρων (SVG με τη γραμματοσειρά Neanes) ----------
 function attach(base,mark,anchor,fallback){
@@ -293,12 +366,12 @@ let flat=[]; // νότες για αναπαραγωγή
 let checks={};
 const MART_PAUSE=1.5;   // (21-10-2026) δευτερόλεπτα παύσης στη μαρτυρία του τέλους της γραμμής
 function compute(){
-  flat=[];checks={};let cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1,isc=sc,hk=SECT[0].sc;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
+  flat=[];checks={};let tgv=null,cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1,isc=sc,hk=SECT[0].sc;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
   data.forEach((line,l)=>line.forEach((s,i)=>{
     if(!Array.isArray(s)){
-      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;return;}
+      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;tgv=null;return;}
       if(s.br){pend=0;const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,dur:0.5,idx:pv.idx,ison:pv.ison,sc});return;}
-      if(s.tp)tf=s.tp; if(s.m===undefined)return;
+      if(s.tp){tf=s.tp;if(s.tg!==undefined)tgv=s.tg;} if(s.m===undefined)return;
       pend=0;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
       if(!s.r)checks[l+"-"+i]=(typeof s.m==="number"?(((cur-s.m)%7)+7)%7===0:cur===s.m);
       if(!s.r&&line.slice(i+1).every(x=>!Array.isArray(x))){const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,sec:MART_PAUSE,dur:1,idx:pv.idx,ison:pv.ison,sc});}   // (21-10-2026) μαρτυρία στο τέλος γραμμής: παύση
@@ -315,7 +388,7 @@ function compute(){
     steps.forEach((st,k)=>{cur+=st;idxs.push(cur);if(nsc&&k===steps.length-1)sc=nsc;
       let d=(B.half&&steps.length>1)?0.5:1;
       if(pend>0){d=pd;pend--;}
-      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),isoM:ison==="M",tf,sc,isc:(ison==="M"?sc:isc)});});
+      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),isoM:ison==="M",tf,tg:tgv,sc,isc:(ison==="M"?sc:isc)});});
     s._notes=idxs;
     // (v41) η φθορά εφαρμόστηκε ήδη πιο πάνω (nsc)
     if(s[9]){const f0=flat[first];f0.dur=0.5;f0.pet=1;}
@@ -478,6 +551,7 @@ if(!document.getElementById('voiceSel').value)document.getElementById('voiceSel'
   vs.addEventListener('change',()=>{try{localStorage.setItem('okt-voice-clean',(vs.value==='christos_mm'||vs.value==='christos_aa'||vs.value==='christos_az')?vs.value:'0');}catch(e){}});})();
 
 try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById('revAmt').value=r;}catch(e){}
+(function(){const c=document.getElementById("agAuto");if(!c)return;try{const v=localStorage.getItem("okt-agauto");if(v!==null)c.checked=v==="1";}catch(e){}c.onchange=()=>{try{localStorage.setItem("okt-agauto",c.checked?"1":"0");}catch(e){}if(!c.checked){const l=document.getElementById("agLbl");if(l)l.textContent="";}};})();
 (function(){const t=document.getElementById("tempo"),l=document.getElementById("tempoLbl");try{const v=localStorage.getItem("okt-bpm");if(v)t.value=v;}catch(e){}const u=()=>{l.textContent=t.value;try{localStorage.setItem("okt-bpm",t.value);}catch(e){}};t.addEventListener("input",u);u();
   // (4-11-2026) γράφεις τον αριθμό που θέλεις (π.χ. 82 ή 95)
   const n=document.getElementById("tempoNum");if(n){const sync=()=>{n.value=t.value;};sync();t.addEventListener("input",sync);
@@ -551,9 +625,11 @@ function playChoir(list,onEnd){
       const melisma=vow&&pv&&pv.endsWith(lo);                        // ίδιο φωνήεν που συνεχίζει: μέσα στη συλλαβή
       if(pv&&!melisma&&(/ς$/.test(pv)||/^[Α-Ω]/.test(pl)||BR_FN[lo]))brStart.add(k);
       prevSyl=pl;});}
+  lastTg=null;
   const brNext=k=>{for(let j=k+1;j<list.length;j++){if(list[j].rest)return -1;const a=list[j],b=list[k];if(a.l===b.l&&a.i===b.i)continue;return j;}return -1;};
   list.forEach((n,k)=>{
-    let dur=n.sec?n.sec:beat*n.dur*(n.tf||1);
+    let dur=n.sec?n.sec:nBeat(n,beat)*n.dur;
+    if(!n.rest&&agAuto()&&n.tg!=null&&n.tg!==lastTg){const g=n.tg;ev.push({t,run:()=>showAg(g)});lastTg=g;}
     if(n.rest){const tr=t;ev.push({t:tr,run:()=>mel.rest()});t+=dur;return;}
     const f=safeF(n.idx,n.acc,n.sc),tn=t,pet=n.pet;
     const sk=n.l+"-"+n.i,cell=(data[n.l]&&data[n.l][n.i])||null,syl=(cell&&typeof cell[0]==="string")?cell[0]:"",newSyl=sk!==lastSk&&!!syl.trim();lastSk=sk;   // (22-10-2026) η συλλαβή, για τον «Ψάλτη με λόγια»
@@ -584,7 +660,7 @@ function play(list,onEnd){
   if(document.getElementById("isonOn").checked)isonV=mine?makeSampleVoice():makeSynthIson();
   let t=ctx.currentTime+0.15;try{window.__metSync&&__metSync(t-ctx.currentTime);}catch(e){}
   list.forEach((n,k)=>{
-    const dur=n.sec?n.sec:beat*n.dur*(n.tf||1);
+    const dur=n.sec?n.sec:nBeat(n,beat)*n.dur;
     if(n.rest){voice.out.gain.setTargetAtTime(0,t,0.03);t+=dur;return;}
     const f=freq(n.idx,n.acc,n.sc);const P=voice.params,c=voice.conv;
     P.forEach(p=>{if(k===0)p.setValueAtTime(c(f),t);else p.setTargetAtTime(c(f),t,0.03);});
@@ -748,11 +824,13 @@ document.getElementById("copyBtn").onclick=async()=>{
   const sel=document.getElementById("secSel"), sc=document.getElementById("scSel");
   const SK="melodos-scales-"+D.key; let saved={};
   try{saved=JSON.parse(localStorage.getItem(SK)||"{}")||{};}catch(e){}
-  SECT.forEach((s,k)=>{if(saved[k])s.sc=saved[k];});
+  const PK=k=>"L"+(SECT[k].l0+LO), oldOK=!D.win;   // (8-11-2026) θέση του ύμνου στο βιβλίο (τα παλιά, με αριθμό ύμνου, μόνο όταν είναι ανοιχτό όλο το βιβλίο)
+  const getS=(o,k)=>o[PK(k)]!==undefined?o[PK(k)]:(oldOK?o[k]:undefined);
+  SECT.forEach((s,k)=>{const v=getS(saved,k);if(v)s.sc=v;});
   // (21-10-2026) Ήχος του ύμνου: αλλάζει μαζί κλίμακα και απήχημα · θυμάται τη δική σου επιλογή
   const md=document.getElementById("mdSel"), MK2="melodos-modes-"+D.key; let savedM={};
   try{savedM=JSON.parse(localStorage.getItem(MK2)||"{}")||{};}catch(e){}
-  SECT.forEach((S,k)=>{if(savedM[k]){S.mode=savedM[k][0];S.sc=savedM[k][1];S.guess=0;}});
+  SECT.forEach((S,k)=>{const v=getS(savedM,k);if(v){S.mode=v[0];S.sc=v[1];S.guess=0;}});
   const optTxt=()=>{[...sel.options].forEach(o=>{if(o.value==="")return;const S=SECT[Number(o.value)];o.textContent=(Number(o.value)+1)+". "+S.t+" · "+S.mode+(S.guess?" (;)":"");});};
   optTxt();
   // (22-10-2026) ποιος ύμνος: ο επιλεγμένος, αλλιώς αυτός που ψάλλεις ή βλέπεις τώρα — ποτέ κλειδωμένα κουτιά
@@ -763,12 +841,33 @@ document.getElementById("copyBtn").onclick=async()=>{
   const sync=()=>{const k0=secAt();sc.disabled=false;md.disabled=false;if(k0<0)return;const k=String(k0);if(k===lastK)return;lastK=k;
     const who=document.getElementById("secWho");if(who)who.textContent=SECT.length>1?"↑ για τον ύμνο «"+(SECT[k0].t||"").slice(0,40)+"»"+(SECT[k0].guess?" — ο ήχος βρέθηκε από τις μαρτυρίες, άλλαξέ τον αν θέλεις":""):"";
     {const S=SECT[Number(k)];sc.value=S.sc;const v=S.mode+"|"+S.sc;md.value=[...md.options].some(o=>o.value===v)?v:([...md.options].find(o=>o.value.split("|")[0]===S.mode)||{value:""}).value;}};
-  md.onchange=()=>{const k=String(secAt());if(k==="-1"||!md.value)return;lastK=null;const [m,c]=md.value.split("|");const S=SECT[Number(k)];S.mode=m;S.sc=c;S.guess=0;savedM[k]=[m,c];saved[k]=c;
+  md.onchange=()=>{const k=String(secAt());if(k==="-1"||!md.value)return;lastK=null;const [m,c]=md.value.split("|");const S=SECT[Number(k)];S.mode=m;S.sc=c;S.guess=0;delete savedM[k];delete saved[k];savedM[PK(Number(k))]=[m,c];saved[PK(Number(k))]=c;
     try{localStorage.setItem(MK2,JSON.stringify(savedM));localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}sc.value=c;optTxt();const wasP=isPlaying();if(wasP)resumeId=hlCurId;stopAll();render();if(wasP)playSel();};
   const old=sel.onchange; sel.onchange=()=>{old&&old();lastK=null;sync();};
   window.__secSync=sync;let sT=0;addEventListener("scroll",()=>{if(sT)return;sT=setTimeout(()=>{sT=0;if(!hlCurId)sync();},400);},{passive:true});
-  sc.onchange=()=>{const k=String(secAt());if(k==="-1")return;lastK=null;SECT[Number(k)].sc=sc.value;saved[k]=sc.value;try{localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}const wasP=isPlaying();if(wasP)resumeId=hlCurId;stopAll();render();if(wasP)playSel();};
+  sc.onchange=()=>{const k=String(secAt());if(k==="-1")return;lastK=null;SECT[Number(k)].sc=sc.value;delete saved[k];saved[PK(Number(k))]=sc.value;try{localStorage.setItem(SK,JSON.stringify(saved));}catch(e){}const wasP=isPlaying();if(wasP)resumeId=hlCurId;stopAll();render();if(wasP)playSel();};
   sync();
+  // (8-11-2026) ✂ ο ήχος αλλάζει από τη συλλαβή που πάτησες (π.χ. από Β΄ σε Πλ. Α΄ μέσα στο ίδιο κομμάτι)
+  const cutSel=document.getElementById("cutSel"),cutUndo=document.getElementById("cutUndo");
+  if(cutSel){cutSel.onchange=()=>{if(!cutSel.value)return;const id=hlCurId||resumeId;let l=null;
+      if(id)l=Number(String(id).split("-")[0]);else{const vp=window.__okt&&__okt.visiblePage?__okt.visiblePage():null;const pg=vp?PAGES.findIndex(P=>P.pageNo>=vp):-1;if(pg>=0&&LINES_OF[pg].length)l=LINES_OF[pg][0];}
+      if(l===null||l<=0){document.getElementById("secWho").textContent="Πάτα πρώτα τη συλλαβή όπου αλλάζει ο ήχος.";cutSel.value="";return;}
+      const [m,c]=cutSel.value.split("|");let cuts=[];try{cuts=JSON.parse(localStorage.getItem(CUTK)||"[]")||[];}catch(e){}
+      const abs=l+LO;cuts=cuts.filter(x=>x[0]!==abs);cuts.push([abs,m,c]);try{localStorage.setItem(CUTK,JSON.stringify(cuts));}catch(e){}
+      const pn=(PAGES[LINEPG[l]]||{}).pageNo;stopAll();if(window.__oktReload&&pn)__oktReload(pn);else location.reload();};}
+  if(cutUndo){let n0=0;try{n0=(JSON.parse(localStorage.getItem(CUTK)||"[]")||[]).length;}catch(e){}cutUndo.style.display=n0?"":"none";
+    cutUndo.onclick=()=>{try{localStorage.removeItem(CUTK);}catch(e){}stopAll();const vp=window.__okt&&__okt.visiblePage?__okt.visiblePage():null;if(window.__oktReload&&vp)__oktReload(vp);else location.reload();};}
+  // (8-11-2026) 🔍 ΕΥΡΕΣΗ ΣΤΟ ΒΙΒΛΙΟ: λέξη ή στίχος, χωρίς ορθογραφία, από την αρχή της λέξης/συλλαβής
+  const bq=document.getElementById("bkQ"),br=document.getElementById("bkRes");
+  if(bq&&br){let tq=0;bq.oninput=()=>{clearTimeout(tq);tq=setTimeout(()=>{br.innerHTML="";const qq=evQ(bq.value);if(qq.length<3)return;
+      const ix=window.__evBook||(()=>{try{return window.__evBook=evIndex({pages:PAGES.map(P=>({pageNo:P.pageNo,lines:P.lines})),lines:ORIGINAL,sect:SECT});}catch(e){return null;}})();
+      if(!ix){br.textContent="Η εύρεση δεν είναι έτοιμη ακόμα.";return;}
+      const hits=ix.p.filter(p=>evHit(p[1],qq)).slice(0,40);
+      if(!hits.length){br.innerHTML='<p style="font-size:19px;margin:6px">Δεν βρέθηκε σε αυτό το βιβλίο.</p>';return;}
+      hits.forEach(p=>{const b=document.createElement("button");b.type="button";const sc=ix.s&&ix.s[p[2]];
+        b.style.cssText="display:block;width:100%;text-align:left;font-size:19px;padding:10px 12px;margin:4px 0;border-radius:12px;border:2px solid #e2bd5e;background:#172a5e;color:#f6ecd4";
+        b.textContent="📄 Σελίδα "+p[0]+(sc&&sc[0]?" · "+String(sc[0]).slice(0,40):"")+(sc&&sc[1]?" · "+sc[1]:"");
+        b.onclick=()=>{br.innerHTML="";const ps=window.__okt.pages();if(ps.indexOf(p[0])>=0)__okt.jumpTo(p[0]);else if(window.__oktReload)__oktReload(p[0]);else __okt.jumpTo(p[0]);};br.appendChild(b);});},350);};}
   window.__okt={jumpTo:(pn)=>{let pg=PAGES.findIndex(P=>P.pageNo>=pn);if(pg<0)pg=PAGES.length-1;wake(pg);wake(pg+1);
       const l=LINES_OF[pg][0];let id=null;if(l!==undefined){const i=data[l].findIndex(x=>Array.isArray(x));if(i>=0)id=l+"-"+i;}
       selStart=null;selEnd=null;resumeId=id;setPlayBtn();setTimeout(()=>pageEls[pg].scrollIntoView({block:"start"}),60);return pg;},
@@ -920,12 +1019,13 @@ render();
     const map={},ns=[];S.forEach((x,i)=>{if(x.l1<L0||x.l0>L1)return;map[i]=ns.length;ns.push(Object.assign({},x,{l0:Math.max(x.l0,L0)-L0,l1:Math.min(x.l1,L1)-L0}));});
     const lines=D.lines.slice(L0,L1+1).map(L=>Array.isArray(L)?L.map(it=>(it&&!Array.isArray(it)&&typeof it==="object"&&"sec" in it)?Object.assign({},it,{sec:map[it.sec]!=null?map[it.sec]:0}):it):L);
     const W=Object.assign({},D,{pages:PG.slice(pa,pb+1),lines,sect:ns.length?ns:[Object.assign({},S[0]||{},{l0:0,l1:lines.length-1})]});
-    W.win={first:PG[pa].pageNo,last:PG[pb].pageNo};return W;}
+    W.win={first:PG[pa].pageNo,last:PG[pb].pageNo};W.lo=L0;return W;}
   function openFull(D,u8,key,n,title,goPage,auto){
     lowMem=true;
+    try{window.__evBook=evIndex(D);}catch(e){window.__evBook=null;}   // (8-11-2026) ευρετήριο ΟΛΟΥ του βιβλίου για την «Εύρεση στο βιβλίο»
     if(PHONE&&D.pages&&D.pages.length>80){try{D=winD(D,goPage);}catch(e){console.error(e);}}
     const WIN=D.win||null;
-    const reloadAt=pp=>{const u=new URL(location.href);if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",title||"");}u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
+    const reloadAt=window.__oktReload=pp=>{const u=new URL(location.href);if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",title||"");}u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
     D.pagesImg=D.pages.map(pg=>({img:null,w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
     D.imgFor=p=>pageData(u8,key,p,true).then(c=>c.img);
     D.key=key+":full";D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;D.full=1;
