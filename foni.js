@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής (v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v42 8-11-2026: νέα «α ζωντανή» με ήπιο τρέμολο · v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -47,7 +47,10 @@
     return u.buffer;
   }
 
-  function alias() { const F = window.FONI_SETS; if (!F || !F.psaltis) return;
+  function alias() { const F = window.FONI_SETS; if (!F) return;
+    // (8-11-2026, v42) «Χρίστος «α» ζωντανή»: τα ίδια σταθερά δείγματα της «α καθαρής», με ήπιο ανθρώπινο τρέμολο
+    if (F.christos_aa && !F.christos_az) F.christos_az = { name: "Χρίστος «α» ζωντανή", notes: F.christos_aa.notes };
+    if (!F.psaltis) return;
     [["psaltis_v", "Ψάλτης με λόγια"], ["psaltis_o", "Ψάλτης «ο»"], ["psaltis_e", "Ψάλτης «ε»"], ["psaltis_m", "Ψάλτης «μμμ»"]].forEach(([k, n]) => { if (!F[k]) F[k] = { name: n, notes: F.psaltis.notes }; }); }
   alias();
   function has(key) { alias(); return !!(window.FONI_SETS && window.FONI_SETS[key]); }
@@ -120,6 +123,16 @@
     if (PS_KEYS[key]) return psLine(key, level);
     let lastEnd = -1, lastHz = 0, lastS = null;
     const lg = ctx.createGain(); lg.gain.value = level; lg.connect(bus);
+    // (8-11-2026, v42) «ζωντανή»: ΕΝΑΣ αργός παλμός για όλη τη γραμμή (ίδια φάση από νότα σε νότα, χωρίς «κύματα» στις ενώσεις)
+    const live = key === "christos_az";
+    let lfo = null, shim = null;
+    if (live) {
+      lfo = ctx.createOscillator(); lfo.frequency.value = 5.2; lfo.start();
+      // πολύ μικρή «αναπνοή» στην ένταση (±3%), όπως στη ζωντανή φωνή
+      shim = ctx.createOscillator(); shim.frequency.value = 0.37; const sg = ctx.createGain(); sg.gain.value = level * 0.03; shim.connect(sg); sg.connect(lg.gain); shim.start();
+      const rec = { src: { stop: w => { try { lfo.stop(w); shim.stop(w); } catch (e) { } } }, g: ctx.createGain() };
+      active.add(rec);
+    }
     return {
       level: level,
       note(t, f, dur, opts) {
@@ -129,7 +142,7 @@
         // (20-10-2026) σε γρήγορες νότες (γοργά, τρίγοργα) μένει στο ίδιο δείγμα: δεν αλλάζει χροιά «σαν άλλο όργανο»
         let s = pick(key, f);
         // (5-11-2026) οι «καθαρές» φωνές του Χρίστου παίρνουν πάντα το πλησιέστερο δείγμα: σταθερό χρώμα, χωρίς παραμόρφωση
-        const clean = key === "christos_aa" || key === "christos_mm";
+        const clean = key === "christos_aa" || key === "christos_mm" || live;
         if (legato && lastS && Math.abs(12 * Math.log2(f / lastS.hz)) < (clean ? 1.2 : 4.5)) s = lastS;
         const rate = f / s.hz;
         const from = legato && lastHz ? (lastHz / s.hz) : rate;
@@ -145,7 +158,15 @@
           const segLen = usable - off / rate;
           const te = Math.min(end, ts + Math.max(0.3, segLen - 0.3));
           const last = te >= end - 1e-6;
-          segment(s, first ? from : rate, rate, ts, te, off, first ? fadeIn : 0.3, last ? tail : 0.3, 1, first ? opts : null, lg);
+          const rec = segment(s, first ? from : rate, rate, ts, te, off, first ? fadeIn : 0.3, last ? tail : 0.3, 1, first ? opts : null, lg);
+          // τρέμολο ±7 εκατοστά τόνου, μόνο στις μακριές νότες, μπαίνει σιγά-σιγά μετά τα πρώτα 0,35″ (όχι στο ίσον)
+          if (live && !opts.noVib && dur > 0.45) {
+            const dg = ctx.createGain(), depth = rate * 0.0042, a = Math.max(ts, t + 0.35);
+            dg.gain.setValueAtTime(0, Math.max(0, ts - 0.05)); dg.gain.setValueAtTime(0, a); dg.gain.linearRampToValueAtTime(depth, Math.max(a + 0.05, Math.min(t + 0.95, te)));
+            dg.gain.setValueAtTime(depth, Math.max(a + 0.05, te)); dg.gain.linearRampToValueAtTime(0, te + 0.12);
+            lfo.connect(dg); dg.connect(rec.src.playbackRate);
+            const old = rec.src.onended; rec.src.onended = () => { try { dg.disconnect(); } catch (e) { } if (old) old(); };
+          }
           if (last) break;
           // (5-11-2026) «α» καθαρή: η συνέχεια πέφτει στην ίδια φάση του κυματισμού (0,2″), ώστε η φωνή να μένει σταθερή στις μακριές νότες
           // (7-11-2026, v40) «καθαρές» φωνές (σταθερό ύψος): η συνέχεια πέφτει στον ίδιο παλμό της φωνής, χωρίς «κύμα» στη διασταύρωση

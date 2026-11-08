@@ -1,4 +1,4 @@
-<!doctype html><html lang="el"><head><!-- v41 · Christos S Magides · 7-11-2026 · ΠΙΣΩ ένα βήμα κάθε φορά και στο ίδιο σημείο της σελίδας · v39: ΜΠΡΟΣΤΑ ένα βήμα κάθε φορά + ανοίγει στο τελευταίο βιβλίο και σημείο --><script>
+<!doctype html><html lang="el"><head><!-- v42 · Christos S Magides · 8-11-2026 · κωδικός εισόδου, εύρεση χωρίς ορθογραφία και μέσα στους στίχους, αυτόματος συγχρονισμός βιβλίων Mac ⇄ iPhone μέσω GitHub · v41 · ΠΙΣΩ ένα βήμα κάθε φορά και στο ίδιο σημείο της σελίδας · v39: ΜΠΡΟΣΤΑ ένα βήμα κάθε φορά + ανοίγει στο τελευταίο βιβλίο και σημείο --><script>
 // (5-11-2026, v39) Όταν ανοίγεις την εφαρμογή (όχι όταν γυρνάς με ΠΙΣΩ/ΑΡΧΗ): συνεχίζει στο τελευταίο βιβλίο και σημείο
 (function(){try{if(!sessionStorage.getItem("okt-session")){sessionStorage.setItem("okt-session","1");
   var L=JSON.parse(localStorage.getItem("okt-last")||"null");
@@ -23,6 +23,27 @@
 .dockrow .chip[hidden]{display:none}
 </style>
 </head><body>
+<script>
+/* (8-11-2026) ΚΩΔΙΚΟΣ ΕΙΣΟΔΟΥ: την πρώτη φορά σε κάθε συσκευή ζητά τον κωδικό (αρχικός 1354). Αλλάζει από τη Βιβλιοθήκη. */
+(function(){
+  var H=function(t){var h=2166136261;t="okt:"+t;for(var i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
+  window.__oktPinHash=H;
+  var want,ok; try{ want=localStorage.getItem("okt-pin-h")||H("1354"); ok=localStorage.getItem("okt-pin-ok"); }catch(e){ return; }
+  if(ok===want) return;
+  var d=document.createElement("div"); d.id="pinGate";
+  d.style.cssText="position:fixed;inset:0;z-index:100000;background:#0e1838;color:#f6ecd4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;font-family:-apple-system,Arial,sans-serif;text-align:center";
+  d.innerHTML='<div style="font-size:64px">🔒</div><div style="font-size:30px;font-weight:800;color:#e2bd5e">Οκτώηχος</div><div style="font-size:22px">Γράψε τον κωδικό για να ανοίξει</div>'+
+    '<input id="pinIn" type="password" inputmode="numeric" autocomplete="off" style="font-size:40px;width:220px;text-align:center;padding:12px;border-radius:16px;border:3px solid #e2bd5e;letter-spacing:8px">'+
+    '<button id="pinGo" type="button" style="font-size:26px;font-weight:800;padding:14px 40px;border-radius:16px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838">Άνοιγμα</button><div id="pinMsg" style="font-size:21px;color:#ff9a8a;min-height:26px"></div>';
+  document.body.appendChild(d); document.documentElement.style.overflow="hidden";
+  var go=function(){ var v=(document.getElementById("pinIn").value||"").trim();
+    if(H(v)===want){ try{ localStorage.setItem("okt-pin-ok",want); }catch(e){} d.remove(); document.documentElement.style.overflow=""; }
+    else{ document.getElementById("pinMsg").textContent="Λάθος κωδικός. Δοκίμασε ξανά."; document.getElementById("pinIn").value=""; } };
+  document.getElementById("pinGo").onclick=go;
+  document.getElementById("pinIn").onkeydown=function(e){ if(e.key==="Enter") go(); };
+  setTimeout(function(){ try{ document.getElementById("pinIn").focus(); }catch(e){} },300);
+})();
+</script>
 <title>Οκτώηχος</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Noto+Sans:wght@400;600;800&display=swap">
@@ -2054,6 +2075,7 @@ function mergeShared(R){
       if(b){ const old=b.pdf; b.pdf=rb.pdf; b.local=false; b.title=rb.title; b.shared=1; if(rb.parts) b.parts=rb.parts; if(rb.size) b.size=rb.size; ch=true;
         if(old&&old!==rb.pdf){ idb.get(old).then(x=>{ if(x) idb.put(rb.pdf,x); }); try{ const T=tocAll(); if(T[old]&&!T[rb.pdf]){ T[rb.pdf]=T[old]; localStorage.setItem("okt-toc",JSON.stringify(T)); } }catch(e){} } } }
     if(b&&rb.parts&&!b.parts){ b.parts=rb.parts; ch=true; }
+    if(b&&rb.ix&&b.ix!==rb.ix){ b.ix=rb.ix; ch=true; }
     if(b&&rb.mv&&b.mv!==rb.mv){ b.mv=rb.mv; ch=true; }   // (31-10-2026) νεότερη έκδοση της έτοιμης μουσικής
     if(!b){ lib.books.push(Object.assign({marks:[]},rb)); ch=true; return; }
     if(rb.toc&&!b.toc){ b.toc=rb.toc; ch=true; }
@@ -2073,6 +2095,7 @@ async function loadRemote(){
       if(remote&&Array.isArray(remote.hymns)) mergeShared(remote);
     }
   }catch(e){}
+  setTimeout(autoSync,3000);   // (8-11-2026) νέα βιβλία αυτής της συσκευής → στις άλλες, αυτόματα
   try{ if(window.claude&&window.claude.use){ artifactCap=await window.claude.use("artifact"); } }catch(e){ artifactCap=null; }
   if(!artifactCap) canPublish=false;
   if(dirty&&canPublish) scheduleSave(500);
@@ -2167,13 +2190,51 @@ function makeZip(){
     }
   };
 }
-async function shareBooks(){
-  const msg=t=>{ $("shareMsg").textContent=t; }, btn=$("btnShareBooks"); btn.disabled=true;
+/* (8-11-2026) ΑΥΤΟΜΑΤΟΣ ΣΥΓΧΡΟΝΙΣΜΟΣ Mac ⇄ iPhone: με ένα κλειδί GitHub (μία φορά σε κάθε συσκευή)
+   τα νέα βιβλία ανεβαίνουν μόνα τους στο oktoichos, το Cloudflare τα δημοσιεύει σε 1-2 λεπτά
+   και η άλλη συσκευή τα παίρνει μόλις ανοίξει (ή ξαναγυρίσει) στην εφαρμογή. */
+const GH={owner:"Christos1354",repo:"oktoichos",branch:"main"};
+function ghKey(){ try{ return localStorage.getItem("okt-gh")||""; }catch(e){ return ""; } }
+async function ghApi(path,opt){
+  opt=opt||{};
+  const h={"Authorization":"Bearer "+ghKey(),"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"};
+  if(opt.body) h["Content-Type"]="application/json"; if(opt.accept) h.Accept=opt.accept;
+  const r=await fetch("https://api.github.com/repos/"+GH.owner+"/"+GH.repo+path,{method:opt.method||"GET",headers:h,body:opt.body?JSON.stringify(opt.body):undefined,cache:"no-store"});
+  if(!r.ok){ let t=""; try{ t=(await r.json()).message||""; }catch(e){}
+    const er=new Error(r.status===401?"Το κλειδί GitHub δεν ισχύει ή έληξε. Βάλε νέο κλειδί.":(r.status===403||r.status===404)?"Το κλειδί GitHub δεν έχει άδεια να γράφει στο oktoichos.":("GitHub "+r.status+" "+t)); er.status=r.status; throw er; }
+  return opt.text?r.text():r.json();
+}
+function b64Of(b){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{ const x=String(fr.result); res(x.slice(x.indexOf(",")+1)); }; fr.onerror=()=>rej(fr.error); fr.readAsDataURL(b); }); }
+async function ghCommit(files,message,onp){
+  const ref=await ghApi("/git/ref/heads/"+GH.branch), head=ref.object.sha, cm=await ghApi("/git/commits/"+head), tree=[];
+  for(let i=0;i<files.length;i++){ const f=files[i]; if(onp) onp(i,files.length,f.name);
+    const body=typeof f.data==="string"?{content:f.data,encoding:"utf-8"}:{content:await b64Of(f.data),encoding:"base64"};
+    const bl=await ghApi("/git/blobs",{method:"POST",body}); tree.push({path:f.name,mode:"100644",type:"blob",sha:bl.sha}); }
+  const t=await ghApi("/git/trees",{method:"POST",body:{base_tree:cm.tree.sha,tree}});
+  const c=await ghApi("/git/commits",{method:"POST",body:{message,tree:t.sha,parents:[head]}});
+  await ghApi("/git/refs/heads/"+GH.branch,{method:"PATCH",body:{sha:c.sha}});
+}
+function syncToast(t){ let d=document.getElementById("syncToast");
+  if(!d){ d=document.createElement("div"); d.id="syncToast"; d.style.cssText="position:fixed;left:10px;right:10px;bottom:12px;z-index:9999;background:#172a5e;color:#f6ecd4;border:3px solid #e2bd5e;border-radius:14px;padding:12px 14px;font:600 18px/1.35 -apple-system,Arial,sans-serif;text-align:center;white-space:pre-line;box-shadow:0 4px 18px rgba(0,0,0,.4)"; document.body.appendChild(d); }
+  d.textContent=t; d.style.display=t?"block":"none"; clearTimeout(d._t); if(/^✓|^⚠/.test(t)) d._t=setTimeout(()=>{ d.style.display="none"; },9000); }
+function pendingBooks(){ const shT=new Set((lib.books||[]).filter(b=>b&&(b.shared||/^vivlia\//.test(b.pdf||""))).map(b=>fold(b.title))); return localOnlyBooks().filter(b=>!shT.has(fold(b.title))); }
+let syncing=false;
+function autoSync(){ if(syncing||!ghKey()||!navigator.onLine) return; if(!pendingBooks().length) return; shareBooks("gh",true); }
+async function refreshShared(){
+  try{ const r=await fetch("library.json",{cache:"no-store"}); if(r.ok){ const R=await r.json(); if(R&&Array.isArray(R.books)){ const before=(lib.books||[]).length; mergeShared(R); if((lib.books||[]).length!==before&&tab==="lib"&&libView!=="book") renderLib(); } } }catch(e){}
+  setTimeout(autoSync,2000);
+}
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refreshShared(); });
+addEventListener("online",()=>setTimeout(autoSync,3000));
+async function shareBooks(mode,silent){
+  const gh=mode==="gh"&&!!ghKey(); if(gh){ if(syncing) return; syncing=true; }
+  const msg=t=>{ const el=$("shareMsg"); if(el) el.textContent=t; if(gh) syncToast(t); }, btn=$("btnShareBooks")||{}; btn.disabled=true;
   try{
     msg("⏳ Ετοιμάζω… (μην κλείσεις τη σελίδα)");
     let R={savedAt:1,hymns:[],books:[],note:"Κοινή βιβλιοθήκη του Οκτώηχου · Christos S Magides"};
-    try{ const r=await fetch("library.json",{cache:"no-store"}); if(r.ok){ const j=await r.json(); if(j&&Array.isArray(j.books)) R=j; } }catch(e){}
-    const zip=makeZip(), used=new Set(R.books.map(b=>String(b.pdf||"").replace(/^vivlia\//,"").replace(/\.pdf$/,""))), T=tocAll();
+    if(gh){ const j=JSON.parse(await ghApi("/contents/library.json?ref="+GH.branch,{accept:"application/vnd.github.raw+json",text:true})); if(j&&Array.isArray(j.books)) R=j; }   // η ΑΛΗΘΙΝΗ τελευταία βιβλιοθήκη, κατευθείαν από το GitHub
+    else try{ const r=await fetch("library.json",{cache:"no-store"}); if(r.ok){ const j=await r.json(); if(j&&Array.isArray(j.books)) R=j; } }catch(e){}
+    const zip=gh?{files:[],file(n,d){ this.files.push({name:n,data:d}); }}:makeZip(), used=new Set(R.books.map(b=>String(b.pdf||"").replace(/^vivlia\//,"").replace(/\.pdf$/,""))), T=tocAll();
     const books=localOnlyBooks(); let added=0, ready=0, same=0; const missing=[];
     for(let k=0;k<books.length;k++){
       const bk=books[k]; msg("⏳ Βιβλίο "+(k+1)+" από "+books.length+": «"+bk.title+"»");
@@ -2186,14 +2247,22 @@ async function shareBooks(){
       if(blob.size>LIM){ parts=Math.ceil(blob.size/PART); for(let p=0;p<parts;p++) zip.file(path+".p"+(p+1),blob.slice(p*PART,(p+1)*PART)); }
       else zip.file(path,blob);
       const tc=T[bk.pdf]||null; let toc=tc&&tc.items?tc.items:[];
-      const FULL=await idb.get("full:"+key+":r5:f1"), meta=await idb.get("meta:"+key+":r5");
+      const FULL=await idb.get("full:"+key+":r5:f1"), meta=await idb.get("meta:"+key+":r5"); let ixp="";
       const n=(meta&&meta.n)||bk.pages||0;
-      if(FULL&&FULL.lines&&FULL.lines.length){ const J={v:1,n:n||FULL.pages.length,D:FULL,toc}; zip.file("vivlia/"+sl+".json",JSON.stringify(J)); ready++; }
-      const e={id:"sh-"+sl,title:bk.title,pdf:path,pages:n,marks:[],size:blob.size,shared:1,toc}; if(parts) e.parts=parts;
+      if(FULL&&FULL.lines&&FULL.lines.length){ const J={v:1,n:n||FULL.pages.length,D:FULL,toc}; zip.file("vivlia/"+sl+".json",JSON.stringify(J)); ready++; try{ zip.file("vivlia/"+sl+".ix.json",JSON.stringify(evIndex(FULL))); ixp="vivlia/"+sl+".ix.json"; }catch(_){} }
+      const e={id:"sh-"+sl,title:bk.title,pdf:path,pages:n,marks:[],size:blob.size,shared:1,toc}; if(parts) e.parts=parts; if(ixp) e.ix=ixp;
       R.books.push(e); added++;
     }
+    if(!added&&gh){ mergeShared(R); syncing=false; btn.disabled=false; msg(silent?"":"✓ Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη."); return; }
     if(!added){ msg(same?("✓ Τα βιβλία αυτής της συσκευής υπάρχουν ήδη στην κοινή βιβλιοθήκη. Κλείσε και ξανάνοιξε την εφαρμογή για να ενωθούν."):("Δεν βρήκα βιβλία για ανέβασμα."+(missing.length?"\nΛείπουν από τη συσκευή: "+missing.join(", "):""))); btn.disabled=false; return; }
     R.savedAt=Date.now(); zip.file("library.json",JSON.stringify(R));
+    if(gh){
+      await ghCommit(zip.files,"Οκτώηχος: "+added+" νέα βιβλία από "+(/iPhone|iPad/.test(navigator.userAgent)?"iPhone":"Mac"),(i,N)=>msg("⏳ Στέλνω τα βιβλία στις άλλες συσκευές… "+Math.round(100*i/N)+"%\n(μην κλείσεις την εφαρμογή)"));
+      mergeShared(R); store.set("okt-lib",lib);
+      msg("✓ Στάλθηκαν "+added+" βιβλία. Σε 1–2 λεπτά θα τα βρεις και στην άλλη συσκευή."+(missing.length?"\n⚠ Δεν βρέθηκαν: "+missing.join(", "):""));
+      if(tab==="lib"&&libView!=="book") renderLib();
+      syncing=false; btn.disabled=false; return;
+    }
     msg("⏳ Φτιάχνω το αρχείο zip…");
     const out=await zip.generate(p=>msg("⏳ Φτιάχνω το αρχείο zip… "+p+"%"));
     const d=new Date(), p2=x=>String(x).padStart(2,"0"), name="Οκτώηχος_βιβλία_"+d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear()+"_"+p2(d.getHours())+"-"+p2(d.getMinutes())+".zip";
@@ -2201,8 +2270,8 @@ async function shareBooks(){
     msg("✓ Έτοιμο: το «"+name+"» είναι στις Λήψεις ("+added+" βιβλία, "+ready+" με έτοιμη μουσική"+(same?", "+same+" υπήρχαν ήδη":"")+").\n"+
         "1. Άνοιξε το zip (διπλό κλικ).\n2. Στο GitHub (oktoichos) πάτα Add file → Upload files.\n3. Σύρε μέσα τον φάκελο «vivlia» ΚΑΙ το «library.json» και πάτα Commit changes."+
         (missing.length?"\n⚠ Δεν βρέθηκαν σε αυτή τη συσκευή: "+missing.join(", "):""));
-  }catch(e){ console.error(e); msg("⚠ Κάτι δεν πήγε καλά: "+(e&&e.message||e)+". Δοκίμασε ξανά."); }
-  btn.disabled=false;
+  }catch(e){ console.error(e); msg("⚠ "+(gh?"Ο συγχρονισμός δεν ολοκληρώθηκε: ":"Κάτι δεν πήγε καλά: ")+(e&&e.message||e)+(gh?"\nΘα ξαναδοκιμάσει μόνος του την επόμενη φορά.":" Δοκίμασε ξανά.")); }
+  if(gh) syncing=false; btn.disabled=false;
 }
 async function getPdfBlob(path){
   if(pdfCache[path]) return pdfCache[path];
@@ -2769,6 +2838,58 @@ function markRecent(id){ try{ const r=recentIds().filter(x=>x!==id); r.unshift(i
 function tocAll(){ try{ return JSON.parse(localStorage.getItem("okt-toc")||"{}")||{}; }catch(e){ return {}; } }
 function tocOf(bk){ const T=tocAll(); return T[bk.pdf]||(bk.toc?{n:bk.pages,v:2,full:true,title:bk.title,items:bk.toc}:null); }
 const fold=t=>String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ς/g,"σ").replace(/\s+/g," ").trim();
+/* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
+   Βρίσκει ΜΟΝΟ από την αρχή λέξης/συλλαβής, όχι από τη μέση. */
+function evFold(t){
+  let x=String(t||"").normalize("NFD").replace(/[̀-ͯͅ]/g,"").toLowerCase()
+    .replace(/µ/g,"μ").replace(/ς/g,"σ").replace(/ϲ/g,"σ");
+  x=x.replace(/ου/g,"u").replace(/([αε])υ/g,"$1β").replace(/(ει|οι|υι)/g,"ι").replace(/αι/g,"ε")
+     .replace(/[ηυ]/g,"ι").replace(/ω/g,"ο").replace(/γ[γκ]/g,"g");
+  x=x.replace(/[^a-zα-ω\s]/g,"");
+  return x.replace(/(.)\1+/g,"$1");
+}
+// συλλαβές → ένα κείμενο όπου το ΚΕΦΑΛΑΙΟ γράμμα σημαίνει «εδώ αρχίζει συλλαβή»
+function evCode(syls){
+  let o="";
+  for(const sy of syls){ const f=evFold(sy).replace(/\s+/g,""); if(!f) continue;
+    let first=true;
+    for(const ch of f){
+      if(o&&o[o.length-1].toLowerCase()===ch){ if(first){ o=o.slice(0,-1)+o[o.length-1].toUpperCase(); first=false; } continue; }
+      o+=first?ch.toUpperCase():ch; first=false;
+    }
+  }
+  return o;
+}
+// ευρετήριο ενός βιβλίου από την έτοιμη μουσική του
+function evIndex(D){
+  const P=[], S=(D.sect||[]).map(s=>[s.t||"",s.mode||""]);
+  let li=0;
+  (D.pages||[]).forEach(pg=>{
+    const syls=[]; let sec=-1;
+    for(let k=0;k<(pg.lines||[]).length;k++,li++){
+      if(sec<0&&D.sect) for(let i=0;i<D.sect.length;i++) if(D.sect[i].l0<=li&&li<=D.sect[i].l1){ sec=i; break; }
+      const L=(D.lines||[])[li]; if(!Array.isArray(L)) continue;
+      L.forEach(n=>{ if(Array.isArray(n)&&typeof n[0]==="string") syls.push(n[0]); });
+    }
+    const c=evCode(syls); if(c) P.push([pg.pageNo,c,sec]);
+  });
+  return {v:1,p:P,s:S};
+}
+// βρίσκει τη φράση q σε κωδικοποιημένο κείμενο, μόνο σε αρχή συλλαβής
+function evQ(q){ return evFold(q).replace(/\s+/g,"").replace(/(.)\1+/g,"$1"); }
+function evHit(code,qq){
+  const low=code.toLowerCase(); let i=low.indexOf(qq);
+  while(i>=0){ const c=code[i]; if(c!==c.toLowerCase()) return true; i=low.indexOf(qq,i+1); }
+  return false;
+}
+// για τίτλους: κάθε λέξη της εύρεσης να είναι αρχή κάποιας λέξης του τίτλου
+function evTitleHit(title,qwords){
+  const tw=evFold(title).split(/\s+/).filter(Boolean);
+  return qwords.every(w=>tw.some(t=>t.startsWith(w)));
+}
+const evCache={};
+function evLoad(path){ if(!evCache[path]) evCache[path]=fetch(path).then(r=>r.ok?r.json():null).catch(()=>null).then(j=>{ if(!j) delete evCache[path]; return j; }); return evCache[path]; }
+let findRun=0;
 function wireFind(mine,books){
   const q=$("libQ"), res=$("libRes"); if(!q) return;
   document.querySelectorAll(".libfind .jump").forEach(b=>b.onclick=()=>{ const t=$(b.dataset.go); if(t){ try{ window.__oktStep&&__oktStep(); }catch(e){} t.scrollIntoView({block:"start",behavior:"smooth"}); } });
@@ -2776,8 +2897,10 @@ function wireFind(mine,books){
   const pages=[...document.querySelectorAll("#secPages .item")].map(b=>({t:b.querySelector(".tt")?b.querySelector(".tt").textContent:b.textContent,b}));
   const run=()=>{ const v=fold(q.value); res.innerHTML=""; try{ sessionStorage.setItem("okt-libq",q.value); }catch(e){}
     if(v.length<2) return;
-    const words=v.split(" ");
-    const hit=t=>{ const f=fold(t); return words.every(w=>f.indexOf(w)>=0); };
+    // (8-11-2026) χωρίς ορθογραφία και ΜΟΝΟ από την αρχή της λέξης
+    const words=evFold(q.value).split(/\s+/).filter(Boolean), qq=evQ(q.value), myRun=++findRun;
+    if(!words.length) return;
+    const hit=t=>evTitleHit(t,words);
     const out=[];
     const add=(title,sub,badge,go)=>{ if(out.length>=40) return; const b=document.createElement("button"); b.type="button"; b.className="item";
       b.innerHTML=`<span><span class="tt">${esc(title)}</span><br><span class="mm">${esc(sub)}</span></span><span class="badge">${esc(badge)}</span>`; b.onclick=go; out.push(b); };
@@ -2785,8 +2908,23 @@ function wireFind(mine,books){
     books.forEach(bk=>{ const tc=T[bk.pdf]; if(!tc) return; tc.items.forEach(it=>{ if(hit(it[0])) add(it[0],bk.title+" · σελίδα "+it[1],it[2]||"Ύμνος",()=>{ markRecent(bk.id); try{stopSeq();}catch(e){} keepUi(); location.href="./selida-vivlio.html?pdf="+encodeURIComponent(bk.pdf)+"&page="+it[1]+"&t="+encodeURIComponent(bk.title||""); }); }); });
     pages.forEach(p=>{ if(hit(p.t)) add(p.t,"Σελίδα που ψάλλει","🎼",()=>p.b.click()); });
     mine.forEach(hy=>{ if(hit(hy.title)) add(hy.title||"Χωρίς τίτλο","Οι ψαλμοί μου","Ψαλμός",()=>{ navPush(); libView="hymn"; openId=hy.id; editing=false; sel=-1; renderLib(); window.scrollTo(0,0); }); });
-    if(!out.length){ res.innerHTML=`<p class="empty">Δεν βρέθηκε τίποτα με «${esc(q.value)}».${books.some(b=>!T[b.pdf])?" (Οι ύμνοι μέσα σε ένα βιβλίο βρίσκονται αφού ανοίξεις μία φορά το βιβλίο στο «Ψάλλε».)":""}</p>`; return; }
-    out.forEach(b=>res.appendChild(b)); };
+    out.forEach(b=>res.appendChild(b));
+    // (8-11-2026) και μέσα στα ΛΟΓΙΑ των ύμνων κάθε βιβλίου
+    const withIx=books.filter(bk=>bk.ix);
+    const wait=document.createElement("p"); wait.className="empty"; wait.textContent=withIx.length?"⏳ Ψάχνω και μέσα στους ύμνους…":"";
+    if(withIx.length&&qq.length>=3) res.appendChild(wait);
+    else if(!out.length){ res.innerHTML=`<p class="empty">Δεν βρέθηκε τίποτα με «${esc(q.value)}».</p>`; return; }
+    else return;
+    Promise.all(withIx.map(bk=>evLoad(bk.ix).then(ix=>({bk,ix})))).then(all=>{
+      if(myRun!==findRun) return; wait.remove(); let n=0;
+      all.forEach(({bk,ix})=>{ if(!ix||!ix.p) return;
+        ix.p.forEach(pg=>{ if(n>=60||!evHit(pg[1],qq)) return; n++;
+          const sc=ix.s&&ix.s[pg[2]]; const b=document.createElement("button"); b.type="button"; b.className="item";
+          b.innerHTML=`<span><span class="tt">${esc(sc&&sc[0]?sc[0]:bk.title)}</span><br><span class="mm">«${esc(bk.title)}» · σελίδα ${pg[0]} · τα λόγια ταιριάζουν</span></span><span class="badge">${esc(sc&&sc[1]?sc[1]:"Στίχος")}</span>`;
+          b.onclick=()=>{ markRecent(bk.id); try{stopSeq();}catch(e){} keepUi(); location.href="./selida-vivlio.html?pdf="+encodeURIComponent(bk.pdf)+"&page="+pg[0]+"&t="+encodeURIComponent(bk.title||""); };
+          res.appendChild(b); }); });
+      if(!res.children.length) res.innerHTML=`<p class="empty">Δεν βρέθηκε τίποτα με «${esc(q.value)}».</p>`;
+    }); };
   let tm=null; q.oninput=()=>{ clearTimeout(tm); tm=setTimeout(run,180); };
   try{ const old=sessionStorage.getItem("okt-libq"); if(old){ q.value=old; run(); } }catch(e){}
 }
@@ -2798,7 +2936,7 @@ function renderLib(){
   const mine=lib.hymns.slice().sort((a,b)=>(a.title||"").localeCompare(b.title||"","el"));
   let h=`<section class="card libfind">
       <p class="label" style="margin:0">ΕΥΡΕΣΗ</p>
-      <input id="libQ" type="search" autocomplete="off" placeholder="🔍 Γράψε λέξη: βιβλίο, ύμνο, ψαλμό…" aria-label="Εύρεση στη Βιβλιοθήκη">
+      <input id="libQ" type="search" autocomplete="off" placeholder="🔍 Γράψε λέξη ή στίχο (χωρίς ορθογραφία)…" aria-label="Εύρεση στη Βιβλιοθήκη">
       <div class="list" id="libRes"></div>
       <div class="jumps">
         <button type="button" class="jump" data-go="secBooks">📚 Βιβλία</button>
@@ -2846,7 +2984,12 @@ function renderLib(){
     <section class="restore"><p class="label">ΚΟΙΝΗ ΒΙΒΛΙΟΘΗΚΗ (ΟΛΕΣ ΟΙ ΣΥΣΚΕΥΕΣ)</p>
       <p class="hint" id="shareInfo" style="font-size:18px"></p>
       <button class="btn" id="btnShareBooks" type="button" style="width:100%;font-size:21px">📤 Ετοίμασε τα βιβλία αυτής της συσκευής για όλες τις συσκευές</button>
-      <p class="hint" id="shareMsg" style="font-size:18px;white-space:pre-line"></p></section>
+      <p class="hint" id="shareMsg" style="font-size:18px;white-space:pre-line"></p>
+      <div id="ghBox" style="margin-top:10px;display:flex;flex-direction:column;gap:10px"></div></section>
+    <section class="restore"><p class="label">🔒 ΚΩΔΙΚΟΣ ΕΙΣΟΔΟΥ</p>
+      <p class="hint" style="font-size:18px">Η εφαρμογή ζητά κωδικό την πρώτη φορά σε κάθε συσκευή.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input id="pinNew" type="password" inputmode="numeric" autocomplete="off" placeholder="νέος κωδικός" style="font-size:22px;width:170px;padding:10px;border-radius:12px;border:2px solid #e2bd5e"><button class="btn small solid" id="pinSave" type="button">Αλλαγή κωδικού</button></div>
+      <p class="hint" id="pinMsg2" style="font-size:18px"></p></section>
     <section class="restore"><p class="label">ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ</p>
       <div class="btnrow"><button class="btn small" id="btnCopy" type="button">Αντιγραφή όλων</button><button class="btn small" id="btnPasteOpen" type="button">Επικόλληση αντιγράφου</button></div>
       <div id="pasteBox" hidden style="margin-top:10px;display:flex;flex-direction:column;gap:10px">
@@ -2951,7 +3094,25 @@ function renderLib(){
     lib.hymns.push(hy); scheduleSave(); libView="hymn"; openId=hy.id; editing=true; sel=-1; renderLib(); window.scrollTo(0,0);
   };
   try{ const shT=new Set((lib.books||[]).filter(b=>b&&(b.shared||/^vivlia\//.test(b.pdf||""))).map(b=>fold(b.title))); const n=localOnlyBooks().filter(b=>!shT.has(fold(b.title))).length; /* (2-11-2026) δεν μετρά όσα υπάρχουν ήδη στην κοινή */ $("shareInfo").textContent=n?("Σε αυτή τη συσκευή υπάρχουν "+n+" βιβλία που δεν τα έχουν οι άλλες συσκευές (π.χ. το iPhone και το Safari)."):"Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη ✓"; if(!n) $("btnShareBooks").style.display="none"; }catch(e){}
-  $("btnShareBooks").onclick=()=>shareBooks();
+  $("btnShareBooks").onclick=()=>shareBooks(ghKey()?"gh":"");
+  $("pinSave").onclick=()=>{ const v=($("pinNew").value||"").trim(); if(v.length<4){ $("pinMsg2").textContent="Τουλάχιστον 4 ψηφία ή γράμματα."; return; }
+    if(!confirm("Νέος κωδικός: "+v+"\nΓράψ' τον κάπου να μην τον ξεχάσεις. Να αλλάξει σε αυτή τη συσκευή;")) return;
+    try{ const h=window.__oktPinHash(v); localStorage.setItem("okt-pin-h",h); localStorage.setItem("okt-pin-ok",h); }catch(e){}
+    $("pinNew").value=""; $("pinMsg2").textContent="✓ Ο κωδικός άλλαξε σε αυτή τη συσκευή."; };
+  (function ghUI(){ const box=$("ghBox"); if(!box) return;
+    const big="font-size:20px;padding:12px;border-radius:12px";
+    if(ghKey()){
+      box.innerHTML='<p class="hint" style="font-size:19px;color:#2e9d57;margin:0">🔄 Αυτόματος συγχρονισμός: <b>ΕΝΕΡΓΟΣ</b> σε αυτή τη συσκευή. Ό,τι βιβλίο ανεβάζεις εδώ πηγαίνει μόνο του και στις άλλες συσκευές.</p><button class="btn small" id="ghOff" type="button">Αφαίρεση κλειδιού από αυτή τη συσκευή</button>';
+      if(pendingBooks().length){ $("btnShareBooks").style.display=""; $("btnShareBooks").textContent="📤 Στείλε τώρα τα βιβλία στις άλλες συσκευές"; }
+      $("ghOff").onclick=()=>{ if(!confirm("Να σταματήσει ο αυτόματος συγχρονισμός σε αυτή τη συσκευή;")) return; try{ localStorage.removeItem("okt-gh"); }catch(e){} renderLib(); };
+    }else{
+      box.innerHTML='<p class="hint" style="font-size:19px;margin:0">🔄 <b>Αυτόματος συγχρονισμός Mac ⇄ iPhone</b>: βάλε εδώ το κλειδί σου από το GitHub (μία φορά σε κάθε συσκευή).</p><input id="ghKeyIn" type="password" autocomplete="off" placeholder="github_pat_…" style="'+big+';border:2px solid #e2bd5e"><button class="btn solid" id="ghSave" type="button" style="font-size:20px">✓ Ενεργοποίηση συγχρονισμού</button><p class="hint" id="ghMsg" style="font-size:18px;white-space:pre-line"></p>';
+      $("ghSave").onclick=async()=>{ const k=($("ghKeyIn").value||"").trim(); const m=$("ghMsg"); if(k.length<20){ m.textContent="Επικόλλησε ολόκληρο το κλειδί."; return; }
+        m.textContent="⏳ Ελέγχω το κλειδί…"; try{ localStorage.setItem("okt-gh",k); const r=await ghApi(""); if(!(r.permissions&&r.permissions.push)) throw new Error("Το κλειδί δεν έχει άδεια εγγραφής (Contents: Read and write)."); }
+        catch(e){ try{ localStorage.removeItem("okt-gh"); }catch(_){} m.textContent="⚠ "+(e&&e.message||e); return; }
+        renderLib(); setTimeout(autoSync,500); };
+    }
+  })();
   $("btnCopy").onclick=()=>{
     const txt=JSON.stringify({hymns:lib.hymns,apech:lib.apech,tuning:lib.tuning||null});
     const done=()=>$("copyMsg").textContent="Αντιγράφηκε. Επικόλλησέ το σε ένα email ή σημείωμα για φύλαξη.";
