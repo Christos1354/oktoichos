@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v42 · Christos S Magides · 8-11-2026 · εύρεση μέσα στο βιβλίο, ✂ αλλαγή ήχου από συλλαβή, αυτόματη χρονική αγωγή · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v42 · Christos S Magides · 8-11-2026 · χωρίς πηδήματα από άγγιγμα την ώρα που ψάλλει · εύρεση μέσα στο βιβλίο, ✂ αλλαγή ήχου από συλλαβή, αυτόματη χρονική αγωγή · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -152,7 +152,7 @@
   <div class="secbar"><label for="secSel">🎼 Ύμνος:</label> <select id="secSel"></select><label for="mdSel">Ήχος:</label> <select id="mdSel"><option value="">—</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select><label for="scSel">Κλίμακα:</label> <select id="scSel"><option value="dia">Διατονική</option><option value="hard">Σκληρή χρωματική (πλ. β΄)</option><option value="soft">Μαλακή χρωματική (β΄)</option><option value="g">Εναρμόνια (γ΄, Ζω ύφεση)</option><option value="vary">Βαρύς (εναρμόνιος, όπως ο Γ΄)</option></select><span id="secWho" style="font-size:17px;color:#e2bd5e;width:100%;text-align:center"></span>
     <label for="cutSel" style="width:100%;text-align:center">✂ Αλλαγή ήχου από τη συλλαβή που πάτησες:</label> <select id="cutSel"><option value="">— διάλεξε νέο ήχο —</option><option value="Α΄|dia">Α΄</option><option value="Β΄|soft">Β΄</option><option value="Γ΄|g">Γ΄</option><option value="Δ΄|dia">Δ΄</option><option value="Δ΄ Λέγετος|dia">Δ΄ Λέγετος</option><option value="Πλ. Α΄|dia">Πλ. Α΄</option><option value="Πλ. Β΄|hard">Πλ. Β΄</option><option value="Βαρύς|vary">Βαρύς</option><option value="Πλ. Δ΄|dia">Πλ. Δ΄</option></select> <button type="button" id="cutUndo" class="oct">↩ Αναίρεση αλλαγών ήχου</button></div>
   <div class="bksearch" style="margin:8px 0"><input id="bkQ" type="search" autocomplete="off" placeholder="🔍 Εύρεση σε αυτό το βιβλίο: λέξη ή στίχος…" style="width:100%;font-size:21px;padding:12px 14px;border-radius:14px;border:3px solid #e2bd5e;background:#fffaf0;color:#0e1838"><div id="bkRes"></div></div>
-  <p class="taphint">👆 Πάτα μια συλλαβή: ψάλλει από εκεί. Ξαναπάτα στη σελίδα: σταματά ή συνεχίζει. Κράτα πατημένη μια συλλαβή για διόρθωση.</p>
+  <p class="taphint">👆 Πάτα μια συλλαβή: ψάλλει από εκεί. Όσο ψάλλει, ένα άγγιγμα οπουδήποτε απλώς σταματά· ξαναπάτα για να συνεχίσει. Κράτα πατημένη μια συλλαβή για διόρθωση.</p>
   <div id="pages"></div>
   <div id="pgNav2" style="display:none;margin:18px 0 8px;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="pgPrevW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">◀ Προηγούμενες σελίδες</button> <button type="button" id="pgNextW2" style="font-size:22px;padding:14px 20px;border-radius:14px;border:3px solid #e2bd5e;background:#e2bd5e;color:#0e1838;font-weight:800;cursor:pointer">Επόμενες σελίδες ▶</button></div>
   <div class="msg" id="status"></div>
@@ -725,11 +725,16 @@ function tapBox(l,i,pos){ if(typeof starting!=="undefined"&&starting)return; con
   if(isPlaying()){pb.click();return;}
   if(selStart!==null&&pos<selStart)selStart=null; if(selEnd!==null&&pos>selEnd)selEnd=null;
   resumeId=l+"-"+i; pb.click(); }
-function wireBox(d,l,i,pos){ let t=null,lp=false;
-  d.addEventListener("pointerdown",()=>{lp=false;clearTimeout(t);t=setTimeout(()=>{lp=true;openMenu(l,i,pos);},650);});
+// (8-11-2026) ΧΩΡΙΣ ΠΗΔΗΜΑΤΑ: ενώ ψάλλει, ένα άγγιγμα (και πάνω σε συλλαβή) ΜΟΝΟ σταματά — ποτέ δεν πηδά αλλού.
+// «Πάτα συλλαβή → ψάλλει από εκεί» μόνο όταν είναι σταματημένο. Το κράτημα για διόρθωση δεν ανοίγει όταν ψάλλει ή όταν κινείται το δάχτυλο.
+function wireBox(d,l,i,pos){ let t=null,lp=false,sx=0,sy=0,mv=false;
+  d.addEventListener("pointerdown",e=>{lp=false;mv=false;sx=e.clientX;sy=e.clientY;clearTimeout(t);if(isPlaying())return;t=setTimeout(()=>{if(mv||isPlaying())return;lp=true;openMenu(l,i,pos);},650);});
+  d.addEventListener("pointermove",e=>{if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10){mv=true;clearTimeout(t);}});
   ["pointerup","pointerleave","pointercancel"].forEach(ev=>d.addEventListener(ev,()=>clearTimeout(t)));
   d.addEventListener("contextmenu",e=>e.preventDefault());
-  d.onclick=e=>{e.stopPropagation();if(lp){lp=false;return;}tapBox(l,i,pos);}; }
+  d.onclick=e=>{e.stopPropagation();if(lp){lp=false;return;}if(mv)return;
+    if(isPlaying()){document.getElementById("playBtn").click();return;}   // ψάλλει → μόνο παύση
+    tapBox(l,i,pos);}; }
 document.getElementById("pages").addEventListener("click",e=>{ if(e.target.closest(".hb"))return; if(typeof starting!=="undefined"&&starting)return;
   if(isPlaying()||resumeId)document.getElementById("playBtn").click(); });
 document.getElementById("editMode").onclick=()=>{editMode=!editMode;const b=document.getElementById("editMode");b.classList.toggle("on",editMode);b.textContent=editMode?"✏️ Διόρθωση: ναι":"✏️ Διόρθωση";};
