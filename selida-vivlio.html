@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v42 · Christos S Magides · 8-11-2026 · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v42 · Christos S Magides · 8-11-2026 · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -905,8 +905,27 @@ render();
   function showHead(title){let h=$("bookHead");if(!h){h=document.createElement("div");h.id="bookHead";
       h.style.cssText="position:fixed;left:0;right:0;top:0;z-index:31;background:#0e1838;color:#e2bd5e;font:700 17px Georgia,serif;text-align:center;padding:5px 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid #e2bd5e";
       document.body.appendChild(h);}h.textContent="📖 "+(title||"Βιβλίο PDF");return h;}
+  // (8-11-2026) ΚΙΝΗΤΟ: μεγάλο βιβλίο (π.χ. Αναστασιματάριο 673 σελ.) → ανοίγει μόνο ένα «παράθυρο» σελίδων,
+  // από την αρχή του ύμνου όπου βρίσκεσαι και ~40 σελίδες μετά. Αλλιώς το Safari του iPhone ξεμένει από μνήμη και κλείνει τη σελίδα.
+  function winD(D,goPage){
+    const PG=D.pages, lineStart=[];let acc=0;PG.forEach(pg=>{lineStart.push(acc);acc+=(pg.lines||[]).length;});
+    const pgOfLine=l=>{let lo=0,hi=PG.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(lineStart[m]<=l)lo=m;else hi=m-1;}return lo;};
+    let tp=PG.findIndex(pg=>pg.pageNo>=(goPage||1));if(tp<0)tp=PG.length-1;
+    const S=D.sect||[];let si=S.findIndex(x=>x.l0<=lineStart[tp]&&lineStart[tp]<=x.l1);if(si<0)si=S.findIndex(x=>x.l0>=lineStart[tp]);
+    let pa=si>=0?pgOfLine(S[si].l0):tp;if(tp-pa>35)pa=Math.max(0,tp-35);
+    if(si>=0&&pa>pgOfLine(S[si].l0)){for(let k=si;k<S.length;k++){if(pgOfLine(S[k].l0)>=pa){si=k;pa=pgOfLine(S[k].l0);break;}}if(pa>tp)pa=tp;}
+    const pb=Math.min(PG.length-1,Math.max(pa+40,tp+25));
+    if(pa===0&&pb===PG.length-1)return D;
+    const L0=lineStart[pa],L1=pb+1<PG.length?lineStart[pb+1]-1:D.lines.length-1;
+    const map={},ns=[];S.forEach((x,i)=>{if(x.l1<L0||x.l0>L1)return;map[i]=ns.length;ns.push(Object.assign({},x,{l0:Math.max(x.l0,L0)-L0,l1:Math.min(x.l1,L1)-L0}));});
+    const lines=D.lines.slice(L0,L1+1).map(L=>Array.isArray(L)?L.map(it=>(it&&!Array.isArray(it)&&typeof it==="object"&&"sec" in it)?Object.assign({},it,{sec:map[it.sec]!=null?map[it.sec]:0}):it):L);
+    const W=Object.assign({},D,{pages:PG.slice(pa,pb+1),lines,sect:ns.length?ns:[Object.assign({},S[0]||{},{l0:0,l1:lines.length-1})]});
+    W.win={first:PG[pa].pageNo,last:PG[pb].pageNo};return W;}
   function openFull(D,u8,key,n,title,goPage,auto){
     lowMem=true;
+    if(PHONE&&D.pages&&D.pages.length>80){try{D=winD(D,goPage);}catch(e){console.error(e);}}
+    const WIN=D.win||null;
+    const reloadAt=pp=>{const u=new URL(location.href);if(!u.searchParams.get("pdf")&&libPath){u.searchParams.set("pdf",libPath);u.searchParams.set("t",title||"");}u.searchParams.set("page",String(pp));u.searchParams.set("auto","0");u.searchParams.delete("fx");u.searchParams.delete("fy");location.replace(u.toString());};
     D.pagesImg=D.pages.map(pg=>({img:null,w:pg.w,h:pg.h,lines:pg.lines,pageNo:pg.pageNo}));
     D.imgFor=p=>pageData(u8,key,p,true).then(c=>c.img);
     D.key=key+":full";D.title=title||"Βιβλίο PDF";D.goPage=0;D.gp=goPage||0;D.full=1;
@@ -918,7 +937,10 @@ render();
     BOOT(D);
     // βελάκια: μία σελίδα πίσω/μπρος · και «πήγαινε στη σελίδα»
     const ps=__okt.pages();
-    const step=d=>{const v=__okt.visiblePage()||ps[0];let i=ps.findIndex(x=>x>=v);if(i<0)i=ps.length-1;i=Math.max(0,Math.min(ps.length-1,i+d));__okt.jumpTo(ps[i]);};
+    const step=d=>{const v=__okt.visiblePage()||ps[0];let i=ps.findIndex(x=>x>=v);if(i<0)i=ps.length-1;
+      if(WIN&&d>0&&i>=ps.length-1&&WIN.last<n)return reloadAt(WIN.last+1);   // (8-11-2026) πέρα από το «παράθυρο»: φέρνει τις επόμενες σελίδες
+      if(WIN&&d<0&&i<=0&&WIN.first>1)return reloadAt(WIN.first-1);
+      i=Math.max(0,Math.min(ps.length-1,i+d));__okt.jumpTo(ps[i]);};
     [["pgPrevW",-1],["pgNextW",1],["pgPrevW2",-1],["pgNextW2",1]].forEach(([id,d])=>{const b=$(id);if(!b)return;b.disabled=false;b.textContent=d<0?"◀ Σελίδα":"Σελίδα ▶";b.onclick=()=>step(d);});
     {const hd=showHead(D.title);const nv=$("pgNav");nv.style.display="flex";nv.style.cssText+=";position:fixed;left:0;right:0;top:"+hd.offsetHeight+"px;z-index:30;background:rgba(14,24,56,.96);border-bottom:2px solid #e2bd5e;padding:6px 8px;margin:0;align-items:center";
       nv.querySelectorAll("button").forEach(b=>{b.style.fontSize="18px";b.style.padding="9px 12px";});
@@ -929,7 +951,7 @@ render();
       let tk=0;const upd=()=>{tk=0;const v=__okt.visiblePage();lab.textContent=v?"σελ. "+v:"";};addEventListener("scroll",()=>{if(!tk)tk=requestAnimationFrame(upd);},{passive:true});setTimeout(upd,300);}
     const nv=$("pgNav");if(nv&&!$("goPg")){const w=document.createElement("span");w.style.cssText="display:inline-flex;gap:6px;align-items:center;font-size:20px";
       w.innerHTML='Πήγαινε <input id="goPg" type="number" min="1" max="'+n+'" style="width:90px;font-size:22px;padding:8px;border-radius:12px;border:2px solid #e2bd5e"> <button type="button" id="goPgB" style="font-size:20px;padding:10px 14px;border-radius:12px;border:3px solid #e2bd5e;background:#172a5e;color:#f6ecd4;font-weight:800">OK</button>';
-      nv.appendChild(w);const go=()=>{const v=Number($("goPg").value);if(v>=1)__okt.jumpTo(v);};$("goPgB").onclick=go;$("goPg").onkeydown=e=>{if(e.key==="Enter")go();};}
+      nv.appendChild(w);const go=()=>{const v=Math.round(Number($("goPg").value));if(v>=1&&v<=n){if(WIN&&(v<WIN.first||v>WIN.last))return reloadAt(v);__okt.jumpTo(v);}};$("goPgB").onclick=go;$("goPg").onkeydown=e=>{if(e.key==="Enter")go();};}
     const q=new URLSearchParams(location.search);
     if(q.get("fx")!==null&&__okt.playAt){setTimeout(()=>__okt.playAt(Number(q.get("page")||0),Number(q.get("fx")),Number(q.get("fy")),!auto),300);if(auto)return;}
     else if(goPage>1)__okt.jumpTo(goPage);
