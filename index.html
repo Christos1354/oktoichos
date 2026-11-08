@@ -2238,11 +2238,16 @@ async function shareBooks(mode,silent){
     const books=localOnlyBooks(); let added=0, ready=0, same=0; const missing=[];
     for(let k=0;k<books.length;k++){
       const bk=books[k]; msg("⏳ Βιβλίο "+(k+1)+" από "+books.length+": «"+bk.title+"»");
-      const blob=await getPdfBlob(bk.pdf); if(!blob){ missing.push(bk.title); continue; }
-      // ίδιο με κάποιο κοινό βιβλίο; τότε δεν ξανανεβαίνει (το ενώνει η συσκευή μόνη της)
-      if(R.books.find(r=>(r.size&&r.size===blob.size)||fold(r.title)===fold(bk.title))){ same++; continue; }
+      // (8-11-2026) ίδιο όνομα με κοινό βιβλίο; τότε δεν το διαβάζω καν
+      if(R.books.find(r=>fold(r.title)===fold(bk.title))){ same++; continue; }
+      // (8-11-2026) στο iPhone το Safari μπορεί να έχει «χαλάσει» ένα αποθηκευμένο βιβλίο (The object can not be found here):
+      // το προσπερνώ και συνεχίζω με τα υπόλοιπα, αντί να σταματά όλος ο συγχρονισμός
+      let blob=null, u8=null;
+      try{ blob=await getPdfBlob(bk.pdf); if(blob){ u8=new Uint8Array(await blob.arrayBuffer()); blob=new Blob([u8],{type:"application/pdf"}); } }catch(e){ blob=null; }
+      if(!blob){ missing.push(bk.title); continue; }
+      if(R.books.find(r=>r.size&&r.size===blob.size)){ same++; continue; }
       let sl=slugOf(bk.title), s0=sl, i=2; while(used.has(sl)) sl=s0+"-"+(i++); used.add(sl);
-      const path="vivlia/"+sl+".pdf", u8=new Uint8Array(await blob.arrayBuffer()), key=bookHash(u8);
+      const path="vivlia/"+sl+".pdf", key=bookHash(u8);
       const LIM=24*1024*1024, PART=20*1024*1024; let parts=0;
       if(blob.size>LIM){ parts=Math.ceil(blob.size/PART); for(let p=0;p<parts;p++) zip.file(path+".p"+(p+1),blob.slice(p*PART,(p+1)*PART)); }
       else zip.file(path,blob);
@@ -2253,7 +2258,8 @@ async function shareBooks(mode,silent){
       const e={id:"sh-"+sl,title:bk.title,pdf:path,pages:n,marks:[],size:blob.size,shared:1,toc}; if(parts) e.parts=parts; if(ixp) e.ix=ixp;
       R.books.push(e); added++;
     }
-    if(!added&&gh){ mergeShared(R); syncing=false; btn.disabled=false; msg(silent?"":"✓ Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη."); return; }
+    if(!added&&gh){ mergeShared(R); store.set("okt-lib",lib); syncing=false; btn.disabled=false;
+      msg(silent?"":(missing.length?"⚠ Αυτά τα βιβλία έχουν χαλάσει σε αυτή τη συσκευή και δεν μπορούν να σταλούν: "+missing.join(", ")+".\nΑν τα θέλεις, άνοιξέ τα ξανά από το αρχείο τους (+ Πρόσθεσε βιβλίο).":"✓ Όλα τα βιβλία αυτής της συσκευής είναι ήδη στην κοινή βιβλιοθήκη.")); return; }
     if(!added){ msg(same?("✓ Τα βιβλία αυτής της συσκευής υπάρχουν ήδη στην κοινή βιβλιοθήκη. Κλείσε και ξανάνοιξε την εφαρμογή για να ενωθούν."):("Δεν βρήκα βιβλία για ανέβασμα."+(missing.length?"\nΛείπουν από τη συσκευή: "+missing.join(", "):""))); btn.disabled=false; return; }
     R.savedAt=Date.now(); zip.file("library.json",JSON.stringify(R));
     if(gh){
