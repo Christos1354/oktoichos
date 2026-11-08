@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής (v42 8-11-2026: νέα «α ζωντανή» με ήπιο τρέμολο · v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v42 8-11-2026: νέα «α ζωντανή» με ήπιο τρέμολο · «με λόγια»: ίση ένταση συλλαβών, διακριτική πεταστή · v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -546,9 +546,26 @@
   }
   function lySet() { const S = window.FONI_SETS && window.FONI_SETS.christos_v; return S && S.logia ? S.logia : null; }
   function lyBuf(n) { if (!n._b || n._b.ctx !== ctx) n._b = { ctx, b: window.FONI_ADPCM(ctx, n) }; return n._b.b; }
+  // (8-11-2026, v42) ΙΣΗ ΕΝΤΑΣΗ: οι 465 ηχογραφημένες συλλαβές διέφεραν έως 12 dB (η μία «φώναζε»). Κάθε συλλαβή
+  // ρυθμίζεται στην ίδια ένταση, μετρημένη στο κρατημένο φωνήεν της. Οι καταλήξεις («ς», «ν») μένουν όπως είναι.
+  function lyNorm(n) {
+    if (n._g != null) return n._g;
+    try { const d = lyBuf(n).getChannelData(0), sr = n.sr || lyBuf(n).sampleRate, b = Math.min(d.length, Math.floor(n.le || d.length)), a = Math.min(b - 1, Math.floor(((n.va || 0) + 0.02) * sr));   // από την αρχή του φωνήεντος ώς το τέλος του κρατήματος
+      let e = 0; for (let i = a; i < b; i++) e += d[i] * d[i]; const r = Math.sqrt(e / Math.max(1, b - a));
+      n._g = r > 0.01 ? Math.max(0.55, Math.min(1.6, 0.2 / r)) : 1; } catch (e) { n._g = 1; }
+    return n._g;
+  }
+  // (8-11-2026, v42) ΠΕΤΑΣΤΗ διακριτική: μικρό, μαλακό πέταγμα (6 μόρια αντί 12) και ελαφρώς ΠΙΟ ΣΙΓΑ, όχι φωναχτά
+  function lyPet(rec, r, t) {
+    try { const p = rec.src.playbackRate, up = r * Math.pow(2, 6 / 72); p.setTargetAtTime(up, t + 0.05, 0.025); p.setTargetAtTime(r, t + 0.15, 0.035);
+      const g = rec.g.gain, G = rec.G; g.setTargetAtTime(G * 0.82, t + 0.04, 0.02); g.setTargetAtTime(G, t + 0.17, 0.04); } catch (e) { }
+  }
   function lyPick(arr, f) { let s = arr[0], bd = 1e9; for (const x of arr) { const d = Math.abs(Math.log(f / x.hz)); if (d < bd) { bd = d; s = x; } } return s; }
   function lyLine(level) {
-    const K = 1.15, lg = ctx.createGain(); lg.gain.value = level * K; lg.connect(bus);
+    // (8-11-2026, v42) ήπιος αυτόματος ρυθμιστής έντασης: καμία συλλαβή δεν «πετάγεται» πιο δυνατά από τις άλλες
+    const K = 1.15, lg = ctx.createGain(); lg.gain.value = level * K;
+    const lev = ctx.createDynamicsCompressor(); lev.threshold.value = -30; lev.knee.value = 8; lev.ratio.value = 6; lev.attack.value = 0.015; lev.release.value = 0.18;
+    const mk = ctx.createGain(); mk.gain.value = 2.0; lg.connect(lev); lev.connect(mk); mk.connect(bus);
     let cur = null, timer = null, dead = false;
     // ένας ήχος από δείγμα: αρχίζει στο st (από το σημείο off), με επίθεση fin
     function play(n, f, st, off, fin, loop, gain) {
@@ -557,7 +574,7 @@
       const s = ctx.createBufferSource(); s.buffer = lyBuf(n);
       if (loop) { s.loop = true; s.loopStart = n.ls / n.sr; s.loopEnd = n.le / n.sr; if (off > s.loopEnd) off = s.loopStart; }
       s.playbackRate.setValueAtTime(rate, st);
-      const g = ctx.createGain(), G = gain == null ? 1 : gain; g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(G, st + fin);
+      const G = (gain == null ? 1 : gain) * (loop ? lyNorm(n) : 1), g = ctx.createGain(); g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(G, st + fin);
       s.connect(g); g.connect(lg); s.start(st, Math.max(0, off));
       const rec = { src: s, g, n, st, fin, G, done: false }; active.add(rec);
       s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); } catch (e) { } };
@@ -575,7 +592,7 @@
       const now = ctx.currentTime, rate = f > 0 && n.hz ? f / n.hz : 1; let off = a, s0 = st;
       if (s0 < now) { off += (now - s0) * rate; s0 = now; } if (off >= b) return;
       const s = ctx.createBufferSource(); s.buffer = lyBuf(n); s.playbackRate.value = rate;
-      const g = ctx.createGain(), d = (b - off) / rate; g.gain.setValueAtTime(0, s0); g.gain.linearRampToValueAtTime(1, s0 + 0.006); g.gain.setValueAtTime(1, s0 + Math.max(0.007, d - 0.012)); g.gain.linearRampToValueAtTime(0, s0 + d);
+      const N = lyNorm(n), g = ctx.createGain(), d = (b - off) / rate; g.gain.setValueAtTime(0, s0); g.gain.linearRampToValueAtTime(N, s0 + 0.006); g.gain.setValueAtTime(N, s0 + Math.max(0.007, d - 0.012)); g.gain.linearRampToValueAtTime(0, s0 + d);
       s.connect(g); g.connect(lg); s.start(s0, off); s.stop(s0 + d + 0.02);
       const rec = { src: s, g }; active.add(rec); s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); } catch (e) { } };
     }
@@ -630,17 +647,18 @@
           }
           ex.forEach(([m, s0, a, b]) => piece(m, f, s0, a, b));
           const rec = play(n, f, st, off0, vowelOnly ? (legato ? 0.05 : 0.04) : 0.012, true);
-          if (opts.pet) { const up = rate * Math.pow(2, 12 / 72); rec.src.playbackRate.setTargetAtTime(up, t + 0.06, 0.018); rec.src.playbackRate.setTargetAtTime(rate, t + 0.15, 0.025); }
+          if (opts.pet) lyPet(rec, rate, t);
           cur = { key, v: P.v, coda: P.coda, n, rec, f, vowelAt: t, lastEnd: end, closed: false };
         } else if (cur && legato) {
           // ---- μέλισμα: ίδια συλλαβή, νέο ύψος ----
           const arr = S[cur.key] || S.a, n = lyPick(arr, f);
           if (n === cur.n) {
             const r = f / n.hz, p = cur.rec.src.playbackRate;
-            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); if (opts.pet) { const up = r * Math.pow(2, 12 / 72); p.setTargetAtTime(up, t + 0.06, 0.018); p.setTargetAtTime(r, t + 0.15, 0.025); } } catch (e) { }
+            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); } catch (e) { }
+            if (opts.pet) lyPet(cur.rec, r, t);
           } else {   // άλλο ύψος δείγματος: μαλακό πέρασμα στο ίδιο φωνήεν
             const rec = play(n, f, t - 0.025, n.ls / n.sr, 0.05, true);
-            release(cur.rec, t - 0.025, 0.05); cur.rec = rec; cur.n = n;
+            release(cur.rec, t - 0.025, 0.05); cur.rec = rec; cur.n = n; if (opts.pet) lyPet(rec, f / n.hz, t);
           }
           cur.f = f; cur.lastEnd = end;
         } else {
