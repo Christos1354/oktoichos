@@ -1,4 +1,4 @@
-// Οκτώηχος · μηχανή φωνής (v42 8-11-2026: νέα «α ζωντανή» με ήπιο τρέμολο · v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
+// Οκτώηχος · μηχανή φωνής (v44 9-11-2026: πεταστή χωρίς ανέβασμα, πιο σφιχτές ενώσεις νοτών · v42 8-11-2026: νέα «α ζωντανή» με ήπιο τρέμολο · v40 7-11-2026: η «α» καθαρή χωρίς κυμάτισμα · v38 5-11-2026: σταθερές «καθαρές» φωνές · v31 31-10-2026: «Χρίστος με λόγια» · v30 30-10-2026: «Χρίστος · παραλλαγή») με αληθινά δείγματα (χορωδία) και ακουστική ναού · έκδοση 22-10-2026 (v29: η φωνή του Χρίστου «α» και «μμμ»)
 // Χρήση: Foni.setup(ctx); await Foni.load(key); const L=Foni.line(key,level); L.note(t,hz,dur,{pet}); Foni.stopAll();
 (function () {
   "use strict";
@@ -100,12 +100,14 @@
     const P = src.playbackRate;
     const pre = 0.03;                       // ξεκινά λίγο νωρίτερα, σιωπηλά
     P.setValueAtTime(rateFrom, Math.max(0, t0 - pre));
-    if (rateFrom !== rate) P.setTargetAtTime(rate, t0, 0.03);
-    if (opts && opts.pet) { const up = rate * Math.pow(2, 12 / 72); P.setTargetAtTime(up, t0 + 0.06, 0.018); P.setTargetAtTime(rate, t0 + 0.15, 0.025); }
+    // (9-11-2026, v44) πιο «σφιχτό» πέρασμα στη νέα νότα (γρηγορότερο γλίστρημα, όχι «πάνω-κάτω»)
+    if (rateFrom !== rate) P.setTargetAtTime(rate, t0, 0.012);
     g.gain.setValueAtTime(0, Math.max(0, t0 - pre));
     g.gain.setValueAtTime(0, t0);
     g.gain.linearRampToValueAtTime(level, t0 + fadeIn);
-    g.gain.setValueAtTime(level, Math.max(t0 + fadeIn, t1));
+    // (9-11-2026, v44) πεταστή: ΚΑΝΕΝΑ ανέβασμα στο ύψος — μόνο ένα διακριτικό, καθαρό «άνοιγμα» της φωνής
+    if (opts && opts.pet && t1 > t0 + fadeIn + 0.2) { const a = t0 + fadeIn; g.gain.setValueAtTime(level, a); g.gain.linearRampToValueAtTime(level * 1.15, a + 0.06); g.gain.linearRampToValueAtTime(level, a + 0.2); }
+    g.gain.setValueAtTime(level, Math.max(t0 + fadeIn + ((opts && opts.pet && t1 > t0 + fadeIn + 0.2) ? 0.2 : 0), t1));
     g.gain.linearRampToValueAtTime(0, t1 + fadeOut);
     const st0 = Math.max(0, t0 - pre);
     src.start(st0, Math.max(0, offset - (t0 - st0) * rateFrom));
@@ -423,8 +425,8 @@
       const end = t + dur, up = f * Math.pow(2, 12 / 72), pet = !!opts.pet;
       const fOf = tt => {
         const x = tt - t;
-        let v = from === f ? f : f * Math.pow(from / f, Math.exp(-Math.max(0, x) / (P.multi ? 0.065 : 0.03)));   // (23-10-2026) μαλακό γλίστρημα
-        if (pet && x > 0.05 && x < 0.2) { const w = Math.sin(Math.PI * (x - 0.05) / 0.15); v *= Math.pow(up / f, w); }
+        let v = from === f ? f : f * Math.pow(from / f, Math.exp(-Math.max(0, x) / (P.multi ? 0.04 : 0.012)));   // (23-10-2026) μαλακό γλίστρημα · (9-11-2026, v44) πιο σφιχτό
+        // (9-11-2026, v44) πεταστή χωρίς ανέβασμα ύψους
         return v;
       };
       const segs = P.mode === "vowel" ? plan(n.on || [], endsSyl && n.co ? n.co : [], dur) : [];
@@ -507,7 +509,6 @@
         const st = Math.max(now, t - pre), off = same ? s.va + 0.05 : Math.max(0, (st - (t - pre)) * rate);
         const src = ctx.createBufferSource(); src.buffer = s.buf; src.loop = true; src.loopStart = s.ls; src.loopEnd = s.le;
         src.playbackRate.setValueAtTime(rate, st);
-        if (opts.pet) { const up = rate * Math.pow(2, 12 / 72); src.playbackRate.setTargetAtTime(up, t + 0.06, 0.018); src.playbackRate.setTargetAtTime(rate, t + 0.15, 0.025); }
         const g = ctx.createGain(), fin = same ? 0.03 : 0.012, tail = opts.tail != null ? opts.tail : 0.08, end = t + dur;
         g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(1, st + fin);
         g.gain.setValueAtTime(1, Math.max(st + fin, end)); g.gain.linearRampToValueAtTime(0, end + tail);
@@ -630,14 +631,13 @@
           }
           ex.forEach(([m, s0, a, b]) => piece(m, f, s0, a, b));
           const rec = play(n, f, st, off0, vowelOnly ? (legato ? 0.05 : 0.04) : 0.012, true);
-          if (opts.pet) { const up = rate * Math.pow(2, 12 / 72); rec.src.playbackRate.setTargetAtTime(up, t + 0.06, 0.018); rec.src.playbackRate.setTargetAtTime(rate, t + 0.15, 0.025); }
           cur = { key, v: P.v, coda: P.coda, n, rec, f, vowelAt: t, lastEnd: end, closed: false };
         } else if (cur && legato) {
           // ---- μέλισμα: ίδια συλλαβή, νέο ύψος ----
           const arr = S[cur.key] || S.a, n = lyPick(arr, f);
           if (n === cur.n) {
             const r = f / n.hz, p = cur.rec.src.playbackRate;
-            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); if (opts.pet) { const up = r * Math.pow(2, 12 / 72); p.setTargetAtTime(up, t + 0.06, 0.018); p.setTargetAtTime(r, t + 0.15, 0.025); } } catch (e) { }
+            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); } catch (e) { }
           } else {   // άλλο ύψος δείγματος: μαλακό πέρασμα στο ίδιο φωνήεν
             const rec = play(n, f, t - 0.025, n.ls / n.sr, 0.05, true);
             release(cur.rec, t - 0.025, 0.05); cur.rec = rec; cur.n = n;
