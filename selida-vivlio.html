@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v42 · Christos S Magides · 8-11-2026 · χωρίς πηδήματα από άγγιγμα την ώρα που ψάλλει · εύρεση μέσα στο βιβλίο, ✂ αλλαγή ήχου από συλλαβή, αυτόματη χρονική αγωγή · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
+<!-- v44 · Christos S Magides · 14-11-2026 · φωνή «Χρίστος με λόγια» έκδοση 3 (σύμφωνα με φυσικό μήκος, χωρίς κενά) · v43 13-11-2026 · νέα φωνή «Χρίστος με λόγια» (έκδοση 2, 48 kHz, 6 ύψη) · v42 8-11-2026 · χωρίς πηδήματα από άγγιγμα την ώρα που ψάλλει · εύρεση μέσα στο βιβλίο, ✂ αλλαγή ήχου από συλλαβή, αυτόματη χρονική αγωγή · μεγάλα βιβλία στο iPhone ανοίγουν σε κομμάτια (χωρίς σφάλμα μνήμης) · νέα φωνή «α ζωντανή», σταθερό χαμηλό ίσον και στην «α καθαρή», κωδικός εισόδου, τα κουμπιά σελίδας με απλό πάτημα (χωρίς επιλογή κειμένου και χωρίς ανεξέλεγκτο γύρισμα) + «Πήγαινε στη σελίδα» · v41 · η φθορά παίρνει το σωστό ύψος του νέου γένους (όχι παραφωνία) · v40: φθορές/μαρτυρίες με σωστή συνέχεια, σταθερό ίσον, φωνή «α» απόλυτα σταθερή · v39 5-11-2026: θυμάται βιβλίο και σημείο (ΜΠΡΟΣΤΑ, άνοιγμα στο τελευταίο σημείο) · v38: φωνή «Χρίστος «α» καθαρή» (απαλό κυμάτισμα, ίσον μία οκτάβα κάτω) · v37 4-11-2026: σταθερό ψάλσιμο (καμία νότα δεν χάνεται) + φωνή «Χρίστος «μμμ» καθαρή» + η σελίδα ανοίγει ακριβώς εκεί που διαλέγεις · (v36: νέα φωνή + χτύποι/λεπτό με αριθμό) -->
 <html lang="el">
 <head><script>
 /* (9-11-2026, v44) Το «μεγάφωνο» (πλαίσιο αναπαραγωγής) του iPhone εμφανίζεται ΜΟΝΟ όσο ακούγεται ήχος.
@@ -257,7 +257,7 @@
 <script src="foni-christos-par.js?v=2"></script>
 <script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
-<script src="foni.js?v=13"></script>
+<script src="foni.js?v=14"></script>
 <script src="anagnostis-vivlion.js?v=6"></script>
 <script>
 /* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
@@ -528,9 +528,9 @@ async function loadVoice(){const k=voiceSel();
     try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-syl.js?v=1";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
     if(m)m.textContent="";
     if(!window.FONI_SYL){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η νέα φωνή δεν κατέβηκε (δες ότι υπάρχει το αρχείο foni-christos-syl.js δίπλα στη σελίδα) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}
-  // (31-10-2026) «Χρίστος με λόγια»: τα δείγματα (3 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
+  // (13-11-2026) «Χρίστος με λόγια», έκδοση 2: τα δείγματα (12 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
   if(k==="christos_v"&&!(window.FONI_SETS&&FONI_SETS.christos_v)){const m=document.getElementById("msg");if(m)m.textContent="⏳ Φέρνω τη φωνή «Χρίστος με λόγια»…";
-    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=1";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
+    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=3";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
     if(m)m.textContent="";
     if(!(window.FONI_SETS&&FONI_SETS.christos_v)){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η φωνή «με λόγια» δεν κατέβηκε (δες τη σύνδεση) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
   if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0||k.indexOf("christos")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
