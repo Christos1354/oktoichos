@@ -4104,22 +4104,22 @@ applyLang();
 <!-- οθόνη γραφής ψαλμού v6b -->
 <!-- Υπογραφή / Signature: Christos S Magides — 13-10-2026 -->
 <div style="position:fixed;bottom:4px;right:6px;z-index:99999;font-size:11px;font-family:sans-serif;color:#fff;background:rgba(60,30,10,0.75);padding:3px 8px;border-radius:8px;pointer-events:none;">© Christos S Magides · <a href="#" data-grapse-mou style="color:inherit;cursor:pointer;pointer-events:auto">✏️ Γράψε μου</a></div>
-<script>/* ✏️ Γράψε μου — Christos S Magides — έκδοση 15-11-2026 */
+<script>/* ✏️ Γράψε μου — Christos S Magides — έκδοση 16-11-2026 */
 (function(){
-var L={el:["Γράψε μου","Μήνυμα από","Γεια σας κύριε Χρίστο,\n\nΣας γράφω για"],
-en:["Write to me","Message from","Hello Mr Christos,\n\nI am writing to you about"],
-de:["Schreiben Sie mir","Nachricht von","Guten Tag Herr Christos,\n\nich schreibe Ihnen wegen"],
-fr:["Écrivez-moi","Message de","Bonjour M. Christos,\n\nJe vous écris au sujet de"],
-es:["Escríbame","Mensaje desde","Hola Sr. Christos,\n\nLe escribo sobre"],
-it:["Scrivimi","Messaggio da","Buongiorno Sig. Christos,\n\nLe scrivo riguardo a"],
-ru:["Напишите мне","Сообщение из","Здравствуйте, господин Христос!\n\nПишу вам по поводу"],
-ar:["راسلني","رسالة من","مرحباً سيد خريستوس،\n\nأكتب إليك بخصوص"],
-tr:["Bana yazın","Mesaj","Merhaba Bay Christos,\n\nSize şu konuda yazıyorum:"]};
+var L={el:["Γράψε μου","Μήνυμα από","Γεια σας κύριε Χρίστο,"],
+en:["Write to me","Message from","Hello Mr Christos,"],
+de:["Schreiben Sie mir","Nachricht von","Guten Tag Herr Christos,"],
+fr:["Écrivez-moi","Message de","Bonjour M. Christos,"],
+es:["Escríbame","Mensaje desde","Hola Sr. Christos,"],
+it:["Scrivimi","Messaggio da","Buongiorno Sig. Christos,"],
+ru:["Напишите мне","Сообщение из","Здравствуйте, господин Христос!"],
+ar:["راسلني","رسالة من","مرحباً سيد خريستوس،"],
+tr:["Bana yazın","Mesaj","Merhaba Bay Christos,"]};
 function lg(){var l=(document.documentElement.lang||navigator.language||"el").slice(0,2).toLowerCase();return L[l]?l:"en"}
 function paint(){var q=document.querySelectorAll("[data-grapse-mou]");for(var i=0;i<q.length;i++){var t="\u270F\uFE0F "+L[lg()][0];if(q[i].textContent!==t)q[i].textContent=t}}
 document.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest("[data-grapse-mou]");if(!a)return;e.preventDefault();
 var t=L[lg()],n=document.title||location.hostname;
-location.href="mailto:"+["cyp","11111"].join("")+"@"+["gmail","com"].join(".")+"?subject="+encodeURIComponent(t[1]+": "+n)+"&body="+encodeURIComponent(t[2]+" \u00AB"+n+"\u00BB.\n\n")});
+location.href="mailto:"+["cyp","11111"].join("")+"@"+["gmail","com"].join(".")+"?subject="+encodeURIComponent(t[1]+": "+n)+"&body="+encodeURIComponent(t[2]+"\n\n")});
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
 try{new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]})}catch(e){}
 })();</script>
