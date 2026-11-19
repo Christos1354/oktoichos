@@ -4114,12 +4114,12 @@ es:["Escríbame","Mensaje desde","Hola Sr. Christos,"],
 it:["Scrivimi","Messaggio da","Buongiorno Sig. Christos,"],
 ru:["Напишите мне","Сообщение из","Здравствуйте, господин Христос!"],
 ar:["راسلني","رسالة من","مرحباً سيد خريستوس،"],
-tr:["Bana yazın","Mesaj","Merhaba Bay Christos,"]};
+tr:["Bana yazın","Mesaj:","Merhaba Bay Christos,"]};
 function lg(){var l=(document.documentElement.lang||navigator.language||"el").slice(0,2).toLowerCase();return L[l]?l:"en"}
 function paint(){var q=document.querySelectorAll("[data-grapse-mou]");for(var i=0;i<q.length;i++){var t="\u270F\uFE0F "+L[lg()][0];if(q[i].textContent!==t)q[i].textContent=t}}
 document.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest("[data-grapse-mou]");if(!a)return;e.preventDefault();
-var t=L[lg()],n=document.title||location.hostname;
-location.href="mailto:"+["cyp","11111"].join("")+"@"+["gmail","com"].join(".")+"?subject="+encodeURIComponent(t[1]+": "+n)+"&body="+encodeURIComponent(t[2]+"\n\n")});
+var t=L[lg()],n=(document.title||location.hostname).split(/\s+[·|–—-]\s+|:\s/)[0].trim();
+location.href="mailto:"+["cyp","11111"].join("")+"@"+["gmail","com"].join(".")+"?subject="+encodeURIComponent(t[1]+" "+n)+"&body="+encodeURIComponent(t[2]+"\n\n")});
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
 try{new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]})}catch(e){}
 })();</script>
