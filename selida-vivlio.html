@@ -79,10 +79,10 @@
   body.shownames .nn{display:block}
   .mcol{display:flex;flex-direction:column;align-items:center;padding:0 4px;border-radius:8px}
   .mcol.bad{background:#ffe1dc;outline:3px dashed var(--red)}
-  #pages{display:flex;flex-direction:column;gap:18px}
-  .pg{position:relative;width:100%;box-sizing:border-box;max-width:1206px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.12);overflow:hidden}
-  .pg img{width:100%;display:block}
-  .pgno{position:absolute;right:8px;top:6px;background:rgba(14,24,56,.75);color:#e2bd5e;font-weight:bold;border-radius:10px;padding:2px 10px;font-size:16px}
+  #pages{display:flex;flex-direction:column;gap:40px;padding-top:30px}
+  .pg{position:relative;width:100%;box-sizing:border-box;max-width:1206px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.12);overflow:visible}
+  .pg img{width:100%;display:block;border-radius:10px}
+  .pgno{position:absolute;right:8px;top:-32px;pointer-events:none;background:rgba(14,24,56,.85);color:#e2bd5e;font-weight:bold;border-radius:10px;padding:2px 10px;font-size:16px}
   .hb{position:absolute;border-radius:10px;cursor:pointer}
   .hb.now{background:rgba(142,92,196,.20);outline:4px solid rgba(142,92,196,.85)}
   .hb.mine:not(.now){box-shadow:inset 0 -5px 0 rgba(30,111,217,.55)}
@@ -227,7 +227,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v41 · 7-11-2026</small>
+  <small style="opacity:.7">v42 · 19-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -258,7 +258,7 @@
 <script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
 <script src="foni.js?v=14"></script>
-<script src="anagnostis-vivlion.js?v=6"></script>
+<script src="anagnostis-vivlion.js?v=7"></script>
 <script>
 /* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
    Βρίσκει ΜΟΝΟ από την αρχή λέξης/συλλαβής, όχι από τη μέση. */
@@ -509,7 +509,11 @@ function moriaS(idx,sc){return _pm(idx,sc||M7);}
 function freq(idx,acc,sc){return diHz()*Math.pow(2,(moriaS(idx,sc)+(acc||0)-42)/72);}
 // (19-10-2026) Φθορά: από αυτή τη νότα αλλάζει το γένος· η νότα της φθοράς μένει στο ίδιο ύψος (άξονας)
 function fthScale(sc,f,cur){const g=f[0],n=f[1];
-  if(g==="zwyf"||g==="gen"){const r=g==="zwyf"?6:((cur%7)+7)%7,out=(sc.length===4?[0,1,2,3,4,5,6].map(i=>_pm(i,sc)):sc.slice());out[r]+=(g==="zwyf"?-4:n);return out;}
+  if(g==="zwyf"||g==="gen"){const r=g==="zwyf"?6:((cur%7)+7)%7,out=(sc.length===4?[0,1,2,3,4,5,6].map(i=>_pm(i,sc)):sc.slice());
+    // (19-11-2026) η ύφεση του Ζω ΔΕΝ αθροίζεται: ο Ζω μένει 4 μόρια κάτω από τη φυσική του θέση (Κε + 6), όσες φθορές κι αν έρθουν.
+    // Πριν κατέβαινε 4 μόρια σε ΚΑΘΕ φθορά, ώσπου έπεφτε κάτω από τον Κε και ακουγόταν «μουγκρητό».
+    if(g==="zwyf"){out[6]=Math.min(out[6],out[5]+6);return out;}
+    out[r]+=n;return out;}
   const G=SCALES[g];if(!G)return sc;
   const r0=((cur%7)+7)%7,d=n-r0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
   for(let r=0;r<7;r++)out.push(anchor+moriaS(r+d,G)-gp);return out;}

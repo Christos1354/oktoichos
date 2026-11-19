@@ -216,8 +216,8 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
               tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue;
             }
             if (/MK\s*Xronos|BZ\s*Xronos/i.test(fi.name)) {   // (22-10-2026) το «χ» της αγωγής: το γοργό/αργό από πάνω του αλλάζει την ταχύτητα
-              // κάθε «χ» της MKXronos έχει μέσα του το σημάδι: k/K γοργό, s δίγοργο, : τρίγοργο, f/F αργό, d/D δίαργο
-              const XR = { 0x6b: 1, 0x4b: 1, 0x73: 2, 0x53: 2, 0x3a: 3, 0x66: -1, 0x46: -1, 0x64: -2, 0x44: -2 };
+              // κάθε «χ» της MKXronos έχει μέσα του το σημάδι: k/K γοργό, s/l δίγοργο, : τρίγοργο, f/F αργό, d/D δίαργο (19-11-2026: προστέθηκε το «l» = δίγοργο, π.χ. Αναστασιματάριο Πέτρου)
+              const XR = { 0x6b: 1, 0x4b: 1, 0x73: 2, 0x53: 2, 0x6c: 2, 0x4c: 2, 0x3a: 3, 0x66: -1, 0x46: -1, 0x64: -2, 0x44: -2 };
               const xc = u ? (u.codePointAt(0) & 0xff) : 0;
               if (u && u.trim()) paths.push({ x0: Math.min(p0[0], p1[0]), x1: Math.max(p0[0], p1[0]) + 0.1 * size, y0: p0[1] - 0.72 * size, y1: p0[1] + 0.05 * size, col, cls: { role: "tempo", g: XR[xc] != null ? XR[xc] : 0, dist: 0 }, mk: "xronos:" + xc.toString(16) });
               tm = mul(tm, [1, 0, 0, 1, adv, 0]); continue; }
@@ -418,6 +418,8 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
       if (it.role !== "tempo") continue;
       const r = it.r, w = Math.max(W(r), 4 * s), h = Math.max(Hh(r), 6 * s);
       let g = (it.r.cls && it.r.cls.g) || 0;
+      // (19-11-2026) «χ» της MKXronos: η αγωγή ξαναβγαίνει από τον κωδικό, ώστε να διορθώνονται και οι σελίδες που διαβάστηκαν παλιότερα
+      if (it.r.mk && /^xronos:/.test(it.r.mk)) { const XRM = { 0x6b: 1, 0x4b: 1, 0x73: 2, 0x53: 2, 0x6c: 2, 0x4c: 2, 0x3a: 3, 0x66: -1, 0x46: -1, 0x64: -2, 0x44: -2 }; const xc = parseInt(it.r.mk.slice(7), 16); if (XRM[xc] != null) g = XRM[xc]; }
       for (const q of its) {
         if (used.has(q) || !(q.role in TROLE)) continue;
         const cx = cxf(q.r);
