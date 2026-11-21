@@ -104,7 +104,7 @@
   .sb{text-align:center;color:#b9c2e2;margin:2px 0 12px;font-size:18px}
   #panel .box,#menu .box{color:#2a1d14}
   #panel h2,#menu h2,.grp{color:#6b3f1f!important}
-  .bar{background:#172a5e!important;border-top:2px solid var(--gold)}
+  .bar{background:#172a5e!important;border-top:2px solid var(--gold);z-index:20}
   @media (max-width:700px){.wrap{padding-bottom:300px!important}.bar{gap:6px;padding:8px}.bar button{font-size:19px;padding:9px 12px}.bar input[type=range]{width:100px}}
   .homebtn{position:fixed;right:16px;bottom:calc(var(--bar-h,150px) + 14px);z-index:25;width:72px;height:72px;border-radius:50%;border:3px solid #1b1606;background:#e2bd5e;color:#1b1606;text-decoration:none;box-shadow:0 6px 16px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center}
   .backbtn{right:auto;left:16px;background:#6fa8ff;border-color:#0b1a33;color:#0b1a33}
@@ -227,7 +227,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v44 · 21-11-2026</small>
+  <small style="opacity:.7">v45 · 21-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -258,7 +258,7 @@
 <script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
 <script src="foni.js?v=16"></script>
-<script src="anagnostis-vivlion.js?v=7"></script>
+<script src="anagnostis-vivlion.js?v=8"></script>
 <script>
 /* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
    Βρίσκει ΜΟΝΟ από την αρχή λέξης/συλλαβής, όχι από τη μέση. */
@@ -619,6 +619,11 @@ try{const r=localStorage.getItem('okt-rev');if(r!==null)document.getElementById(
     n.addEventListener("change",set);n.addEventListener("keydown",e=>{if(e.key==="Enter"){set();n.blur();}});}
 })();
 document.getElementById('revAmt').oninput=e=>{try{localStorage.setItem('okt-rev',e.target.value);}catch(_){} if(window.Foni&&ctx){Foni.setup(ctx);Foni.setReverb(Number(e.target.value));}};
+// (21-11-2026, v45) Ταχύτητα και τονικότητα πιάνουν ΑΜΕΣΩΣ και όσο ψάλλει: μόλις αφήσεις τη μπάρα (ή αλλάξεις οκτάβα/αριθμό),
+// ξαναρχίζει από την ίδια συλλαβή με τη νέα τιμή. Πριν, η νέα τιμή περίμενε το επόμενο «Ψάλλε».
+(function(){let t=0;const again=()=>{if(!isPlaying())return;clearTimeout(t);t=setTimeout(()=>{if(!isPlaying())return;resumeId=hlCurId||resumeId;stopAll();playSel();},250);};
+  ["tempo","pitch","tempoNum"].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener("change",again);});
+  ["octUp","octDown"].forEach(id=>{const b=document.getElementById(id);if(b)b.addEventListener("click",again);});})();
 try{const io=document.getElementById('isoOct');const v=localStorage.getItem('okt-iso-oct');if(io&&v)io.value=v;io.onchange=()=>{try{localStorage.setItem('okt-iso-oct',io.value);}catch(_){}if(isPlaying()){resumeId=hlCurId;stopAll();playSel();}};}catch(e){}
 document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value==='christos_s'?'christos_par':e.target.value);localStorage.setItem('okt-voice-syl',e.target.value==='christos_s'?'1':'0');}catch(_){} if(isPlaying()){resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null);stopAll();playSel();}};
 let looping=false;

@@ -62,7 +62,14 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
 
   // ---- γραμματοσειρές του προγράμματος «ΜΚ» ----
   const MK = window.MR_MK || { spec: {}, box: {} };
-  function MKFONT(name) { const m = /BZ\s*(Byzantina|Loipa|Fthores|Ison)/i.exec(name || ""); return m ? "BZ" + m[1][0].toUpperCase() + m[1].slice(1).toLowerCase() : null; }   // και «BZ Byzantina» με κενό
+  // (21-11-2026) Γραμματοσειρά «MKIson» / «MKIson2» (Εορτολόγιο, Τριώδιο, Αγρυπνία, Χαιρετισμοί): γράφει τις επικεφαλίδες «Ἦχος … Πα».
+  // Παίρνουμε ΜΟΝΟ τις επικεφαλίδες (ίδιοι κωδικοί με την BZIson, και 1–5 = α΄ β΄ γ΄ δ΄ βαρύς) — έτσι κάθε ύμνος παίρνει τον δικό του ήχο/κλίμακα.
+  (function () { const B = MK.spec && MK.spec.BZIson, BB = (MK.box && MK.box.BZIson) || {}; if (!B) return; const h = {}, bx = {};
+    for (const k in B) if (Array.isArray(B[k]) && B[k][0] === "h") { h[k] = B[k]; if (BB[k]) bx[k] = BB[k]; }
+    Object.assign(h, { "31": ["h", "α΄ "], "32": ["h", "β΄ "], "33": ["h", "γ΄ "], "34": ["h", "δ΄ "], "35": ["h", "βαρύς "] });
+    Object.assign(bx, { "31": BB["37"], "32": BB["38"], "33": BB["39"], "34": BB["36"], "35": BB["28"] });
+    MK.spec.MKIson = h; MK.box.MKIson = bx; })();
+  function MKFONT(name) { if (/MK\s*Ison/i.test(name || "")) return "MKIson"; const m = /BZ\s*(Byzantina|Loipa|Fthores|Ison)/i.exec(name || ""); return m ? "BZ" + m[1][0].toUpperCase() + m[1].slice(1).toLowerCase() : null; }   // και «BZ Byzantina» με κενό
   function mkGlyph(f, u, m, fsize, hs, rise, col, size, paths, chars) {
     const code = (u.codePointAt(0) & 0xff).toString(16), sp = (MK.spec[f] || {})[code];
     if (!sp) return;
