@@ -550,35 +550,19 @@
   function lyBuf(n) { if (!n._b || n._b.ctx !== ctx) n._b = { ctx, b: window.FONI_ADPCM(ctx, n) }; return n._b.b; }
   function lyPick(arr, f) { let s = arr[0], bd = 1e9; for (const x of arr) { const d = Math.abs(Math.log(f / x.hz)); if (d < bd) { bd = d; s = x; } } return s; }
   function lyLine(level) {
-    const K = 1.15, lg = ctx.createGain(); lg.gain.value = level * K;
-    // (21-11-2026, v43) καθαρότερη φωνή: κόβουμε το «σφύριγμα/χνούδι» στα πολύ ψηλά και το βουητό στα πολύ χαμηλά,
-    // χωρίς να χάνονται τα σύμφωνα (ήπιο φίλτρο, όχι απότομο)
-    const hsF = ctx.createBiquadFilter(); hsF.type = "highshelf"; hsF.frequency.value = 4800; hsF.gain.value = -6;
-    const lpF = ctx.createBiquadFilter(); lpF.type = "lowpass"; lpF.frequency.value = 9000; lpF.Q.value = 0.6;
-    const hpF = ctx.createBiquadFilter(); hpF.type = "highpass"; hpF.frequency.value = 60; hpF.Q.value = 0.6;
-    lg.connect(hsF); hsF.connect(lpF); lpF.connect(hpF); hpF.connect(bus);
-    // (21-11-2026, v43) λίγη φυσική κίνηση πάνω σε κάθε νότα, όπως στην ανθρώπινη φωνή: πολύ μικρός παλμός (~5 φορές/δευτ.)
-    // και αργή «αναπνοή» του ύψους — μόλις 3–4 εκατοστά του τόνου, ώστε να μην ακούγεται σκαμπανέβασμα
-    const vib = ctx.createOscillator(); vib.frequency.value = 5.1; const drift = ctx.createOscillator(); drift.frequency.value = 0.31;
-    const mod = ctx.createGain(); mod.gain.value = 1; const dG = ctx.createGain(); dG.gain.value = 0.6;
-    vib.connect(mod); drift.connect(dG); dG.connect(mod); vib.start(); drift.start();
-    active.add({ src: { stop: w => { try { vib.stop(w); drift.stop(w); } catch (e) { } } }, g: ctx.createGain() });
+    const K = 1.15, lg = ctx.createGain(); lg.gain.value = level * K; lg.connect(bus);
     let cur = null, timer = null, dead = false;
     // ένας ήχος από δείγμα: αρχίζει στο st (από το σημείο off), με επίθεση fin
-    // (21-11-2026, v43) fromF: ξεκινά από το ύψος της προηγούμενης νότας και γλιστράει απαλά στη νέα (όχι «σκαλοπάτι»)
-    function play(n, f, st, off, fin, loop, gain, fromF, glideAt, tau) {
+    function play(n, f, st, off, fin, loop, gain) {
       const now = ctx.currentTime, rate = f > 0 && n.hz ? f / n.hz : 1;
       if (st < now) { off += (now - st) * rate; st = now; }
       const s = ctx.createBufferSource(); s.buffer = lyBuf(n);
       if (loop) { s.loop = true; s.loopStart = n.ls / n.sr; s.loopEnd = n.le / n.sr; if (off > s.loopEnd) off = s.loopStart; }
-      if (fromF > 0 && n.hz && Math.abs(Math.log2(fromF / f)) < 0.6) { s.playbackRate.setValueAtTime(fromF / n.hz, st); s.playbackRate.setTargetAtTime(rate, Math.max(st, glideAt || st), tau || 0.03); }
-      else s.playbackRate.setValueAtTime(rate, st);
+      s.playbackRate.setValueAtTime(rate, st);
       const g = ctx.createGain(), G = gain == null ? 1 : gain; g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(G, st + fin);
       s.connect(g); g.connect(lg); s.start(st, Math.max(0, off));
-      let vg = null;
-      if (loop) { vg = ctx.createGain(); const dep = rate * 0.0021, a = st + 0.3; vg.gain.setValueAtTime(0, st); vg.gain.setValueAtTime(0, a); vg.gain.linearRampToValueAtTime(dep, a + 0.4); mod.connect(vg); vg.connect(s.playbackRate); }
       const rec = { src: s, g, n, st, fin, G, done: false }; active.add(rec);
-      s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); if (vg) vg.disconnect(); } catch (e) { } };
+      s.onended = () => { active.delete(rec); try { s.disconnect(); g.disconnect(); } catch (e) { } };
       return rec;
     }
     function release(rec, t, rel) {
@@ -648,17 +632,16 @@
             else finish(cur, cur.lastEnd, true);
           }
           ex.forEach(([m, s0, a, b]) => piece(m, f, s0, a, b));
-          const prevF = legato && cur ? cur.f : 0;
-          const rec = play(n, f, st, off0, vowelOnly ? (legato ? 0.05 : 0.04) : 0.02, true, null, prevF, t - 0.02, Math.min(0.035, Math.max(0.012, dur * 0.1)));   // (14-11-2026) πιο μαλακή είσοδος του φωνήεντος · (21-11-2026) απαλό γλίστρημα από την προηγούμενη νότα
+          const rec = play(n, f, st, off0, vowelOnly ? (legato ? 0.05 : 0.04) : 0.02, true);   // (14-11-2026) πιο μαλακή είσοδος του φωνήεντος
           cur = { key, v: P.v, coda: P.coda, n, rec, f, vowelAt: t, lastEnd: end, closed: false };
         } else if (cur && legato) {
           // ---- μέλισμα: ίδια συλλαβή, νέο ύψος ----
           const arr = S[cur.key] || S.a, n = lyPick(arr, f);
           if (n === cur.n) {
             const r = f / n.hz, p = cur.rec.src.playbackRate;
-            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), Math.min(0.032, Math.max(0.012, dur * 0.1))); } catch (e) { }   // (21-11-2026) λίγο πιο απαλό γλίστρημα
+            try { p.setTargetAtTime(r, Math.max(ctx.currentTime, t - 0.01), 0.022); } catch (e) { }
           } else {   // άλλο ύψος δείγματος: μαλακό πέρασμα στο ίδιο φωνήεν
-            const rec = play(n, f, t - 0.025, n.ls / n.sr, 0.05, true, null, cur.f, t - 0.02, Math.min(0.032, Math.max(0.012, dur * 0.1)));
+            const rec = play(n, f, t - 0.025, n.ls / n.sr, 0.05, true);
             release(cur.rec, t - 0.025, 0.05); cur.rec = rec; cur.n = n;
           }
           cur.f = f; cur.lastEnd = end;

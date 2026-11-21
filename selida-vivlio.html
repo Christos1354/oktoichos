@@ -227,7 +227,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v43β · 21-11-2026</small>
+  <small style="opacity:.7">v44 · 21-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -257,7 +257,7 @@
 <script src="foni-christos-par.js?v=2"></script>
 <script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
-<script src="foni.js?v=15"></script>
+<script src="foni.js?v=16"></script>
 <script src="anagnostis-vivlion.js?v=7"></script>
 <script>
 /* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
@@ -412,12 +412,18 @@ let flat=[]; // νότες για αναπαραγωγή
 let checks={};
 const MART_PAUSE=1.5;   // (21-10-2026) δευτερόλεπτα παύσης στη μαρτυρία του τέλους της γραμμής
 function compute(){
-  flat=[];checks={};let tgv=null,cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1,isc=sc,hk=SECT[0].sc;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
+  flat=[];checks={};let tgv=null,cur=START,ison=START,tf=1,sc=SCALES[SECT[0].sc],pend=0,pd=1,isc=sc,hk=SECT[0].sc;
+  // (21-11-2026, v44) ΧΡΟΝΙΚΗ ΑΓΩΓΗ: ένα σημάδι αγωγής ισχύει ως το τέλος της παραγράφου του (π.χ. το γρήγορο «Δόξα… Και νυν… αμήν»).
+  // Στην επόμενη παράγραφο (νέο τροπάριο) η ταχύτητα γυρίζει σε εκείνη του ύμνου — δεν μένει «γοργή» μέχρι το τέλος του βιβλίου.
+  // Τέλος παραγράφου = γραμμή που τελειώνει με μαρτυρία και είναι μισογεμάτη (το κείμενο σταματά πριν από το τέλος της γραμμής).
+  const PG_=(typeof D!=="undefined"&&(D.pagesImg||D.pages))||[],LW_=[];PG_.forEach(P=>(P.lines||[]).forEach(L=>{const b=L&&L[L.length-1];LW_.push(b&&P.w?(b[0]+b[2])/P.w:1);}));
+  let secTf=1,secTg=null,secNotes=0;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
   data.forEach((line,l)=>line.forEach((s,i)=>{
     if(!Array.isArray(s)){
-      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;tgv=null;return;}
+      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;tgv=null;secTf=1;secTg=null;secNotes=0;return;}
       if(s.br){pend=0;const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,dur:0.5,idx:pv.idx,ison:pv.ison,sc});return;}
-      if(s.tp){tf=s.tp;if(s.tg!==undefined)tgv=s.tg;} if(s.m===undefined)return;
+      if(s.tp){tf=s.tp;if(s.tg!==undefined)tgv=s.tg;if(!secNotes){secTf=tf;secTg=tgv;}} if(s.m===undefined)return;
+      if(!s.r&&(LW_[l]===undefined?1:LW_[l])<0.8&&line.slice(i+1).every(x=>!Array.isArray(x))){tf=secTf;tgv=secTg;}   // (v44) τέλος παραγράφου: η αγωγή του ύμνου
       pend=0;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
       if(!s.r)checks[l+"-"+i]=(typeof s.m==="number"?(((cur-s.m)%7)+7)%7===0:cur===s.m);
       if(!s.r&&line.slice(i+1).every(x=>!Array.isArray(x))){const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,sec:MART_PAUSE,dur:1,idx:pv.idx,ison:pv.ison,sc});}   // (21-10-2026) μαρτυρία στο τέλος γραμμής: παύση
@@ -425,12 +431,12 @@ function compute(){
       cur=(typeof s.m==="number"&&Number.isFinite(cur))?s.m+7*Math.round((cur-s.m)/7):s.m; if(s.is!==undefined){ison=s.is;isc=sc;} return;}
     if(s[5]!==null&&s[5]!==undefined){ison=s[5];isc=sc;}
     const B=BASE[s[1]];const idxs=[];const steps=(s[10]!==null&&s[10]!==undefined)?[s[10]-cur]:(s[7]||B.st);
-    const first=flat.length;
+    const first=flat.length;secNotes++;
     // (7-11-2026, v41) η φθορά ισχύει ΚΑΙ για τη νότα πάνω στην οποία είναι γραμμένη· και όταν ονομάζει την ίδια τη νότα
     // (π.χ. διατονικός Νη΄ πάνω στον Νη΄), η νότα παίρνει το σωστό ύψος του νέου γένους — όχι το ύψος του προηγούμενου (αλλιώς παραφωνία)
     let nsc=null;
     if(s[11]){const f=s[11],G=SCALES[f[0]],fc=cur+steps.reduce((a,b)=>a+b,0),r0=((fc%7)+7)%7;
-      nsc=(G&&(f[1]===r0||G.length===4))?G:fthScale(sc,f,fc);}
+      nsc=(G&&(f[1]===r0||G.length===4))?G:fthScale(sc,f,fc,SCALES[hk]);}
     steps.forEach((st,k)=>{cur+=st;idxs.push(cur);if(nsc&&k===steps.length-1)sc=nsc;
       let d=(B.half&&steps.length>1)?0.5:1;
       if(pend>0){d=pd;pend--;}
@@ -508,14 +514,18 @@ showPitch();
 function moriaS(idx,sc){return _pm(idx,sc||M7);}
 function freq(idx,acc,sc){return diHz()*Math.pow(2,(moriaS(idx,sc)+(acc||0)-42)/72);}
 // (19-10-2026) Φθορά: από αυτή τη νότα αλλάζει το γένος· η νότα της φθοράς μένει στο ίδιο ύψος (άξονας)
-function fthScale(sc,f,cur){const g=f[0],n=f[1];
+function fthScale(sc,f,cur,base){const g=f[0],n=f[1];
   if(g==="zwyf"||g==="gen"){const r=g==="zwyf"?6:((cur%7)+7)%7,out=(sc.length===4?[0,1,2,3,4,5,6].map(i=>_pm(i,sc)):sc.slice());
     // (19-11-2026) η ύφεση του Ζω ΔΕΝ αθροίζεται: ο Ζω μένει 4 μόρια κάτω από τη φυσική του θέση (Κε + 6), όσες φθορές κι αν έρθουν.
     // Πριν κατέβαινε 4 μόρια σε ΚΑΘΕ φθορά, ώσπου έπεφτε κάτω από τον Κε και ακουγόταν «μουγκρητό».
     if(g==="zwyf"){out[6]=Math.min(out[6],out[5]+6);return out;}
     out[r]+=n;return out;}
   const G=SCALES[g];if(!G)return sc;
-  const r0=((cur%7)+7)%7,d=n-r0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
+  // (21-11-2026, v44) ΧΩΡΙΣ «ΓΛΙΣΤΡΗΜΑ» ΤΟΥ ΥΨΟΥΣ: η νότα της φθοράς (άξονας) παίρνει το ύψος που έχει στην κλίμακα του ΗΧΟΥ του ύμνου,
+  // όχι το ύψος που της άφησε η προηγούμενη φθορά. Πριν, κάθε φθορά ανέβαζε λίγο όλη τη μελωδία, ώσπου η κατάληξη (π.χ. ο Βου στο
+  // «οι εχθροί μου», Πέτρου σ. 93-95) ακουγόταν 8-10 μόρια ψηλότερα από τη μαρτυρία. Ο τρόπος που διαβάζεται η φθορά μένει ο ίδιος (όπως στη v42).
+  // Μόνο για φθορά γραμμένη 1-2 σκαλοπάτια δίπλα (όπως τις τυπώνει ο Πέτρος)· στις πραγματικές μεταθέσεις (τετάρτη/πέμπτη) ο άξονας μένει όπου ακούγεται.
+  const r0=((cur%7)+7)%7,d=n-r0,dd=Math.min((((d%7)+7)%7),(((-d%7)+7)%7)),anchor=(base&&dd<=2)?moriaS(r0,base)+72*Math.floor(cur/7):moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
   for(let r=0;r<7;r++)out.push(anchor+moriaS(r+d,G)-gp);return out;}
 
 // ---------- Φωνή: η φωνή του Χρήστου (δείγμα) ή συνθετική ----------
