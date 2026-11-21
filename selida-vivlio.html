@@ -156,6 +156,14 @@
   #panel .opts svg{height:42px!important}
   #panel .opts canvas{height:46px!important}
   #panel .row button{font-size:18px!important;padding:8px 6px!important}
+
+  /* (21-11-2026, v46) ΜΠΑΡΕΣ ΓΙΑ ΤΟ ΔΑΧΤΥΛΟ: φαρδιές, με μεγάλο στρογγυλό κουμπί — πιάνονται και μετακινούνται εύκολα */
+  .bar input[type=range]{width:200px!important;height:44px!important;-webkit-appearance:none;appearance:none;background:transparent;touch-action:none;margin:0 4px}
+  .bar input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:6px;background:#e2bd5e}
+  .bar input[type=range]::-moz-range-track{height:12px;border-radius:6px;background:#e2bd5e}
+  .bar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;margin-top:-14px;border-radius:50%;background:#fff;border:4px solid #1e6fd9;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .bar input[type=range]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;background:#fff;border:4px solid #1e6fd9}
+  .tbtn{font-size:24px!important;font-weight:800;min-width:52px;min-height:48px;border-radius:12px!important;background:#f6e7cf!important;color:#3a2410!important;border:2px solid #b8913a!important;padding:0 10px!important}
 </style>
 </head>
 <body>
@@ -215,7 +223,7 @@
 <div class="bar" id="mainBar" style="display:none">
   <button class="play" id="playBtn">▶ Ψάλλε</button>
   <button class="oct" id="apBtn">🎵 Απήχημα</button>
-  <label>Ταχύτητα <input type="range" id="tempo" min="30" max="240" step="1" value="70"> <input type="number" id="tempoNum" min="30" max="240" step="1" inputmode="numeric" value="70" style="width:4.2em;font-size:20px;font-weight:700;text-align:center;padding:4px;border-radius:10px" aria-label="Χτύποι το λεπτό"><b id="tempoLbl" hidden>70</b> χτύποι/λεπτό</label> <label style="white-space:nowrap"><input type="checkbox" id="agAuto" checked style="width:22px;height:22px;vertical-align:middle"> Αυτόματη αγωγή</label> <b id="agLbl" style="color:#e2bd5e"></b>
+  <button class="tbtn" id="tMinus" type="button" aria-label="Πιο αργά">−5</button><label>Ταχύτητα <input type="range" id="tempo" min="30" max="240" step="1" value="70"> <input type="number" id="tempoNum" min="30" max="240" step="1" inputmode="numeric" value="70" style="width:4.2em;font-size:20px;font-weight:700;text-align:center;padding:4px;border-radius:10px" aria-label="Χτύποι το λεπτό"><b id="tempoLbl" hidden>70</b> χτύποι/λεπτό</label><button class="tbtn" id="tPlus" type="button" aria-label="Πιο γρήγορα">+5</button> <label style="white-space:nowrap"><input type="checkbox" id="agAuto" checked style="width:22px;height:22px;vertical-align:middle"> Αυτόματη αγωγή</label> <b id="agLbl" style="color:#e2bd5e"></b>
   <button class="oct" id="octDown">▼ Οκτάβα</button>
   <label>Τονικότητα <input type="range" id="pitch" min="0" max="1" step="0.0005" value="0.2"><span id="pitchLbl"></span></label>
   <button class="oct" id="octUp">▲ Οκτάβα</button>
@@ -227,7 +235,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v45 · 21-11-2026</small>
+  <small style="opacity:.7">v46 · 21-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -417,14 +425,14 @@ function compute(){
   // Στην επόμενη παράγραφο (νέο τροπάριο) η ταχύτητα γυρίζει σε εκείνη του ύμνου — δεν μένει «γοργή» μέχρι το τέλος του βιβλίου.
   // Τέλος παραγράφου = γραμμή που τελειώνει με μαρτυρία και είναι μισογεμάτη (το κείμενο σταματά πριν από το τέλος της γραμμής).
   const PG_=(typeof D!=="undefined"&&(D.pagesImg||D.pages))||[],LW_=[];PG_.forEach(P=>(P.lines||[]).forEach(L=>{const b=L&&L[L.length-1];LW_.push(b&&P.w?(b[0]+b[2])/P.w:1);}));
-  let secTf=1,secTg=null,secNotes=0;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
+  let secTf=1,secTg=null,secNotes=0,locHold=null;   // isc: η κλίμακα του ίσου (μένει ίδια στις φθορές) · hk: το γένος του ήχου
   data.forEach((line,l)=>line.forEach((s,i)=>{
     if(!Array.isArray(s)){
-      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;tgv=null;secTf=1;secTg=null;secNotes=0;return;}
+      if(s.sec!==undefined){hk=SECT[s.sec].sc;sc=SCALES[hk];isc=sc;pend=0;tf=1;tgv=null;secTf=1;secTg=null;secNotes=0;locHold=null;return;}
       if(s.br){pend=0;const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,dur:0.5,idx:pv.idx,ison:pv.ison,sc});return;}
       if(s.tp){tf=s.tp;if(s.tg!==undefined)tgv=s.tg;if(!secNotes){secTf=tf;secTg=tgv;}} if(s.m===undefined)return;
       if(!s.r&&(LW_[l]===undefined?1:LW_[l])<0.8&&line.slice(i+1).every(x=>!Array.isArray(x))){tf=secTf;tgv=secTg;}   // (v44) τέλος παραγράφου: η αγωγή του ύμνου
-      pend=0;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
+      pend=0;locHold=null;   // (21-10-2026) τα γρήγορα (δίγοργο/τρίγοργο) σταματούν στη μαρτυρία
       if(!s.r)checks[l+"-"+i]=(typeof s.m==="number"?(((cur-s.m)%7)+7)%7===0:cur===s.m);
       if(!s.r&&line.slice(i+1).every(x=>!Array.isArray(x))){const pv=flat[flat.length-1];if(pv&&!pv.rest)flat.push({l:pv.l,i:pv.i,rest:1,sec:MART_PAUSE,dur:1,idx:pv.idx,ison:pv.ison,sc});}   // (21-10-2026) μαρτυρία στο τέλος γραμμής: παύση
       // (7-11-2026, v40) η μαρτυρία λέει τον φθόγγο, όχι την οκτάβα: μένουμε στην πιο κοντινή οκτάβα (αλλιώς η μελωδία «πηδά» οκτάβα)
@@ -434,13 +442,19 @@ function compute(){
     const first=flat.length;secNotes++;
     // (7-11-2026, v41) η φθορά ισχύει ΚΑΙ για τη νότα πάνω στην οποία είναι γραμμένη· και όταν ονομάζει την ίδια τη νότα
     // (π.χ. διατονικός Νη΄ πάνω στον Νη΄), η νότα παίρνει το σωστό ύψος του νέου γένους — όχι το ύψος του προηγούμενου (αλλιώς παραφωνία)
-    let nsc=null;
+    let nsc=null,loc=null;
     if(s[11]){const f=s[11],G=SCALES[f[0]],fc=cur+steps.reduce((a,b)=>a+b,0),r0=((fc%7)+7)%7;
-      nsc=(G&&(f[1]===r0||G.length===4))?G:fthScale(sc,f,fc,SCALES[hk]);}
+      nsc=(G&&(f[1]===r0||G.length===4))?G:fthScale(sc,f,fc,SCALES[hk]);
+      // (21-11-2026, v46) Η ΥΦΕΣΗ ΤΟΥ ΖΩ είναι αλλοίωση (σαν δίεση/ύφεση): ισχύει ΜΟΝΟ για τη νότα όπου γράφεται
+      // (και όσο η φωνή μένει πάνω της, π.χ. με ίσον). Πριν έμενε για όλο τον ύμνο και χαμήλωνε και άλλους Ζω πιο κάτω.
+      if(f[0]==="zwyf"){loc=nsc;nsc=null;}}
     steps.forEach((st,k)=>{cur+=st;idxs.push(cur);if(nsc&&k===steps.length-1)sc=nsc;
+      if(locHold&&cur!==locHold.idx)locHold=null;          // η φωνή έφυγε από τη νότα: η ύφεση τελείωσε
+      if(loc&&k===steps.length-1)locHold={idx:cur,sc:loc};
+      const scN=(locHold&&locHold.idx===cur)?locHold.sc:sc;
       let d=(B.half&&steps.length>1)?0.5:1;
       if(pend>0){d=pd;pend--;}
-      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),isoM:ison==="M",tf,tg:tgv,sc,isc:(ison==="M"?sc:isc)});});
+      flat.push({l,i,idx:cur,dur:d,acc:(k===0?s[4]:0),pet:(B.pet&&k===0)?1:0,ison:(ison==="M"?cur:ison),isoM:ison==="M",tf,tg:tgv,sc:scN,isc:(ison==="M"?scN:isc)});});
     s._notes=idxs;
     // (v41) η φθορά εφαρμόστηκε ήδη πιο πάνω (nsc)
     if(s[9]){const f0=flat[first];f0.dur=0.5;f0.pet=1;}
@@ -624,6 +638,9 @@ document.getElementById('revAmt').oninput=e=>{try{localStorage.setItem('okt-rev'
 (function(){let t=0;const again=()=>{if(!isPlaying())return;clearTimeout(t);t=setTimeout(()=>{if(!isPlaying())return;resumeId=hlCurId||resumeId;stopAll();playSel();},250);};
   ["tempo","pitch","tempoNum"].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener("change",again);});
   ["octUp","octDown"].forEach(id=>{const b=document.getElementById(id);if(b)b.addEventListener("click",again);});})();
+// (21-11-2026, v46) −5 / +5: η ταχύτητα αλλάζει με ένα πάτημα (χωρίς να σέρνεις τη μπάρα)
+["tMinus","tPlus"].forEach((id,q)=>{const b=document.getElementById(id),t=document.getElementById("tempo");if(!b||!t)return;
+  b.onclick=()=>{const v=Math.max(30,Math.min(240,Math.round(Number(t.value)||70)+(q?5:-5)));t.value=String(v);t.dispatchEvent(new Event("input"));t.dispatchEvent(new Event("change"));};});
 try{const io=document.getElementById('isoOct');const v=localStorage.getItem('okt-iso-oct');if(io&&v)io.value=v;io.onchange=()=>{try{localStorage.setItem('okt-iso-oct',io.value);}catch(_){}if(isPlaying()){resumeId=hlCurId;stopAll();playSel();}};}catch(e){}
 document.getElementById('voiceSel').onchange=e=>{try{localStorage.setItem('okt-voice2',e.target.value==='christos_s'?'christos_par':e.target.value);localStorage.setItem('okt-voice-syl',e.target.value==='christos_s'?'1':'0');}catch(_){} if(isPlaying()){resumeId=(hlCur?Object.keys(cols).find(k=>cols[k]===hlCur)||null:null);stopAll();playSel();}};
 let looping=false;
