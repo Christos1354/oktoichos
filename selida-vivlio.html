@@ -222,12 +222,12 @@
   <button class="oct" id="editMode">✏️ Διόρθωση</button>
   <label class="loopchk"><input type="checkbox" id="loopOn" style="width:24px;height:24px"> 🔁 Επανάληψη</label>
   <button class="oct" id="clearSel">✕ Όλη η σελίδα</button>
-  <label><input type="checkbox" id="isonOn" checked style="width:22px;height:22px"> Ίσον</label>
+  <label><input type="checkbox" id="isonOn" style="width:22px;height:22px" onchange="try{localStorage.setItem('okt-ison-on',this.checked?'1':'0')}catch(e){}"> Ίσον</label><script>/* (21-11-2026, v43) το ίσον μπαίνει μόνο όταν το διαλέξεις */try{if(localStorage.getItem("okt-ison-on")==="1")document.getElementById("isonOn").checked=true;}catch(e){}</script>
   <label>Οκτάβα ίσου <select id="isoOct" style="font-size:18px;padding:4px;border-radius:10px"><option value="0.5">1 οκτάβα κάτω</option><option value="1" selected>ίδια με τη μελωδία</option><option value="2">1 οκτάβα πάνω</option></select></label>
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v42 · 19-11-2026</small>
+  <small style="opacity:.7">v43 · 21-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -257,7 +257,7 @@
 <script src="foni-christos-par.js?v=2"></script>
 <script src="foni-christos-aa.js?v=2"></script>
 <script src="foni-christos-mm.js?v=1"></script>
-<script src="foni.js?v=14"></script>
+<script src="foni.js?v=15"></script>
 <script src="anagnostis-vivlion.js?v=7"></script>
 <script>
 /* (8-11-2026) ΕΥΡΕΣΗ χωρίς ορθογραφία: η=ι=υ=ει=οι, ω=ο, αι=ε, διπλά γράμματα = ένα, χωρίς τόνους.
@@ -515,7 +515,11 @@ function fthScale(sc,f,cur){const g=f[0],n=f[1];
     if(g==="zwyf"){out[6]=Math.min(out[6],out[5]+6);return out;}
     out[r]+=n;return out;}
   const G=SCALES[g];if(!G)return sc;
-  const r0=((cur%7)+7)%7,d=n-r0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
+  // (21-11-2026, v43) Όταν η φθορά δεν πέφτει πάνω στον φθόγγο που ονομάζει, «περιστρέφουμε» την κλίμακα ΜΟΝΟ αν η απόσταση
+  // είναι τετάρτη ή πέμπτη (μετάθεση, π.χ. φθορά του Νη πάνω στον Δι). Αν απέχει ένα-δύο σκαλοπάτια (π.χ. η σκληρή χρωματική
+  // φθορά γραμμένη στον Κε στον Β΄ ήχο του Πέτρου, ή η διατονική πάνω στο «λέ-οντος»), κρατάμε τα ονόματα των φθόγγων και
+  // παίρνουμε μόνο τα διαστήματα του νέου γένους γύρω από τη νότα. Αλλιώς όλα τα επόμενα διαστήματα έβγαιναν λάθος.
+  const r0=((cur%7)+7)%7,dd=(((n-r0)%7)+7)%7,d=(dd===3||dd===4)?n-r0:0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
   for(let r=0;r<7;r++)out.push(anchor+moriaS(r+d,G)-gp);return out;}
 
 // ---------- Φωνή: η φωνή του Χρήστου (δείγμα) ή συνθετική ----------
@@ -534,7 +538,7 @@ async function loadVoice(){const k=voiceSel();
     if(!window.FONI_SYL){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η νέα φωνή δεν κατέβηκε (δες ότι υπάρχει το αρχείο foni-christos-syl.js δίπλα στη σελίδα) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}
   // (13-11-2026) «Χρίστος με λόγια», έκδοση 2: τα δείγματα (12 MB) κατεβαίνουν μόνο όταν διαλέξεις αυτή τη φωνή
   if(k==="christos_v"&&!(window.FONI_SETS&&FONI_SETS.christos_v)){const m=document.getElementById("msg");if(m)m.textContent="⏳ Φέρνω τη φωνή «Χρίστος με λόγια»…";
-    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=3";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
+    try{await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="foni-christos-logia.js?v=4";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);});}catch(e){}
     if(m)m.textContent="";
     if(!(window.FONI_SETS&&FONI_SETS.christos_v)){document.getElementById("voiceSel").value="christos_par";if(m)m.textContent="⚠ Η φωνή «με λόγια» δεν κατέβηκε (δες τη σύνδεση) — ψάλλει η «Χρίστος · παραλλαγή».";return loadVoice();}}if(window.Foni){ensureCtx();Foni.setup(ctx);Foni.setReverb(Number(document.getElementById("revAmt").value));}
   if((k.indexOf("xorodia")===0||k.indexOf("psaltis")===0||k.indexOf("christos")===0)&&!isChoir()){choirFail();return loadVoice();}   // εφεδρική φωνή αν δεν φόρτωσε η χορωδία
@@ -659,7 +663,7 @@ function playChoir(list,onEnd){
   let t=ctx.currentTime+0.6,isoT=null,isoF=0,isoN=null;try{window.__metSync&&__metSync(t-ctx.currentTime);}catch(e){}
   let __m0,lastSk=null;const ev=[];
   // (29-10-2026) το ίσον σε κομμάτια ως 1,5″ (δεμένα μεταξύ τους): ακολουθεί ομαλά την Τονικότητα την ώρα που ψάλλει
-  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:dt=>{let fi=safeF(N.idx,0,N.sc)*isoMul;while(fi<40)fi*=2;iso.note(aa+dt,fi,d,o);}});a+=d;first=false;}}isoT=null;};
+  const flushIso=(tEnd)=>{if(iso&&isoT!==null&&tEnd>isoT){const N=isoN;let a=isoT,first=true;while(a<tEnd-1e-6){const aa=a,d=Math.min(1.5,tEnd-a),last=aa+d>=tEnd-1e-6,o=first?{soft:true,tail:last?0.35:0.07}:{tail:last?0.35:0.07};ev.push({t:aa,run:dt=>{let fi=safeF(N.idx,0,N.sc)*isoMul;while(fi<(isoMul<1?60:80))fi*=2;iso.note(aa+dt,fi,d,o);}});a+=d;first=false;}}isoT=null;};
   // (5-11-2026, v38) «Ανάσα» στο τέλος κάθε λέξης (όχι σε κάθε συλλαβή): η τελευταία νότα της λέξης κλείνει λίγο νωρίτερα
   // και η επόμενη λέξη ξαναπατά. Τα βιβλία δεν σημειώνουν τα κενά ανάμεσα στις λέξεις, οπότε κρατάμε μόνο σίγουρα σημάδια:
   // λέξη που τελειώνει σε «ς», λέξη που αρχίζει με κεφαλαίο, μικρές λέξεις (και, εις, γαρ…). Ποτέ μέσα σε μέλισμα (ει-ει-ει).
@@ -717,7 +721,7 @@ function play(list,onEnd){
     // (9-11-2026, v44) πεταστή χωρίς ανέβασμα ύψους
     voice.out.gain.setTargetAtTime(V,t,0.03);
     voice.out.gain.setTargetAtTime(Vlow,t+dur-0.05,0.02);
-    if(isonV){const fi=freq(n.ison,0,n.sc);const ci=isonV.conv;
+    if(isonV){let fi=freq(n.ison,0,n.sc);while(fi<80)fi*=2;const ci=isonV.conv;
       if(k===0){isonV.params.forEach(p=>p.setValueAtTime(ci(fi),t));isonV.out.gain.setTargetAtTime(isonLevel(),t,0.15);}
       else isonV.params.forEach(p=>p.setTargetAtTime(ci(fi),t,0.1));}
     if(n.l>=0)hlMark(t,n.l+"-"+n.i);
