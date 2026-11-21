@@ -227,7 +227,7 @@
   <label>Ένταση ίσου <input type="range" id="isonVol" min="0" max="3" step="0.05" value="1"><b id="isonVolLbl"></b></label>
   <label>Φωνή <select id="voiceSel" style="font-size:18px;padding:6px;border-radius:10px"><option value="christos_aa">🎙 Χρίστος «α» καθαρή</option><option value="christos_az">🎙 Χρίστος «α» ζωντανή (νέα)</option><option value="christos_mm">🎙 Χρίστος «μμμ» καθαρή</option><option value="christos_v">🎙 Χρίστος με λόγια</option><option value="christos_s">🎙 Χρίστος · νέα φωνή (δοκιμαστική)</option><option value="christos_par">🎙 Χρίστος · παραλλαγή</option><option value="christos">🎙 Χρίστος «α»</option><option value="christos_m">🎙 Χρίστος «μμμ»</option><option value="psaltis">🎙 Ψάλτης «α»</option><option value="psaltis_m">🎙 Ψάλτης «μμμ»</option><option value="xorodia_a">🎶 Χορωδία «ααα»</option><option value="xorodia_ou">🎶 Χορωδία «ουου»</option><option value="piano">🎹 Πιάνο</option><option value="apech">🎙 Φωνή απηχήματος</option><option value="mine">🎤 Η φωνή μου</option><option value="synth">🎹 Συνθετική</option></select></label>
   <label>⛪ Ναός <input type="range" id="revAmt" min="0" max="0.8" step="0.05" value="0.3"></label>
-  <small style="opacity:.7">v43 · 21-11-2026</small>
+  <small style="opacity:.7">v43β · 21-11-2026</small>
 </div>
 
 <div id="menu"><div class="box">
@@ -515,11 +515,7 @@ function fthScale(sc,f,cur){const g=f[0],n=f[1];
     if(g==="zwyf"){out[6]=Math.min(out[6],out[5]+6);return out;}
     out[r]+=n;return out;}
   const G=SCALES[g];if(!G)return sc;
-  // (21-11-2026, v43) Όταν η φθορά δεν πέφτει πάνω στον φθόγγο που ονομάζει, «περιστρέφουμε» την κλίμακα ΜΟΝΟ αν η απόσταση
-  // είναι τετάρτη ή πέμπτη (μετάθεση, π.χ. φθορά του Νη πάνω στον Δι). Αν απέχει ένα-δύο σκαλοπάτια (π.χ. η σκληρή χρωματική
-  // φθορά γραμμένη στον Κε στον Β΄ ήχο του Πέτρου, ή η διατονική πάνω στο «λέ-οντος»), κρατάμε τα ονόματα των φθόγγων και
-  // παίρνουμε μόνο τα διαστήματα του νέου γένους γύρω από τη νότα. Αλλιώς όλα τα επόμενα διαστήματα έβγαιναν λάθος.
-  const r0=((cur%7)+7)%7,dd=(((n-r0)%7)+7)%7,d=(dd===3||dd===4)?n-r0:0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
+  const r0=((cur%7)+7)%7,d=n-r0,anchor=moriaS(cur,sc),gp=moriaS(cur+d,G),out=[];
   for(let r=0;r<7;r++)out.push(anchor+moriaS(r+d,G)-gp);return out;}
 
 // ---------- Φωνή: η φωνή του Χρήστου (δείγμα) ή συνθετική ----------
