@@ -66,6 +66,15 @@ export async function onRequestGet({ request }) {
       if (!okPath(p) || !/[?&]download=\d+/.test(p)) return new Response("μη επιτρεπτή διεύθυνση", { status: 400 });
       const r = await fetch(SITE + p, { headers: { "user-agent": UA, "referer": SITE + LIB }, redirect: "follow", cf: { cacheTtl: 86400, cacheEverything: true } });
       if (!r.ok) return new Response("το papline.gr απάντησε " + r.status, { status: 502 });
+      const ct = r.headers.get("content-type") || "";
+      if (q.has("dbg") || /text\/html/i.test(ct)) {
+        // δεν ήρθε αρχείο αλλά σελίδα: δείχνω τι έγραφε, για να φανεί τι ζητά το papline.gr
+        const html = await r.text();
+        const links = []; const re = /<a\b[^>]*href\s*=\s*"([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi; let m;
+        while ((m = re.exec(html)) && links.length < 60) { const hr = decode(m[1]); if (/download|\.pdf|token|file/i.test(hr)) links.push([hr, clean(m[2]).slice(0, 80)]); }
+        const forms = (html.match(/<form[\s\S]*?<\/form>/gi) || []).map(f => f.replace(/\s+/g, " ").slice(0, 1500));
+        return json({ err: "το papline.gr έδωσε σελίδα αντί για αρχείο", status: r.status, url: r.url, ctype: ct, cookies: r.headers.get("set-cookie"), links, forms, text: clean(html).slice(0, 1200) });
+      }
       const h = new Headers();
       h.set("content-type", "application/pdf");
       const len = r.headers.get("content-length"); if (len) h.set("content-length", len);
