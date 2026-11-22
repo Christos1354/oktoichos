@@ -35,7 +35,7 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   if (url.origin === location.origin) {
     if (url.pathname.endsWith("library.json")) return;
-    if (url.pathname.endsWith("/papline")) return;   // papline.gr: το PDF το κρατά η ίδια η σελίδα στη συσκευή
+    if (url.pathname.endsWith("/api/papline")) return;   // papline.gr: το PDF το κρατά η ίδια η σελίδα στη συσκευή
     const p = url.pathname;
     if (req.mode === "navigate" || p.endsWith("/") || p.endsWith(".html") || p.endsWith(".js") || p.endsWith(".webmanifest")) {
       const key = (p.endsWith("/") || p.endsWith("/index.html")) ? "./index.html" : new Request(url.origin + p);

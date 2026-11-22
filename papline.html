@@ -83,7 +83,7 @@
   var idbGet=function(k){return idb("readonly",function(s){return s.get(k);});};
   var idbPut=function(k,v){return idb("readwrite",function(s){return s.put(v,k);});};
   var idbDel=function(k){return idb("readwrite",function(s){return s.delete(k);});};
-  var pathOf=function(u){return "papline?d="+encodeURIComponent(u);};
+  var pathOf=function(u){return "api/papline?d="+encodeURIComponent(u);};
 
   // ---- βιβλιοθήκη της εφαρμογής (για να φαίνονται και στα «Τα βιβλία μου») ----
   function libGet(){var L;try{L=JSON.parse(localStorage.getItem("okt-lib"))||null;}catch(e){L=null;}if(!L||!Array.isArray(L.hymns))L={savedAt:0,hymns:[]};L.books=L.books||[];return L;}
@@ -102,7 +102,7 @@
   async function load(p){
     $("listMsg").textContent="⏳ Φέρνω τη λίστα από το papline.gr…";
     var d=null;
-    try{var r=await fetch("papline?list="+encodeURIComponent(p),{cache:"no-store"});d=await r.json();if(d.err)throw new Error(d.err);cachePut(p,d);}
+    try{var r=await fetch("api/papline?list="+encodeURIComponent(p),{cache:"no-store"});d=await r.json();if(d.err)throw new Error(d.err);cachePut(p,d);}
     catch(e){d=cacheGet()[p]||null;$("listMsg").textContent=d?"📴 Χωρίς σύνδεση — δείχνω τη λίστα όπως ήταν την τελευταία φορά.":"⚠ Δεν μπόρεσα να φέρω τη λίστα ("+(e.message||"χωρίς σύνδεση")+").";}
     if(d&&!$("listMsg").textContent.startsWith("📴"))$("listMsg").textContent="";
     cur=d;await markStored();render();
@@ -148,7 +148,7 @@
   async function renderMine(){
     var ms=mineList(),box=$("mineBox"),m=$("mine");m.innerHTML="";var any=0;
     for(var i=0;i<ms.length;i++){var b=ms[i];if(!stored[b.pdf])continue;any++;
-      var f={id:b.id.replace(/^pl-/,""),t:b.title,u:decodeURIComponent(b.pdf.replace(/^papline\?d=/,"")),date:""};m.appendChild(fileRow(f,true));}
+      var f={id:b.id.replace(/^pl-/,""),t:b.title,u:decodeURIComponent(b.pdf.replace(/^api\/papline\?d=/,"")),date:""};m.appendChild(fileRow(f,true));}
     box.hidden=!any;
   }
   $("q").oninput=function(){clearTimeout(window.__qt);window.__qt=setTimeout(render,150);};
