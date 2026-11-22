@@ -1,3 +1,4 @@
+// (22-11-2026) + αρχίγραμμα (μεγάλο πρώτο γράμμα ύμνου)
 // Οκτώηχος · αναγνώστης PDF βυζαντινής σημειογραφίας (Μελωδός + γραμματοσειρά Word + γραμματοσειρές «ΜΚ», 19-10-2026 · τεχνοτροπία «ANNA», 31-10-2026). Ελέγχθηκε σε 201/201 και 168/168 μαρτυρίες.
 // Πρότυπα σχημάτων: γραμματοσειρά Μελωδού (157) + βυζαντινή γραμματοσειρά εγγράφων Word (136)
 // (31-10-2026) Πρότυπα σχημάτων για βιβλία με τη γραμματοσειρά «ANNA» (π.χ. Αναστασιματάριο Ιωάννου): 74 σχήματα από 42 σελίδες.
@@ -358,8 +359,11 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
   // ---------- γραμμές συλλαβών ----------
   function pageRows(P, L) {
     const s = L / REF_L, H = P.H;
-    const syl = [], isonl = [];
+    const syl = [], isonl = [], caps = [];
     for (const c of P.chars) {
+      // (22-11-2026) ΜΕΓΑΛΟ ΑΡΧΙΚΟ ΓΡΑΜΜΑ (αρχίγραμμα) στην αρχή του ύμνου, π.χ. το «Κ» του «Κύριε εκέκραξα» σε GFS Nicefore:
+      // πιο μεγάλο από τους στίχους, γι' αυτό πριν χανόταν και η λέξη άρχιζε λάθος («υ-ρι-ε»). Το κρατάμε και το κολλάμε στην πρώτη συλλαβή.
+      if (c.size >= 1.25 * L && c.size <= 5 * L && c.y1 >= 0.063 * H && /^[\u0370-\u03ff\u1f00-\u1fff]$/.test(c.c) && !/Byzantinografos|ANNA2000|MKHeader/i.test(c.font)) { caps.push(c); continue; }
       if (c.y1 < 0.063 * H && !/Byzantinografos-MK/.test(c.font)) continue;
       if (/KEFALEA|MgByzantine|MKHeader/i.test(c.font) || c.c === "_") continue;
       if (/^[\uE000-\uF8FF\u200B-\u200F\uFEFF]+$/.test(c.c)) continue;   // (20-10-2026) αόρατα σημάδια του Word μέσα στους στίχους
@@ -388,6 +392,19 @@ window.MR_MK={spec:{"BZByzantina":{"61":["f",[0],0,0],"6a":["f",[-1],0,0],"73":[
       r.items = []; r.ison = [];
     }
     for (let i = rows.length - 1; i >= 0; i--) if (!rows[i].syl.length) rows.splice(i, 1);
+    // (22-11-2026) αρχίγραμμα → στην πρώτη συλλαβή της γραμμής που έχει την ίδια βάση και αρχίζει αμέσως δεξιά του
+    for (const c of caps) {
+      const cb = c.y1 - 0.25 * c.size; let best = null;
+      for (const r of rows) {
+        const s0 = r.syl[0], c0 = r.ch[0]; if (!s0 || !c0) continue;
+        const rb = c0.y1 - 0.25 * c0.size, gap = s0.r.x0 - c.x1;
+        if (Math.abs(rb - cb) < 0.6 * L && gap > -0.3 * L && gap < 3.5 * L && (!best || gap < best[0])) best = [gap, r];
+      }
+      if (!best) continue;
+      const r = best[1], s0 = r.syl[0], up = c.c.toUpperCase();
+      if (best[0] < 1.4 * L && !/^[\u0391-\u03a9\u1f08-\u1f0f\u1f18-\u1f1d\u1f28-\u1f2f\u1f38-\u1f3f\u1f48-\u1f4d\u1f59-\u1f5f\u1f68-\u1f6f]/.test(s0.t)) s0.t = up + s0.t;   // «Κ»+«υ» = «Κυ»
+      else r.syl.unshift({ t: up, r: { x0: c.x0, y0: s0.r.y0, x1: c.x1, y1: s0.r.y1 }, cap: 1 });   // «Α» μόνο του (Α-κή-κο-ε)
+    }
     const rowfor = (cy) => {
       let best = null;
       for (const r of rows) { const dy = r.top - cy; if (dy > -14 * s && (best === null || dy < best[0])) best = [dy, r]; }

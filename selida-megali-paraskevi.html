@@ -48,7 +48,7 @@
 })();
 </script><!-- v44 · Christos S Magides · 9-11-2026 · το μεγάφωνο του iPhone μόνο όσο ακούγεται ήχος · εικονίδιο σε όλες τις σελίδες · πεταστή χωρίς ανέβασμα, πιο σφιχτές ενώσεις νοτών -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ο ευσχήμων Ιωσήφ · Οκτώηχος</title>
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" href="icons/favicon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Οκτώηχος"><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0e1838">
@@ -646,6 +646,135 @@ document.querySelectorAll("a.homebtn:not(.backbtn)").forEach(a=>a.addEventListen
   $('mBar2').onclick=()=>{ M.bar=M.bar>=4?1:M.bar+1; M.n=0; save(); show(); };
   document.addEventListener('visibilitychange',()=>{ if(document.hidden&&M.on) stop(); });
   show();
+})();
+</script>
+<!-- (22-11-2026, v47) ΜΙΚΡΗ ΚΑΤΩ ΜΠΑΡΑ: μένουν μόνο ▶ Ψάλλε · Απήχημα · ταχύτητα · ⚙ Ρυθμίσεις.
+     Όλα τα άλλα (οκτάβα, τονικότητα, ίσον, φωνή, Ναός, διόρθωση, όλη η σελίδα) μπαίνουν στο παράθυρο «⚙ Ρυθμίσεις».
+     Η μπάρα κάθεται ΠΑΝΩ από τη γραμμή του iPhone, ώστε να μη φεύγει η εφαρμογή όταν σέρνεις το δάχτυλο. -->
+<style>
+  .bar.okt47{position:fixed!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+    padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px)) 8px!important;background:#172a5e!important;border-top:2px solid #e2bd5e!important;z-index:40!important;overflow:hidden}
+  .bar.okt47[style*="display:none"],.bar.okt47[style*="display: none"]{display:none!important}
+  .bar.okt47 > *{flex:0 0 auto}
+  .bar.okt47 button{font-size:18px!important;font-weight:800!important;min-height:46px!important;padding:6px 12px!important;border-radius:14px!important;border:2px solid #e2bd5e!important;background:#f6e7cf!important;color:#3a2410!important;white-space:nowrap}
+  .bar.okt47 #playBtn{font-size:21px!important;min-width:128px;background:#f3c64b!important}
+  .bar.okt47 #playBtn.on{background:#d0492f!important;color:#fff!important}
+  .bar.okt47 #oktGear{background:#e2bd5e!important;color:#0e1838!important}
+  .bar.okt47 #oktEditOn{background:#d0492f!important;color:#fff!important;border-color:#fff!important}
+  .bar.okt47 #tempoNum{width:3.4em!important;font-size:20px!important;font-weight:800;text-align:center;padding:6px 2px!important;border-radius:12px;border:2px solid #e2bd5e;min-height:44px}
+  .bar.okt47 .tbtn{min-width:44px!important;padding:0 8px!important;font-size:19px!important}
+  #oktSheet{position:fixed;left:0;right:0;bottom:var(--bar-h,64px);z-index:39;display:none;flex-wrap:wrap;gap:12px 14px;align-items:center;justify-content:center;
+    max-height:66vh;overflow:auto;-webkit-overflow-scrolling:touch;background:#0e1838;color:#f6ecd4;border-top:3px solid #e2bd5e;padding:10px 12px 16px;box-shadow:0 -8px 30px rgba(0,0,0,.6);font-size:19px}
+  #oktSheet.open{display:flex}
+  #oktSheet .sh-h{width:100%;display:flex;align-items:center;justify-content:space-between;font-weight:800;color:#e2bd5e;font-size:21px;position:sticky;top:-10px;background:#0e1838;padding:4px 0;z-index:2}
+  #oktSheet .sh-x{font-size:22px;font-weight:800;min-width:52px;min-height:46px;border-radius:14px;border:2px solid #e2bd5e;background:#e2bd5e;color:#0e1838}
+  #oktSheet .sh-g{width:100%;font-weight:800;color:#e2bd5e;border-top:1px solid #3a4a80;padding-top:8px;margin-top:2px;font-size:18px}
+  #oktSheet label{font-size:18px!important;display:inline-flex!important;flex-wrap:wrap;align-items:center;gap:8px;color:#f6ecd4;max-width:100%}
+  #oktSheet button{font-size:18px!important;font-weight:700;min-height:44px;padding:6px 12px!important;border-radius:12px!important;border:2px solid #e2bd5e!important;background:#f6e7cf!important;color:#3a2410!important}
+  #oktSheet button.on{background:#ead9fb!important;border-color:#8b5cf6!important}
+  #oktSheet select{font-size:18px!important;padding:6px!important;border-radius:10px;max-width:92vw}
+  #oktSheet input[type=range]{width:min(220px,52vw)!important}
+  #oktSheet input[type=checkbox]{width:24px!important;height:24px!important}
+  #oktSheet .vlist{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
+  #oktSheet .vlist label{background:#172a5e;border-radius:10px;padding:6px 8px}
+  #oktSheet .vlist small{opacity:.7}
+  .bar.okt47{flex-wrap:wrap!important;row-gap:6px!important}
+  @media (max-width:520px){
+    .bar.okt47{gap:5px!important;padding-left:4px!important;padding-right:4px!important}
+    .bar.okt47 #playBtn{min-width:0!important;font-size:19px!important;padding:6px 10px!important}
+    .bar.okt47 #apBtn{font-size:0!important;padding:6px 8px!important}
+    .bar.okt47 #apBtn::before{content:"🎵 απ.";font-size:16px}
+    .bar.okt47 .tbtn{min-width:40px!important;padding:0 4px!important;font-size:17px!important}
+    .bar.okt47 #tempoNum{width:2.9em!important;font-size:19px!important}
+    .bar.okt47 #oktGear{padding:6px 10px!important}
+  }
+  @media (orientation:landscape) and (max-height:520px){
+    .bar.okt47{padding-top:3px!important;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))!important;padding-left:calc(8px + env(safe-area-inset-left,0px))!important;padding-right:calc(8px + env(safe-area-inset-right,0px))!important}
+    .bar.okt47 button{min-height:40px!important;font-size:16px!important;padding:3px 10px!important}
+    .bar.okt47 #playBtn{font-size:18px!important}
+    #oktSheet{max-height:72vh}
+    .homebtn{width:50px!important;height:50px!important}.homebtn .ar{font-size:20px!important}.homebtn .tx{font-size:9px!important}
+  }
+  .wrap{padding-bottom:110px!important}
+</style>
+<script>
+(function(){
+  var bar=document.querySelector(".bar"); if(!bar||bar.classList.contains("okt47")) return;
+  bar.classList.add("okt47");
+  var $=function(id){return document.getElementById(id);};
+  // 1) το παράθυρο «Ρυθμίσεις»
+  var sh=document.createElement("div"); sh.id="oktSheet";
+  sh.innerHTML='<div class="sh-h"><span>⚙ Ρυθμίσεις</span><button type="button" class="sh-x" aria-label="Κλείσιμο">✕</button></div>';
+  document.body.appendChild(sh);
+  var grp=function(t){var g=document.createElement("div");g.className="sh-g";g.textContent=t;sh.appendChild(g);};
+  // 2) όσα μένουν στη μπάρα
+  var keep={playBtn:1,apBtn:1,tMinus:1,tPlus:1};
+  var kids=Array.prototype.slice.call(bar.children);
+  var tn=$("tempoNum");
+  grp("⏱ Ταχύτητα");
+  kids.forEach(function(el){
+    if(el.id&&keep[el.id]) return;
+    if(el.tagName==="SCRIPT") return;
+    var t=(el.textContent||"");
+    if(/Τονικότητα|Οκτάβα/.test(t)&&!sh.querySelector('[data-g="p"]')){var g=document.createElement("div");g.className="sh-g";g.dataset.g="p";g.textContent="🎼 Τονικότητα";sh.appendChild(g);}
+    if(/Ίσον|ίσου/.test(t)&&!sh.querySelector('[data-g="i"]')){var g2=document.createElement("div");g2.className="sh-g";g2.dataset.g="i";g2.textContent="🎵 Ισοκράτης";sh.appendChild(g2);}
+    if(/Φωνή/.test(t)&&!sh.querySelector('[data-g="v"]')){var g3=document.createElement("div");g3.className="sh-g";g3.dataset.g="v";g3.textContent="🎙 Φωνή και ναός";sh.appendChild(g3);}
+    if(/Διόρθωση|Επανάληψη|Όλη η σελίδα/.test(t)&&!sh.querySelector('[data-g="d"]')){var g4=document.createElement("div");g4.className="sh-g";g4.dataset.g="d";g4.textContent="✏️ Διόρθωση και επανάληψη";sh.appendChild(g4);}
+    sh.appendChild(el);
+  });
+  // ο αριθμός της ταχύτητας μένει στη μπάρα, ανάμεσα στο −5 και στο +5
+  if(tn){ var tm=$("tMinus"), tp=$("tPlus"); if(tp) bar.insertBefore(tn,tp); else bar.appendChild(tn); }
+  // σειρά στη μπάρα: Ψάλλε · Απήχημα · −5 · αριθμός · +5 · ⚙
+  ["playBtn","apBtn","tMinus"].forEach(function(id){var e=$(id); if(e) bar.appendChild(e);}); if(tn) bar.appendChild(tn); if($("tPlus")) bar.appendChild($("tPlus"));
+  var ed=document.createElement("button"); ed.type="button"; ed.id="oktEditOn"; ed.textContent="✏️ ✕"; ed.title="Τέλος διόρθωσης"; ed.style.display="none"; bar.appendChild(ed);
+  var gear=document.createElement("button"); gear.type="button"; gear.id="oktGear"; gear.textContent="⚙"; gear.setAttribute("aria-label","Ρυθμίσεις"); bar.appendChild(gear);
+  var open=function(o){ sh.classList.toggle("open",o); gear.textContent=o?"✕":"⚙"; };
+  gear.onclick=function(){ open(!sh.classList.contains("open")); };
+  sh.querySelector(".sh-x").onclick=function(){ open(false); };
+  // Διόρθωση / Όλη η σελίδα: κλείνει το παράθυρο για να πατήσεις πάνω στη σελίδα
+  ["editMode","clearSel"].forEach(function(id){ var b=$(id); if(b) b.addEventListener("click",function(){ setTimeout(function(){open(false);},150); }); });
+  var em=$("editMode");
+  if(em){ var upd=function(){ ed.style.display=em.classList.contains("on")?"":"none"; };
+    new MutationObserver(upd).observe(em,{attributes:true,attributeFilter:["class"]}); upd();
+    ed.onclick=function(){ em.click(); }; }
+  // ύψος μπάρας για τα στρογγυλά κουμπιά ΠΙΣΩ / ΑΡΧΗ
+  var setH=function(){ document.documentElement.style.setProperty("--bar-h",bar.offsetHeight+"px"); };
+  setH(); if(window.ResizeObserver) new ResizeObserver(setH).observe(bar); window.addEventListener("orientationchange",function(){setTimeout(setH,300);});
+
+  // 3) ΦΩΝΕΣ ΠΟΥ ΘΕΛΩ: κρύβεις όσες δεν σου αρέσουν (ξαναφαίνονται όποτε θέλεις)
+  var vs=$("voiceSel"); if(!vs) return;
+  var ALL=Array.prototype.map.call(vs.options,function(o){return [o.value,o.textContent];});
+  var NEED={apech:1,christos_par:1};   // χρειάζονται ως «εφεδρικές» φωνές, δεν κρύβονται
+  var off={}; try{ (JSON.parse(localStorage.getItem("okt-voices-off"))||[]).forEach(function(v){ if(!NEED[v]) off[v]=1; }); }catch(e){}
+  var desc=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+  function rebuild(){
+    var cur=desc.get.call(vs);
+    while(vs.firstChild) vs.removeChild(vs.firstChild);
+    ALL.forEach(function(a){ if(off[a[0]]&&a[0]!==cur) return; var o=document.createElement("option"); o.value=a[0]; o.textContent=a[1]; vs.appendChild(o); });
+    desc.set.call(vs,cur);
+  }
+  // αν το πρόγραμμα ζητήσει μόνο του μια κρυμμένη φωνή, την ξαναβάζει για να μη χαλάσει τίποτα
+  Object.defineProperty(vs,"value",{configurable:true,get:function(){return desc.get.call(vs);},set:function(v){
+    if(v&&!Array.prototype.some.call(vs.options,function(o){return o.value===v;})){ var a=ALL.filter(function(x){return x[0]===v;})[0]; if(a){ var o=document.createElement("option"); o.value=a[0]; o.textContent=a[1]; vs.appendChild(o); } }
+    desc.set.call(vs,v); }});
+  var cur0=desc.get.call(vs);
+  if(off[cur0]){ var first=ALL.filter(function(a){return !off[a[0]];})[0]; if(first){ desc.set.call(vs,first[0]); try{ vs.dispatchEvent(new Event("change")); }catch(e){} } }
+  rebuild();
+  grp("👁 Φωνές που θέλω να βλέπω στη λίστα");
+  var list=document.createElement("div"); list.className="vlist"; sh.appendChild(list);
+  ALL.forEach(function(a){
+    var l=document.createElement("label"), c=document.createElement("input"); c.type="checkbox"; c.checked=!off[a[0]];
+    if(NEED[a[0]]){ c.disabled=true; c.checked=true; }
+    c.onchange=function(){
+      if(c.checked) delete off[a[0]]; else off[a[0]]=1;
+      var left=ALL.filter(function(x){return !off[x[0]];}).length; if(!left){ delete off[a[0]]; c.checked=true; return; }
+      try{ localStorage.setItem("okt-voices-off",JSON.stringify(Object.keys(off))); }catch(e){}
+      if(off[desc.get.call(vs)]){ var f=ALL.filter(function(x){return !off[x[0]];})[0]; desc.set.call(vs,f[0]); try{ vs.dispatchEvent(new Event("change")); }catch(e){} }
+      rebuild();
+    };
+    l.appendChild(c); l.appendChild(document.createTextNode(" "+a[1])); if(NEED[a[0]]){ var s=document.createElement("small"); s.textContent=" (μένει πάντα)"; l.appendChild(s); }
+    list.appendChild(l);
+  });
 })();
 </script>
 </body>
