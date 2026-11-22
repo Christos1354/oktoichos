@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- Οκτώηχος · Christos S Magides · 22-11-2026 · Βιβλία από το papline.gr + λειτουργία χωρίς ίντερνετ -->
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1838">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon.png">
+<title>Βιβλία από το papline.gr · Οκτώηχος</title>
+<style>
+  :root{--bg:#0e1838;--card:#172a5e;--gold:#e2bd5e;--cream:#f6ecd4;--ink:#3a2410;--ok:#3f9c5a;--red:#d0492f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:20px;line-height:1.35;
+    padding:calc(10px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 120px calc(12px + env(safe-area-inset-left,0px))}
+  h1{color:var(--gold);font-family:Georgia,serif;font-weight:400;font-size:30px;text-align:center;margin:8px 0 2px}
+  .sub{text-align:center;opacity:.85;font-size:16px;margin:0 0 12px}
+  .sub a{color:var(--gold)}
+  .top{display:flex;gap:10px;justify-content:space-between;align-items:center}
+  button,.btn{font:inherit;font-weight:800;border-radius:16px;border:2px solid var(--gold);background:var(--cream);color:var(--ink);padding:10px 16px;min-height:52px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+  button.gold{background:var(--gold);color:#0e1838}
+  button.green{background:var(--ok);color:#fff;border-color:#fff}
+  button:disabled{opacity:.5}
+  .card{background:var(--card);border-radius:18px;padding:14px;margin:12px 0;border:1px solid #2d4384}
+  .label{color:var(--gold);font-weight:800;font-size:19px;margin:0 0 8px}
+  .bar{height:14px;background:#0b1430;border-radius:8px;overflow:hidden;margin:10px 0 4px;display:none}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#e2bd5e,#3f9c5a)}
+  .msg{font-size:18px;white-space:pre-line;margin:6px 0 0}
+  input[type=search]{width:100%;font-size:21px;padding:12px 14px;border-radius:14px;border:2px solid var(--gold);background:#fffaf0;color:#222}
+  .item{background:#0f1f4a;border-radius:14px;padding:10px 12px;margin:8px 0;border-left:6px solid var(--gold)}
+  .item.cat{border-left-color:#8b5cf6;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .item .t{font-size:19px;font-weight:700}
+  .item .m{font-size:15px;opacity:.75;margin-top:2px}
+  .item .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .item .acts button{min-height:46px;font-size:17px;padding:6px 12px}
+  .badge{display:inline-block;font-size:14px;font-weight:800;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+  .b-ok{background:var(--ok);color:#fff}.b-new{background:var(--red);color:#fff}
+  .crumb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .empty{opacity:.75;font-size:17px}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="btn" href="index.html">◀ Αρχή</a>
+  <span style="font-size:14px;opacity:.6">v1 · 22-11-2026</span>
+</div>
+<h1>📥 Βιβλία από το papline.gr</h1>
+<p class="sub">Δωρεάν βιβλία Βυζαντινής Μουσικής από τα «Μουσικά Κείμενα» του Δημητρίου Ι. Παπαδόπουλου · <a href="https://papline.gr/" target="_blank" rel="noopener">papline.gr</a></p>
+
+<section class="card" id="offBox">
+  <p class="label">📴 ΧΩΡΙΣ ΙΝΤΕΡΝΕΤ (για την εκκλησία)</p>
+  <div class="msg" id="offMsg">Ελέγχω…</div>
+  <div class="bar" id="offBar"><i></i></div>
+  <p style="margin:10px 0 0"><button class="gold" id="offGo" type="button">📴 Ετοίμασε την εφαρμογή για χωρίς ίντερνετ</button></p>
+  <p class="msg" style="font-size:16px;opacity:.8">Πάτησέ το μία φορά στο σπίτι, με WiFi. Μετά, κάθε βιβλίο που άνοιξες ή κράτησες εδώ ανοίγει και ψάλλει χωρίς σύνδεση.</p>
+</section>
+
+<section class="card" id="mineBox" hidden>
+  <p class="label">✓ ΤΑ ΚΡΑΤΗΣΑ ΣΤΗ ΣΥΣΚΕΥΗ (ανοίγουν χωρίς ίντερνετ)</p>
+  <div id="mine"></div>
+</section>
+
+<section class="card">
+  <input id="q" type="search" placeholder="🔍 Γράψε λέξη (π.χ. Λειτουργία, Κυριακή, Τριώδιο)…" autocomplete="off">
+  <div class="crumb" id="crumb"></div>
+  <div class="msg" id="listMsg"></div>
+  <div id="list"></div>
+</section>
+
+<script src="offline.js"></script>
+<script>try{if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");}catch(e){}</script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
+  var fold=function(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ς/g,"σ");};
+  var ROOT="/index.php/bibliotheke-downloads";
+
+  // ---- αποθήκη PDF στη συσκευή (η ίδια με τη σελίδα του βιβλίου) ----
+  function idb(mode,fn){return new Promise(function(res){try{var r=indexedDB.open("okt-pdf",1);r.onupgradeneeded=function(){r.result.createObjectStore("files");};
+    r.onsuccess=function(){try{var t=r.result.transaction("files",mode);var q=fn(t.objectStore("files"));q.onsuccess=function(){res(q.result||null);};q.onerror=function(){res(null);};}catch(e){res(null);}};r.onerror=function(){res(null);};}catch(e){res(null);}});}
+  var idbGet=function(k){return idb("readonly",function(s){return s.get(k);});};
+  var idbPut=function(k,v){return idb("readwrite",function(s){return s.put(v,k);});};
+  var idbDel=function(k){return idb("readwrite",function(s){return s.delete(k);});};
+  var pathOf=function(u){return "papline?d="+encodeURIComponent(u);};
+
+  // ---- βιβλιοθήκη της εφαρμογής (για να φαίνονται και στα «Τα βιβλία μου») ----
+  function libGet(){var L;try{L=JSON.parse(localStorage.getItem("okt-lib"))||null;}catch(e){L=null;}if(!L||!Array.isArray(L.hymns))L={savedAt:0,hymns:[]};L.books=L.books||[];return L;}
+  function libAdd(f){var L=libGet();var p=pathOf(f.u);if(!L.books.find(function(b){return b.pdf===p;})){L.books.push({id:"pl-"+f.id,title:f.t,pdf:p,pages:0,marks:[],local:true,src:"papline"});L.savedAt=Date.now();try{localStorage.setItem("okt-lib",JSON.stringify(L));}catch(e){}}}
+  function libDel(p){var L=libGet();L.books=L.books.filter(function(b){return b.pdf!==p;});try{localStorage.setItem("okt-lib",JSON.stringify(L));}catch(e){}}
+  function mineList(){return libGet().books.filter(function(b){return b.src==="papline";});}
+
+  // ---- λίστες (κρατιούνται και για χωρίς ίντερνετ) ----
+  var CK="okt-papline-cache";
+  function cacheGet(){try{return JSON.parse(localStorage.getItem(CK))||{};}catch(e){return {};}}
+  function cachePut(p,d){var c=cacheGet();c[p]=d;try{localStorage.setItem(CK,JSON.stringify(c));}catch(e){}}
+  var seen={};try{seen=JSON.parse(localStorage.getItem("okt-papline-seen"))||{};}catch(e){}
+  var firstVisit=!Object.keys(seen).length;
+
+  var stack=[ROOT], cur=null, stored={};
+  async function load(p){
+    $("listMsg").textContent="⏳ Φέρνω τη λίστα από το papline.gr…";
+    var d=null;
+    try{var r=await fetch("papline?list="+encodeURIComponent(p),{cache:"no-store"});d=await r.json();if(d.err)throw new Error(d.err);cachePut(p,d);}
+    catch(e){d=cacheGet()[p]||null;$("listMsg").textContent=d?"📴 Χωρίς σύνδεση — δείχνω τη λίστα όπως ήταν την τελευταία φορά.":"⚠ Δεν μπόρεσα να φέρω τη λίστα ("+(e.message||"χωρίς σύνδεση")+").";}
+    if(d&&!$("listMsg").textContent.startsWith("📴"))$("listMsg").textContent="";
+    cur=d;await markStored();render();
+  }
+  async function markStored(){stored={};var ms=mineList();for(var i=0;i<ms.length;i++){var b=await idbGet(ms[i].pdf);if(b)stored[ms[i].pdf]=1;}}
+  function crumb(){var c=$("crumb");c.innerHTML="";if(stack.length>1){var b=document.createElement("button");b.type="button";b.textContent="◀ Πίσω";b.onclick=function(){stack.pop();load(stack[stack.length-1]);window.scrollTo(0,0);};c.appendChild(b);}
+    var s=document.createElement("span");s.className="label";s.style.margin="0";s.textContent=stack.length>1&&cur&&cur.title?cur.title:"📚 Βιβλιοθήκη papline.gr";c.appendChild(s);}
+  function fileRow(f,isMine){
+    var p=pathOf(f.u),d=document.createElement("div");d.className="item";
+    var isNew=!firstVisit&&!seen[f.id]&&stack.length===1;
+    d.innerHTML='<div class="t">'+esc(f.t)+(stored[p]?'<span class="badge b-ok">✓ στη συσκευή</span>':'')+(isNew?'<span class="badge b-new">🆕 νέο</span>':'')+'</div>'+(f.date?'<div class="m">📅 '+f.date.split("-").reverse().join("-")+'</div>':'')+'<div class="acts"></div>';
+    var a=d.querySelector(".acts");
+    var o=document.createElement("button");o.type="button";o.className="gold";o.textContent="📖 Άνοιξε και ψάλλε";
+    o.onclick=function(){libAdd(f);location.href="selida-vivlio.html?pdf="+encodeURIComponent(p)+"&t="+encodeURIComponent(f.t);};a.appendChild(o);
+    if(!stored[p]){var k=document.createElement("button");k.type="button";k.textContent="📥 Κράτα το για χωρίς ίντερνετ";k.onclick=function(){keep(f,k);};a.appendChild(k);}
+    else if(isMine){var x=document.createElement("button");x.type="button";x.textContent="🗑 Σβήσε από τη συσκευή";x.onclick=async function(){if(!confirm("Να σβηστεί το «"+f.t+"» από τη συσκευή;"))return;await idbDel(p);libDel(p);await markStored();render();};a.appendChild(x);}
+    return d;
+  }
+  async function keep(f,btn){
+    var p=pathOf(f.u);btn.disabled=true;btn.textContent="⏳ Κατεβάζω…";
+    try{var r=await fetch(p);if(!r.ok)throw new Error("απάντηση "+r.status);var b=await r.blob();
+      var h=new Uint8Array(await b.slice(0,1024).arrayBuffer());if(String.fromCharCode.apply(null,h).indexOf("%PDF")<0)throw new Error("δεν ήρθε PDF");
+      await idbPut(p,new Blob([b],{type:"application/pdf"}));libAdd(f);stored[p]=1;
+      btn.textContent="✓ Κρατήθηκε ("+(b.size/1048576).toFixed(1)+" MB) — άνοιξέ το μία φορά για να ετοιμαστούν όλες οι σελίδες";btn.className="green";
+      renderMine();}
+    catch(e){btn.disabled=false;btn.textContent="⚠ Απέτυχε ("+(e.message||"")+") — ξαναδοκίμασε";}
+  }
+  function render(){
+    crumb();var L=$("list");L.innerHTML="";if(!cur)return;
+    var v=fold($("q").value).trim(),words=v.split(/\s+/).filter(Boolean);
+    var hit=function(t){var f=fold(t);return words.every(function(w){return f.indexOf(w)>=0;});};
+    var files=(cur.files||[]).filter(function(f){return hit(f.t);});
+    files.sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+    if(files.length){var h=document.createElement("p");h.className="label";h.textContent=stack.length===1?"🆕 ΤΕΛΕΥΤΑΙΕΣ ΔΗΜΟΣΙΕΥΣΕΙΣ (Εσπερινός, Όρθρος, Λειτουργία)":"📄 ΒΙΒΛΙΑ";L.appendChild(h);
+      files.forEach(function(f){L.appendChild(fileRow(f));});}
+    var cats=(cur.cats||[]).filter(function(c){return hit(c.t);});
+    if(cats.length){var h2=document.createElement("p");h2.className="label";h2.style.marginTop="14px";h2.textContent="📂 ΚΑΤΗΓΟΡΙΕΣ";L.appendChild(h2);
+      cats.forEach(function(c){var d=document.createElement("div");d.className="item cat";d.innerHTML='<span class="t">'+esc(c.t)+'</span><span style="font-size:26px">›</span>';
+        d.onclick=function(){stack.push(c.u);$("q").value="";load(c.u);window.scrollTo(0,0);};L.appendChild(d);});}
+    if(!files.length&&!cats.length)L.innerHTML='<p class="empty">Δεν βρέθηκε τίποτα'+(v?' με «'+esc($("q").value)+'»':'')+'.</p>';
+    if(stack.length===1&&cur.files){cur.files.forEach(function(f){seen[f.id]=1;});try{localStorage.setItem("okt-papline-seen",JSON.stringify(seen));}catch(e){}}
+  }
+  async function renderMine(){
+    var ms=mineList(),box=$("mineBox"),m=$("mine");m.innerHTML="";var any=0;
+    for(var i=0;i<ms.length;i++){var b=ms[i];if(!stored[b.pdf])continue;any++;
+      var f={id:b.id.replace(/^pl-/,""),t:b.title,u:decodeURIComponent(b.pdf.replace(/^papline\?d=/,"")),date:""};m.appendChild(fileRow(f,true));}
+    box.hidden=!any;
+  }
+  $("q").oninput=function(){clearTimeout(window.__qt);window.__qt=setTimeout(render,150);};
+
+  // ---- χωρίς ίντερνετ ----
+  async function offStatus(){
+    try{var s=await oktOffline.status();var at=Number(localStorage.getItem("okt-offline-at")||0);
+      $("offMsg").textContent=(s.have>=s.total?"✓ Η εφαρμογή είναι έτοιμη για χωρίς ίντερνετ.":"Έτοιμα "+s.have+" από "+s.total+" αρχεία της εφαρμογής.")+(at?"\nΤελευταία ετοιμασία: "+new Date(at).toLocaleString("el-GR"):"");
+      $("offGo").textContent=s.have>=s.total?"🔄 Ανανέωσέ τη (νέα έκδοση)":"📴 Ετοίμασε την εφαρμογή για χωρίς ίντερνετ";}
+    catch(e){$("offMsg").textContent="Δεν μπορώ να ελέγξω ("+(e.message||"")+").";}
+  }
+  $("offGo").onclick=async function(){
+    var b=$("offGo"),bar=$("offBar"),fill=bar.querySelector("i");b.disabled=true;bar.style.display="block";
+    try{var r=await oktOffline.prepare(function(i,n,p){fill.style.width=Math.round(100*i/n)+"%";$("offMsg").textContent="⏳ Κατεβάζω "+(i+1>n?n:i+1)+" από "+n+(p?"\n"+p:"")+"\n(μην κλείσεις τη σελίδα)";});
+      $("offMsg").textContent=r.bad.length?"⚠ Έτοιμα "+r.ok+" από "+r.total+". Δεν ήρθαν: "+r.bad.join(", ")+"\nΞαναπάτησε όταν έχεις καλή σύνδεση.":"✓ Έτοιμο! Η εφαρμογή ανοίγει και ψάλλει χωρίς ίντερνετ.";}
+    catch(e){$("offMsg").textContent="⚠ "+(e.message||"Απέτυχε");}
+    b.disabled=false;setTimeout(function(){bar.style.display="none";offStatus();},2500);
+  };
+
+  offStatus();
+  (async function(){await markStored();renderMine();load(ROOT);})();
+})();
+</script>
+</body>
+</html>

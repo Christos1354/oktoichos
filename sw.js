@@ -1,20 +1,27 @@
+// Οκτώηχος: λειτουργία χωρίς διαδίκτυο · έκδοση v31 (22-11-2026: papline.gr, «Ετοίμασε για χωρίς ίντερνετ»)
 // Οκτώηχος: λειτουργία χωρίς διαδίκτυο · έκδοση v30 (30-10-2026: κοινή βιβλιοθήκη, αναγνώστης PDF στον ιστότοπο)
 // (22-10-2026) Σελίδες ΚΑΙ αρχεία .js: πρώτα από το διαδίκτυο (για να έρχεται πάντα η νέα έκδοση),
 // αλλιώς από την αποθήκη. Έτσι σε κάθε ενημέρωση ανεβαίνουν ΜΟΝΟ τα αρχεία που άλλαξαν.
-const CACHE = "oktoichos-v30";
-const CORE = ["./", "./index.html", "./selida-simeron.html", "./selida-megali-paraskevi.html", "./selida-allilouia.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png", "./pdfjs/pdf.min.js?v=1", "./pdfjs/pdf.worker.min.js?v=1"];
+const CACHE = "oktoichos-v31";
+const CORE = ["./", "./index.html", "./selida-simeron.html", "./selida-megali-paraskevi.html", "./selida-allilouia.html", "./selida-vivlio.html", "./papline.html", "./offline.js", "./anagnostis-vivlion.js", "./foni.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png", "./pdfjs/pdf.min.js?v=1", "./pdfjs/pdf.worker.min.js?v=1"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  // (22-11-2026) πριν σβηστεί η παλιά αποθήκη, μεταφέρω ό,τι είχε (φωνές, σελίδες) για να μη χαθεί η λειτουργία χωρίς ίντερνετ
+  e.waitUntil(caches.keys().then(async keys => {
+    const cur = await caches.open(CACHE);
+    for (const k of keys) { if (k === CACHE || !/^oktoichos-/.test(k)) continue;
+      try { const old = await caches.open(k); for (const rq of await old.keys()) { if (!(await cur.match(rq))) { const r = await old.match(rq); if (r) await cur.put(rq, r); } } } catch (e) {}
+      await caches.delete(k); }
+  }).then(() => self.clients.claim()));
 });
 // από το διαδίκτυο, με όριο χρόνου· αν δεν απαντήσει, από την αποθήκη
 function netFirst(req, key, ms) {
   return new Promise(resolve => {
     let done = false;
-    const fromCache = () => caches.match(key, { ignoreSearch: true }).then(hit => hit || caches.match("./index.html"));
+    const fromCache = () => caches.match(key, { ignoreSearch: true }).then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : Response.error()));
     const t = setTimeout(() => { if (!done) { done = true; fromCache().then(resolve); } }, ms);
     fetch(req).then(r => {
       if (r && r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(key, copy)); }
@@ -28,6 +35,7 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   if (url.origin === location.origin) {
     if (url.pathname.endsWith("library.json")) return;
+    if (url.pathname.endsWith("/papline")) return;   // papline.gr: το PDF το κρατά η ίδια η σελίδα στη συσκευή
     const p = url.pathname;
     if (req.mode === "navigate" || p.endsWith("/") || p.endsWith(".html") || p.endsWith(".js") || p.endsWith(".webmanifest")) {
       const key = (p.endsWith("/") || p.endsWith("/index.html")) ? "./index.html" : new Request(url.origin + p);
@@ -41,5 +49,5 @@ self.addEventListener("fetch", e => {
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
     if (r && (r.ok || r.type === "opaque")) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
     return r;
-  })));
+  }).catch(() => caches.match(req, { ignoreSearch: true }).then(h => h || Response.error()))));   // χωρίς ίντερνετ: και χωρίς το «?v=»
 });

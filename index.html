@@ -2200,7 +2200,7 @@ const idb=(()=>{
 // (31-10-2026) Κοινή βιβλιοθήκη: τα βιβλία που άνοιξες μόνο σε αυτή τη συσκευή (π.χ. στο Chrome του Mac)
 // πακετάρονται σε ένα zip (φάκελος vivlia + library.json) για ανέβασμα στο GitHub. Μαζί και η ήδη διαβασμένη μουσική τους,
 // ώστε οι άλλες συσκευές να μην τα ξαναδιαβάζουν. Βιβλία πάνω από 24 MB χωρίζονται σε κομμάτια (.p1, .p2 …), λόγω ορίου του Cloudflare.
-function localOnlyBooks(){ return (lib.books||[]).filter(b=>b&&b.pdf&&!b.shared&&!/^vivlia\//.test(b.pdf)); }
+function localOnlyBooks(){ return (lib.books||[]).filter(b=>b&&b.pdf&&!b.shared&&b.src!=="papline"&&!/^vivlia\//.test(b.pdf)); }   // (22-11-2026) τα βιβλία του papline.gr τα φέρνει κάθε συσκευή μόνη της
 function bookHash(u8){let h=2166136261;const step=Math.max(1,Math.floor(u8.length/4096));for(let i=0;i<u8.length;i+=step){h^=u8[i];h=Math.imul(h,16777619);}return (h>>>0).toString(36)+"-"+u8.length;}   // ίδιο με selida-vivlio.html
 function slugOf(t){
   const M={α:"a",β:"v",γ:"g",δ:"d",ε:"e",ζ:"z",η:"i",θ:"th",ι:"i",κ:"k",λ:"l",μ:"m",ν:"n",ξ:"x",ο:"o",π:"p",ρ:"r",σ:"s",ς:"s",τ:"t",υ:"y",φ:"f",χ:"ch",ψ:"ps",ω:"o"};
@@ -2298,7 +2298,7 @@ async function shareBooks(mode,silent){
       if(blob.size>LIM){ parts=Math.ceil(blob.size/PART); for(let p=0;p<parts;p++) zip.file(path+".p"+(p+1),blob.slice(p*PART,(p+1)*PART)); }
       else zip.file(path,blob);
       const tc=T[bk.pdf]||null; let toc=tc&&tc.items?tc.items:[];
-      const FULL=await idb.get("full:"+key+":r5:f1"), meta=await idb.get("meta:"+key+":r5"); let ixp="";
+      const FULL=(await idb.get("full:"+key+":r5:f2"))||(await idb.get("full:"+key+":r5:f1")), meta=await idb.get("meta:"+key+":r5"); let ixp="";
       const n=(meta&&meta.n)||bk.pages||0;
       if(FULL&&FULL.lines&&FULL.lines.length){ const J={v:1,n:n||FULL.pages.length,D:FULL,toc}; zip.file("vivlia/"+sl+".json",JSON.stringify(J)); ready++; try{ zip.file("vivlia/"+sl+".ix.json",JSON.stringify(evIndex(FULL))); ixp="vivlia/"+sl+".ix.json"; }catch(_){} }
       const e={id:"sh-"+sl,title:bk.title,pdf:path,pages:n,marks:[],size:blob.size,shared:1,toc}; if(parts) e.parts=parts; if(ixp) e.ix=ixp;
@@ -3002,6 +3002,7 @@ function renderLib(){
     <section id="secRecent" hidden><p class="label">ΑΝΟΙΞΕΣ ΠΡΟΣΦΑΤΑ</p><div class="list" id="recent"></div></section>
     <section id="secBooks"><p class="label">ΤΑ ΒΙΒΛΙΑ ΜΟΥ</p><div class="list" id="books"></div></section>
     <button class="btn solid" id="btnPdf" type="button">+ Πρόσθεσε βιβλίο (PDF)</button>
+    <button class="btn solid" id="btnPapline" type="button" onclick="location.href='./papline.html'">📥 Βιβλία από το papline.gr · 📴 χωρίς ίντερνετ</button>
     <input type="file" id="pdfInput" accept="application/pdf,.pdf" hidden>
     <button class="btn red" id="btnPhoto" type="button" hidden>📷 Φωτογραφία σελίδας → να παίξει</button>
     <input type="file" id="photoInput" accept="image/*" hidden>
